@@ -123,7 +123,7 @@ export default function TodayTasks() {
                     }}
                     className="flex items-center gap-3 p-4 rounded-xl"
                     style={{
-                      background: 'rgba(255,255,255,0.7)',
+                      background: 'var(--surface)',
                       border: '1px solid rgba(232,230,220,0.8)',
                       opacity: isCompleted ? 0.6 : 1,
                     }}
@@ -137,7 +137,7 @@ export default function TodayTasks() {
                         borderColor: priorityColors[task.priority],
                         background: isCompleted ? priorityColors[task.priority] : 'transparent',
                         cursor: 'pointer',
-                        color: '#fff',
+                        color: 'var(--text-on-primary)',
                         minWidth: '24px',
                         minHeight: '24px',
                       }}

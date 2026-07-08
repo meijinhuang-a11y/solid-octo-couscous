@@ -188,7 +188,7 @@ export default function PhotoPage() {
                 rows={4}
                 className="w-full px-3.5 py-2.5 rounded-xl outline-none resize-none"
                 style={{
-                  background: 'rgba(255,255,255,0.7)',
+                  background: 'var(--surface)',
                   border: '1px solid var(--cream-border)',
                   fontFamily: "'Lora',var(--font-sans)",
                   fontSize: '16px',
@@ -291,7 +291,7 @@ export default function PhotoPage() {
               </div>
             </div>
 
-            <div className="mb-4 p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.5)' }}>
+            <div className="mb-4 p-3 rounded-xl" style={{ background: 'var(--surface-soft)' }}>
               <label className="block mb-3 uppercase tracking-wide" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-text-muted)' }}>
                 参数调整
               </label>
@@ -336,7 +336,7 @@ export default function PhotoPage() {
               className="w-full h-11 rounded-xl flex items-center justify-center gap-2"
               style={{
                 background: !prompt.trim() || isGenerating ? 'rgba(106,155,204,0.4)' : 'var(--soft-blue)',
-                color: '#fff',
+                color: 'var(--text-on-primary)',
                 border: 'none',
                 fontFamily: "'Poppins',var(--font-sans)",
                 fontSize: '0.8125rem',
@@ -431,7 +431,7 @@ export default function PhotoPage() {
                     )}
 
                     {photo.batchVersions && photo.batchVersions.length > 0 && (
-                      <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full z-10" style={{ background: 'rgba(167,139,250,0.9)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', fontWeight: 500, color: '#fff' }}>
+                      <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full z-10" style={{ background: 'rgba(167,139,250,0.9)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', fontWeight: 500, color: 'var(--text-on-primary)' }}>
                         {photo.batchVersions.length}版
                       </div>
                     )}
@@ -447,13 +447,13 @@ export default function PhotoPage() {
                           background: photo.status === 'enhanced' ? 'rgba(138,191,146,0.8)' : photo.status === 'processing' ? 'rgba(251,191,36,0.8)' : 'rgba(106,155,204,0.8)',
                           fontFamily: "'Poppins',var(--font-sans)",
                           fontSize: '0.5625rem',
-                          color: '#fff',
+                          color: 'var(--text-on-primary)',
                           fontWeight: 500,
                         }}>
                           {photo.status === 'enhanced' ? '已优化' : photo.status === 'processing' ? '处理中' : '原图'}
                         </span>
                       </div>
-                      <p className="m-0 truncate" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: '#fff', opacity: 0.9 }}>
+                      <p className="m-0 truncate" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--text-on-primary)', opacity: 0.9 }}>
                         {photo.name}
                       </p>
                     </div>
@@ -463,7 +463,7 @@ export default function PhotoPage() {
                         type="button"
                         onClick={(e) => { e.stopPropagation(); deletePhoto(photo.id); }}
                         className="w-8 h-8 rounded-xl flex items-center justify-center"
-                        style={{ background: 'rgba(239,68,68,0.8)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                        style={{ background: 'rgba(239,68,68,0.8)', color: 'var(--text-on-primary)', border: 'none', cursor: 'pointer' }}
                         whileTap={{ scale: 0.9 }}
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -516,7 +516,7 @@ export default function PhotoPage() {
                     <div className="relative rounded-2xl overflow-hidden mb-4" style={{ aspectRatio: '3/4', filter: currentPreviewPhoto?.filterParams ? buildCssFilter(currentPreviewPhoto.filterParams) : undefined }}>
                       <img src={currentPreviewPhoto?.thumbnail || currentPhoto.thumbnail} alt="图片预览" className="w-full h-full object-cover" />
                     </div>
-                    <div className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.5)' }}>
+                    <div className="p-3 rounded-xl" style={{ background: 'var(--surface-soft)' }}>
                       <div className="grid grid-cols-2 gap-2" style={{ fontSize: '0.75rem' }}>
                         <div>
                           <span style={{ color: 'var(--cream-text-muted)' }}>名称：</span>
@@ -599,7 +599,7 @@ export default function PhotoPage() {
                       </div>
                     </div>
 
-                    <div className="mb-4 p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.5)' }}>
+                    <div className="mb-4 p-3 rounded-xl" style={{ background: 'var(--surface-soft)' }}>
                       <span className="block mb-2 uppercase tracking-wide" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-text-muted)' }}>参数微调</span>
                       {SLIDER_CONFIGS.map((config) => (
                         <SliderRow
@@ -649,10 +649,10 @@ export default function PhotoPage() {
                 <button type="button" onClick={closeModal} className="w-full sm:w-auto h-11 px-5 rounded-xl" style={{ background: 'transparent', color: 'var(--cream-text-muted)', border: '1px solid var(--cream-border)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, cursor: 'pointer' }}>
                   取消
                 </button>
-                <motion.button type="button" onClick={handleApplyAdjust} className="w-full sm:w-auto h-11 px-5 rounded-xl" style={{ background: 'var(--soft-blue)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, cursor: 'pointer', boxShadow: '0 3px 10px rgba(106,155,204,0.25)' }} whileTap={{ scale: 0.97 }}>
+                <motion.button type="button" onClick={handleApplyAdjust} className="w-full sm:w-auto h-11 px-5 rounded-xl" style={{ background: 'var(--soft-blue)', color: 'var(--text-on-primary)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, cursor: 'pointer', boxShadow: '0 3px 10px rgba(106,155,204,0.25)' }} whileTap={{ scale: 0.97 }}>
                   应用调整
                 </motion.button>
-                <motion.button type="button" className="w-full sm:w-auto h-11 px-5 rounded-xl" style={{ background: 'var(--moss-green)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, cursor: 'pointer', boxShadow: '0 3px 10px rgba(138,191,146,0.25)' }} whileTap={{ scale: 0.97 }}>
+                <motion.button type="button" className="w-full sm:w-auto h-11 px-5 rounded-xl" style={{ background: 'var(--moss-green)', color: 'var(--text-on-primary)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, cursor: 'pointer', boxShadow: '0 3px 10px rgba(138,191,146,0.25)' }} whileTap={{ scale: 0.97 }}>
                   导出
                 </motion.button>
               </div>

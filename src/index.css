@@ -2,21 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 基础字号：参考飞书风格，整体缩小 */
+/* 基础字号：更紧凑精致 */
 html {
-  font-size: 14px;
+  font-size: 13px;
 }
 @media (min-width: 1440px) {
-  html { font-size: 14.5px; }
+  html { font-size: 13.5px; }
 }
 @media (min-width: 1920px) {
-  html { font-size: 13px; }
+  html { font-size: 12px; }
 }
 @media (min-width: 2560px) {
-  html { font-size: 11px; }
+  html { font-size: 10px; }
 }
 @media (min-width: 3840px) {
-  html { font-size: 9px; }
+  html { font-size: 8px; }
 }
 
 :root {
@@ -126,21 +126,21 @@ html {
   --font-mono: 'JetBrains Mono', monospace;
   --tracking-normal: 0em;
 
-  /* Radius - 飞书风格：更紧凑的圆角 */
-  --radius: 0.75rem;
+  /* Radius - 更精致紧凑 */
+  --radius: 0.625rem;
 
-  /* Shadows - 飞书风格：更柔和的阴影 */
-  --shadow-2xs: 0 1px 1px rgba(0, 0, 0, 0.04);
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-xl: 0 8px 20px rgba(0, 0, 0, 0.10);
-  --shadow-2xl: 0 12px 32px rgba(0, 0, 0, 0.12);
+  /* Shadows - 更精致柔和 */
+  --shadow-2xs: 0 1px 1px rgba(0, 0, 0, 0.03);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 3px 10px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 6px 16px rgba(0, 0, 0, 0.08);
+  --shadow-2xl: 0 10px 24px rgba(0, 0, 0, 0.10);
 
-  /* Spacing - 更紧凑的间距 */
-  --spacing: 0.2rem;
+  /* Spacing - 更紧凑 */
+  --spacing: 0.15rem;
 
   /* Custom colors */
   --warm-orange: #d97757;
@@ -152,6 +152,16 @@ html {
   --cream-text: #b0aea5;
   --cream-text-muted: #b0aea5;
   --cream-dark: #141413;
+
+  /* Surface colors - 用于替代硬编码白色，支持夜间模式 */
+  --surface: rgba(255, 255, 255, 0.7);
+  --surface-soft: rgba(255, 255, 255, 0.5);
+  --surface-faint: rgba(255, 255, 255, 0.4);
+  --surface-strong: #ffffff;
+  --surface-solid: rgba(255, 255, 255, 0.9);
+  --surface-light: rgba(255, 255, 255, 0.25);
+  --surface-lighter: rgba(255, 255, 255, 0.2);
+  --text-on-primary: #ffffff;
 }
 
 .dark {
@@ -211,6 +221,16 @@ html {
   --cream-text: #e3e3e8;
   --cream-text-muted: #8e8e93;
   --cream-dark: #f5f5f7;
+
+  /* Surface colors dark */
+  --surface: rgba(255, 255, 255, 0.06);
+  --surface-soft: rgba(255, 255, 255, 0.04);
+  --surface-faint: rgba(255, 255, 255, 0.03);
+  --surface-strong: #2c2c2e;
+  --surface-solid: rgba(255, 255, 255, 0.08);
+  --surface-light: rgba(255, 255, 255, 0.12);
+  --surface-lighter: rgba(255, 255, 255, 0.1);
+  --text-on-primary: #ffffff;
 }
 
 @layer base {
@@ -346,14 +366,13 @@ html {
   }
 
   .stat-card {
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--surface);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(232, 230, 220, 0.8);
     border-radius: 10px;
   }
 
   .dark .stat-card {
-    background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--cream-border);
   }
 

@@ -175,7 +175,7 @@ export default function WelcomeCard() {
             className="text-center rounded-xl cursor-default"
             style={{
               padding: '10px 6px',
-              background: 'rgba(255,255,255,0.7)',
+              background: 'var(--surface)',
               backdropFilter: 'blur(8px)',
               border: '1px solid rgba(232,230,220,0.8)',
               minWidth: 0,

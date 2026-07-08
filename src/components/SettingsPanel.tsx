@@ -117,7 +117,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             </div>
 
             <div className="space-y-5">
-              <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.5)' }}>
+              <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--surface-soft)' }}>
                 <div className="flex items-center gap-3">
                   <div
                     className="w-10 h-10 rounded-lg flex items-center justify-center"
@@ -170,7 +170,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.5)' }}>
+              <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--surface-soft)' }}>
                 <div className="flex items-center gap-3">
                   <div
                     className="w-10 h-10 rounded-lg flex items-center justify-center"
@@ -230,7 +230,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                     exit={{ height: 0, opacity: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.5)' }}>
+                    <div className="p-3 rounded-xl" style={{ background: 'var(--surface-soft)' }}>
                       <label
                         className="block mb-1.5"
                         style={{
@@ -264,7 +264,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                           className="flex-1 px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5"
                           style={{
                             background: 'var(--soft-blue)',
-                            color: '#fff',
+                            color: 'var(--text-on-primary)',
                             border: 'none',
                             fontFamily: "'Poppins',var(--font-sans)",
                             fontSize: '0.6875rem',

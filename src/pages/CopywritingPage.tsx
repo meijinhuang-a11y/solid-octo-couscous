@@ -168,7 +168,7 @@ function EditableField({ label, desc, value, accent, onSave }: {
           rows={3}
           className="w-full px-3 py-2 rounded-xl outline-none resize-none"
           style={{
-            background: 'rgba(255,255,255,0.9)',
+            background: 'var(--surface-solid)',
             border: `1px solid ${accent}`,
             fontFamily: "'Lora',var(--font-sans)",
             fontSize: '0.8125rem',
@@ -181,7 +181,7 @@ function EditableField({ label, desc, value, accent, onSave }: {
           onClick={() => { setDraft(value); setEditing(true); }}
           className="px-3 py-2 rounded-xl cursor-text"
           style={{
-            background: 'rgba(255,255,255,0.5)',
+            background: 'var(--surface-soft)',
             border: '1px solid var(--cream-border)',
             fontFamily: "'Lora',var(--font-sans)",
             fontSize: '0.8125rem',
@@ -258,7 +258,7 @@ function CopywritingCard({ item, index, onDelete, onUpdateDeliverable }: Copywri
         </div>
       </div>
 
-      <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.4)', border: '1px solid var(--cream-border)' }}>
+      <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: 'var(--surface-faint)', border: '1px solid var(--cream-border)' }}>
         <p className="m-0" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.8125rem', color: 'var(--cream-dark)', lineHeight: 1.5 }}>
           {item.original}
         </p>
@@ -275,7 +275,7 @@ function CopywritingCard({ item, index, onDelete, onUpdateDeliverable }: Copywri
                   onClick={() => setActiveVersion(i)}
                   className="flex-shrink-0 px-3 h-9 rounded-xl"
                   style={{
-                    background: activeVersion === i ? 'var(--soft-blue)' : 'rgba(255,255,255,0.7)',
+                    background: activeVersion === i ? 'var(--soft-blue)' : 'var(--surface)',
                     color: activeVersion === i ? '#fff' : 'var(--cream-text-muted)',
                     border: `1px solid ${activeVersion === i ? 'var(--soft-blue)' : 'var(--cream-border)'}`,
                     fontFamily: "'Poppins',var(--font-sans)",
@@ -328,7 +328,7 @@ function CopywritingCard({ item, index, onDelete, onUpdateDeliverable }: Copywri
                     onClick={() => setExportFormat(f.format)}
                     className="flex-shrink-0 px-2.5 h-9 rounded-xl"
                     style={{
-                      background: exportFormat === f.format ? 'var(--warm-orange)' : 'rgba(255,255,255,0.7)',
+                      background: exportFormat === f.format ? 'var(--warm-orange)' : 'var(--surface)',
                       color: exportFormat === f.format ? '#fff' : 'var(--cream-text-muted)',
                       border: `1px solid ${exportFormat === f.format ? 'var(--warm-orange)' : 'var(--cream-border)'}`,
                       fontFamily: "'Poppins',var(--font-sans)",
@@ -372,7 +372,7 @@ function CopywritingCard({ item, index, onDelete, onUpdateDeliverable }: Copywri
                     className="w-full sm:flex-1 h-10 px-3 rounded-xl flex items-center justify-center gap-1.5"
                     style={{
                       background: 'var(--warm-orange)',
-                      color: '#fff',
+                      color: 'var(--text-on-primary)',
                       border: 'none',
                       fontFamily: "'Poppins',var(--font-sans)",
                       fontSize: '0.75rem',
@@ -443,7 +443,7 @@ function EditableHashtags({ value, onSave }: { value: string[]; onSave: (v: stri
           placeholder="空格或逗号分隔，如 好物分享 测评"
           className="w-full h-11 px-3 rounded-xl outline-none"
           style={{
-            background: 'rgba(255,255,255,0.9)',
+            background: 'var(--surface-solid)',
             border: '1px solid var(--moss-green)',
             fontFamily: "'Lora',var(--font-sans)",
             fontSize: '16px',
@@ -451,7 +451,7 @@ function EditableHashtags({ value, onSave }: { value: string[]; onSave: (v: stri
           }}
         />
       ) : (
-        <div className="px-3 py-2 rounded-xl flex flex-wrap gap-1.5" style={{ background: 'rgba(255,255,255,0.5)', border: '1px solid var(--cream-border)', minHeight: '44px' }}>
+        <div className="px-3 py-2 rounded-xl flex flex-wrap gap-1.5" style={{ background: 'var(--surface-soft)', border: '1px solid var(--cream-border)', minHeight: '44px' }}>
           {value.length ? (
             value.map((h) => (
               <span key={h} className="px-2 py-0.5 rounded-full" style={{ background: 'color-mix(in srgb, var(--moss-green) 15%, transparent)', color: 'var(--moss-green)', fontFamily: "'Lora',var(--font-sans)", fontSize: '0.625rem' }}>
@@ -521,7 +521,7 @@ export default function CopywritingPage() {
                 rows={4}
                 className="w-full px-3.5 py-2.5 rounded-xl outline-none resize-none"
                 style={{
-                  background: 'rgba(255,255,255,0.7)',
+                  background: 'var(--surface)',
                   border: '1px solid var(--cream-border)',
                   fontFamily: "'Lora',var(--font-sans)",
                   fontSize: '16px',
@@ -652,7 +652,7 @@ export default function CopywritingPage() {
               className="w-full h-11 rounded-xl flex items-center justify-center gap-2"
               style={{
                 background: !original.trim() || isGenerating ? 'rgba(106,155,204,0.4)' : 'var(--soft-blue)',
-                color: '#fff',
+                color: 'var(--text-on-primary)',
                 border: 'none',
                 fontFamily: "'Poppins',var(--font-sans)",
                 fontSize: '0.8125rem',

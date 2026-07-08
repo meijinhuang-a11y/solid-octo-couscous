@@ -186,7 +186,7 @@ export default function NotesPage() {
           className="w-full sm:w-auto h-11 px-5 rounded-xl flex items-center justify-center gap-2"
           style={{
             background: 'var(--soft-blue)',
-            color: '#fff',
+            color: 'var(--text-on-primary)',
             border: 'none',
             fontFamily: "'Poppins',var(--font-sans)",
             fontSize: '0.8125rem',
@@ -749,7 +749,7 @@ export default function NotesPage() {
                     rows={8}
                     className="w-full px-3.5 py-2.5 rounded-xl outline-none resize-none"
                     style={{
-                      background: voice.isListening ? 'rgba(239,68,68,0.03)' : 'rgba(255,255,255,0.7)',
+                      background: voice.isListening ? 'rgba(239,68,68,0.03)' : 'var(--surface)',
                       border: `1px solid ${voice.isListening ? 'rgba(239,68,68,0.3)' : 'var(--cream-border)'}`,
                       fontFamily: "'Lora',var(--font-sans)",
                       fontSize: '16px',
@@ -798,7 +798,7 @@ export default function NotesPage() {
                     className="w-full sm:w-auto h-11 px-5 rounded-xl"
                     style={{
                       background: 'var(--soft-blue)',
-                      color: '#fff',
+                      color: 'var(--text-on-primary)',
                       border: 'none',
                       fontFamily: "'Poppins',var(--font-sans)",
                       fontSize: '0.75rem',
@@ -1225,7 +1225,7 @@ export default function NotesPage() {
                         style={{
                           fontFamily: "'Poppins',var(--font-sans)",
                           fontSize: '0.75rem',
-                          color: '#fff',
+                          color: 'var(--text-on-primary)',
                           background: 'var(--warm-orange)',
                         }}
                       >

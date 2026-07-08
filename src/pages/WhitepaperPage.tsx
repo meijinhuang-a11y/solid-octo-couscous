@@ -587,7 +587,7 @@ export default function WhitepaperPage() {
                     className="px-4 py-2 rounded-lg flex items-center justify-center gap-1 transition-all min-h-11 w-full sm:w-auto"
                     style={{
                       background: 'var(--moss-green)',
-                      color: '#fff',
+                      color: 'var(--text-on-primary)',
                       border: '1px solid var(--moss-green)',
                       fontFamily: "'Poppins',var(--font-sans)",
                       fontSize: '0.75rem',

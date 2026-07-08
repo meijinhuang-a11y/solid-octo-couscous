@@ -446,7 +446,7 @@ export default function NewsPage() {
                     style={{
                       background: selectedNews.isFavorite
                         ? 'color-mix(in srgb, var(--warm-orange) 12%, transparent)'
-                        : 'rgba(255,255,255,0.7)',
+                        : 'var(--surface)',
                       border: `1px solid ${selectedNews.isFavorite ? 'var(--warm-orange)' : 'var(--cream-border)'}`,
                       color: selectedNews.isFavorite ? 'var(--warm-orange)' : 'var(--cream-text-muted)',
                       cursor: 'pointer',

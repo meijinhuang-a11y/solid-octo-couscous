@@ -94,7 +94,7 @@ export default function TrendingVideoSummary() {
               key={video.id}
               className="flex items-center gap-4 p-4 rounded-xl"
               style={{
-                background: 'rgba(255,255,255,0.7)',
+                background: 'var(--surface)',
                 border: '1px solid rgba(232,230,220,0.8)',
               }}
               initial={{ opacity: 0, y: 10 }}
@@ -115,7 +115,7 @@ export default function TrendingVideoSummary() {
                   style={{
                     width: '1.75rem',
                     height: '1.75rem',
-                    background: 'rgba(255,255,255,0.9)',
+                    background: 'var(--surface-solid)',
                     backdropFilter: 'blur(4px)',
                   }}
                 >
@@ -128,7 +128,7 @@ export default function TrendingVideoSummary() {
                   style={{
                     fontFamily: "'JetBrains Mono',var(--font-mono)",
                     fontSize: '0.625rem',
-                    color: '#fff',
+                    color: 'var(--text-on-primary)',
                     background: 'rgba(0,0,0,0.6)',
                   }}
                 >

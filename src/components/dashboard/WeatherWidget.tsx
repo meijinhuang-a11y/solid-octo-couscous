@@ -113,7 +113,7 @@ export default function WeatherWidget() {
             style={{
               padding: '10px 12px',
               minWidth: '56px',
-              background: 'rgba(255,255,255,0.7)',
+              background: 'var(--surface)',
               border: '1px solid rgba(232,230,220,0.8)',
             }}
             initial={{ opacity: 0, y: 10 }}

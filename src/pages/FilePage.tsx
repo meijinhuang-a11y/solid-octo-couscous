@@ -173,7 +173,7 @@ export default function FilePage() {
             className="w-full sm:w-auto h-11 px-5 rounded-xl flex items-center justify-center gap-2"
             style={{
               background: isOrganizing ? 'var(--cream-border)' : 'var(--moss-green)',
-              color: '#fff',
+              color: 'var(--text-on-primary)',
               border: 'none',
               fontFamily: "'Poppins',var(--font-sans)",
               fontSize: '0.8125rem',
@@ -298,7 +298,7 @@ export default function FilePage() {
             >
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr style={{ background: 'rgba(255,255,255,0.5)' }}>
+                  <tr style={{ background: 'var(--surface-soft)' }}>
                     <th
                       className="text-left px-4 py-3"
                       style={{

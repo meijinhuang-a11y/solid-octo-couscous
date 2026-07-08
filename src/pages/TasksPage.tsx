@@ -280,7 +280,7 @@ export default function TasksPage() {
           className="w-full sm:w-auto h-11 px-5 rounded-xl flex items-center justify-center gap-2"
           style={{
             background: 'var(--warm-orange)',
-            color: '#fff',
+            color: 'var(--text-on-primary)',
             border: 'none',
             fontFamily: "'Poppins',var(--font-sans)",
             fontSize: '0.8125rem',
@@ -333,7 +333,7 @@ export default function TasksPage() {
                     style={{
                       background: newTaskType === opt.value
                         ? `color-mix(in srgb, ${opt.color} 12%, transparent)`
-                        : 'rgba(255,255,255,0.7)',
+                        : 'var(--surface)',
                       border: `2px solid ${newTaskType === opt.value ? opt.color : 'var(--cream-border)'}`,
                       cursor: 'pointer',
                     }}
@@ -388,7 +388,7 @@ export default function TasksPage() {
                   placeholder="输入任务标题..."
                   className="w-full h-11 px-3.5 rounded-xl outline-none"
                   style={{
-                    background: 'rgba(255,255,255,0.7)',
+                    background: 'var(--surface)',
                     border: '1px solid var(--cream-border)',
                     fontFamily: "'Poppins',var(--font-sans)",
                     fontSize: '16px',
@@ -417,7 +417,7 @@ export default function TasksPage() {
                       onClick={() => setNewTaskPriority(p)}
                       className="flex-1 h-11 rounded-xl"
                       style={{
-                        background: newTaskPriority === p ? priorityColors[p] : 'rgba(255,255,255,0.7)',
+                        background: newTaskPriority === p ? priorityColors[p] : 'var(--surface)',
                         color: newTaskPriority === p ? '#fff' : priorityColors[p],
                         border: `1px solid ${newTaskPriority === p ? priorityColors[p] : 'var(--cream-border)'}`,
                         fontFamily: "'Poppins',var(--font-sans)",
@@ -452,7 +452,7 @@ export default function TasksPage() {
                     onChange={(e) => setNewTaskStartDate(e.target.value)}
                     className="w-full h-11 px-3 rounded-xl outline-none"
                     style={{
-                      background: 'rgba(255,255,255,0.7)',
+                      background: 'var(--surface)',
                       border: '1px solid var(--cream-border)',
                       fontFamily: "'Poppins',var(--font-sans)",
                       fontSize: '0.8125rem',
@@ -467,7 +467,7 @@ export default function TasksPage() {
                     onChange={(e) => setNewTaskEndDate(e.target.value)}
                     className="w-full h-11 px-3 rounded-xl outline-none"
                     style={{
-                      background: 'rgba(255,255,255,0.7)',
+                      background: 'var(--surface)',
                       border: '1px solid var(--cream-border)',
                       fontFamily: "'Poppins',var(--font-sans)",
                       fontSize: '0.8125rem',
@@ -500,7 +500,7 @@ export default function TasksPage() {
                           onClick={() => setNewRecurringFreq(f.value)}
                           className="flex-1 h-11 rounded-xl"
                           style={{
-                            background: newRecurringFreq === f.value ? 'var(--moss-green)' : 'rgba(255,255,255,0.7)',
+                            background: newRecurringFreq === f.value ? 'var(--moss-green)' : 'var(--surface)',
                             color: newRecurringFreq === f.value ? '#fff' : 'var(--moss-green)',
                             border: `1px solid ${newRecurringFreq === f.value ? 'var(--moss-green)' : 'var(--cream-border)'}`,
                             fontFamily: "'Poppins',var(--font-sans)",
@@ -536,7 +536,7 @@ export default function TasksPage() {
                         onChange={(e) => setNewRecurringInterval(Math.max(1, parseInt(e.target.value) || 1))}
                         className="w-24 h-11 px-3 rounded-xl outline-none"
                         style={{
-                          background: 'rgba(255,255,255,0.7)',
+                          background: 'var(--surface)',
                           border: '1px solid var(--cream-border)',
                           fontFamily: "'Poppins',var(--font-sans)",
                           fontSize: '16px',
@@ -572,7 +572,7 @@ export default function TasksPage() {
                             style={{
                               background: newRecurringWeekdays.includes(w.value)
                                 ? 'var(--moss-green)'
-                                : 'rgba(255,255,255,0.7)',
+                                : 'var(--surface)',
                               color: newRecurringWeekdays.includes(w.value) ? '#fff' : 'var(--cream-text-muted)',
                               border: `1px solid ${newRecurringWeekdays.includes(w.value) ? 'var(--moss-green)' : 'var(--cream-border)'}`,
                               fontFamily: "'Poppins',var(--font-sans)",
@@ -607,7 +607,7 @@ export default function TasksPage() {
                       onChange={(e) => setNewRecurringEndDate(e.target.value)}
                       className="w-full h-11 px-3 rounded-xl outline-none"
                       style={{
-                        background: 'rgba(255,255,255,0.7)',
+                        background: 'var(--surface)',
                         border: '1px solid var(--cream-border)',
                         fontFamily: "'Poppins',var(--font-sans)",
                         fontSize: '0.8125rem',
@@ -652,7 +652,7 @@ export default function TasksPage() {
                     onChange={(e) => setNewTaskReminderTime(e.target.value)}
                     className="flex-1 w-full h-11 px-3 rounded-xl outline-none"
                     style={{
-                      background: 'rgba(255,255,255,0.7)',
+                      background: 'var(--surface)',
                       border: '1px solid var(--cream-border)',
                       fontFamily: "'Poppins',var(--font-sans)",
                       fontSize: '0.8125rem',
@@ -683,7 +683,7 @@ export default function TasksPage() {
                 rows={3}
                 className="w-full px-3.5 py-2.5 rounded-xl outline-none resize-none"
                 style={{
-                  background: 'rgba(255,255,255,0.7)',
+                  background: 'var(--surface)',
                   border: '1px solid var(--cream-border)',
                   fontFamily: "'Lora',var(--font-sans)",
                   fontSize: '16px',
@@ -715,7 +715,7 @@ export default function TasksPage() {
                 className="w-full sm:w-auto h-11 px-5 rounded-xl"
                 style={{
                   background: 'var(--warm-orange)',
-                  color: '#fff',
+                  color: 'var(--text-on-primary)',
                   border: 'none',
                   fontFamily: "'Poppins',var(--font-sans)",
                   fontSize: '0.75rem',
@@ -784,7 +784,7 @@ export default function TasksPage() {
                       borderColor: priorityColors[task.priority],
                       background: task.status === 'completed' ? priorityColors[task.priority] : 'transparent',
                       cursor: 'pointer',
-                      color: '#fff',
+                      color: 'var(--text-on-primary)',
                     }}
                     whileTap={{ scale: 0.9 }}
                     aria-label="切换任务状态"
@@ -925,7 +925,7 @@ export default function TasksPage() {
                       <div
                         className="rounded-xl px-3 py-2"
                         style={{
-                          background: 'rgba(255,255,255,0.5)',
+                          background: 'var(--surface-soft)',
                           borderLeft: '3px solid var(--soft-blue)',
                         }}
                       >

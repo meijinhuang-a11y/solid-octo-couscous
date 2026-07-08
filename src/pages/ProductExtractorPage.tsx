@@ -185,7 +185,7 @@ export default function ProductExtractorPage() {
             onClick={handleExtract}
             disabled={!url.trim() || isExtracting}
             className="flex-1 sm:flex-none h-11 px-5 rounded-xl flex items-center justify-center gap-2 transition-all"
-            style={{ background: isExtracting ? 'var(--cream-border)' : 'var(--moss-green)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.875rem', fontWeight: 500, cursor: (!url.trim() || isExtracting) ? 'not-allowed' : 'pointer', boxShadow: isExtracting ? 'none' : '0 4px 12px rgba(120,140,93,0.3)' }}
+            style={{ background: isExtracting ? 'var(--cream-border)' : 'var(--moss-green)', color: 'var(--text-on-primary)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.875rem', fontWeight: 500, cursor: (!url.trim() || isExtracting) ? 'not-allowed' : 'pointer', boxShadow: isExtracting ? 'none' : '0 4px 12px rgba(120,140,93,0.3)' }}
             whileTap={(!url.trim() || isExtracting) ? {} : { scale: 0.97 }}
           >
             {isExtracting ? (
@@ -251,7 +251,7 @@ export default function ProductExtractorPage() {
                   style={{
                     fontSize: '0.625rem',
                     fontWeight: 600,
-                    background: isActive ? 'rgba(255,255,255,0.25)' : `${color}20`,
+                    background: isActive ? 'var(--surface-light)' : `${color}20`,
                     color: isActive ? '#fff' : color,
                     minWidth: '18px',
                     textAlign: 'center',
@@ -334,7 +334,7 @@ export default function ProductExtractorPage() {
                                   tag === '源头旗舰' ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' :
                                   tag === '实力商家' ? 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)' :
                                   'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
-                                color: '#fff',
+                                color: 'var(--text-on-primary)',
                                 fontFamily: "'Poppins',var(--font-sans)",
                                 fontSize: '0.625rem',
                               }}>
@@ -346,7 +346,7 @@ export default function ProductExtractorPage() {
                         <div className="flex items-center justify-between">
                           <span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.875rem', fontWeight: 600, color: 'var(--warm-orange)' }}>{product.price}</span>
                           {product.profit.sellingPrice > 0 && (
-                            <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ fontFamily: "'Poppins',var(--font-sans)", color: '#fff', background: product.profit.profitMargin >= 50 ? 'var(--moss-green)' : 'var(--warm-orange)' }}>
+                            <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ fontFamily: "'Poppins',var(--font-sans)", color: 'var(--text-on-primary)', background: product.profit.profitMargin >= 50 ? 'var(--moss-green)' : 'var(--warm-orange)' }}>
                               利润 {product.profit.profitMargin}%
                             </span>
                           )}
@@ -572,7 +572,7 @@ function ProductDetail(props: ProductDetailProps) {
                       tag === '源头旗舰' ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' :
                       tag === '实力商家' ? 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)' :
                       'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
-                    color: '#fff',
+                    color: 'var(--text-on-primary)',
                     fontFamily: "'Poppins',var(--font-sans)",
                     fontSize: '0.625rem',
                   }}>
@@ -641,7 +641,7 @@ function ProductDetail(props: ProductDetailProps) {
               onClick={handleUpdateProfit}
               disabled={!sellingPriceInput || parseFloat(sellingPriceInput) <= 0}
               className="w-full mt-3 h-11 rounded-xl"
-              style={{ background: (!sellingPriceInput || parseFloat(sellingPriceInput) <= 0) ? 'var(--cream-border)' : 'var(--soft-blue)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: (!sellingPriceInput || parseFloat(sellingPriceInput) <= 0) ? 'not-allowed' : 'pointer' }}
+              style={{ background: (!sellingPriceInput || parseFloat(sellingPriceInput) <= 0) ? 'var(--cream-border)' : 'var(--soft-blue)', color: 'var(--text-on-primary)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: (!sellingPriceInput || parseFloat(sellingPriceInput) <= 0) ? 'not-allowed' : 'pointer' }}
               whileTap={(!sellingPriceInput || parseFloat(sellingPriceInput) <= 0) ? {} : { scale: 0.97 }}
             >
               保存利润测算
@@ -680,7 +680,7 @@ function ProductDetail(props: ProductDetailProps) {
                   onClick={handleOpenListModal}
                   disabled={!xhsUrlInput.trim()}
                   className="w-full h-11 rounded-lg"
-                  style={{ background: !xhsUrlInput.trim() ? 'var(--cream-border)' : 'var(--moss-green)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: !xhsUrlInput.trim() ? 'not-allowed' : 'pointer' }}
+                  style={{ background: !xhsUrlInput.trim() ? 'var(--cream-border)' : 'var(--moss-green)', color: 'var(--text-on-primary)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: !xhsUrlInput.trim() ? 'not-allowed' : 'pointer' }}
                   whileTap={!xhsUrlInput.trim() ? {} : { scale: 0.97 }}
                 >
                   绑定上架
@@ -688,13 +688,13 @@ function ProductDetail(props: ProductDetailProps) {
               </div>
             </div>
             {product.xhsUrl && (
-              <motion.button type="button" onClick={() => window.open(product.xhsUrl, '_blank')} className="w-full h-11 rounded-xl flex items-center justify-center gap-1.5 mb-2" style={{ background: 'var(--soft-blue)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
+              <motion.button type="button" onClick={() => window.open(product.xhsUrl, '_blank')} className="w-full h-11 rounded-xl flex items-center justify-center gap-1.5 mb-2" style={{ background: 'var(--soft-blue)', color: 'var(--text-on-primary)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
                 查看小红书商品
               </motion.button>
             )}
             {product.status === 'pending' && product.profit.sellingPrice > 0 && (
-              <motion.button type="button" onClick={() => { updateProductStatus(product.id, 'ready'); setActiveTab('ready'); onClose(); }} className="w-full h-11 rounded-xl" style={{ background: 'var(--moss-green)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
+              <motion.button type="button" onClick={() => { updateProductStatus(product.id, 'ready'); setActiveTab('ready'); onClose(); }} className="w-full h-11 rounded-xl" style={{ background: 'var(--moss-green)', color: 'var(--text-on-primary)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
                 准备上架
               </motion.button>
             )}
@@ -725,11 +725,11 @@ function ProductDetail(props: ProductDetailProps) {
             <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>利润率</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 600, color: product.profit.profitMargin >= 50 ? 'var(--moss-green)' : 'var(--warm-orange)' }}>{product.profit.profitMargin}%</span></div>
             <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>运费成本</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>¥{product.profit.shippingCost}</span></div>
           </div>
-          <motion.button type="button" onClick={() => window.open(product.xhsUrl, '_blank')} className="w-full h-11 rounded-xl flex items-center justify-center gap-1.5 mb-2" style={{ background: 'var(--soft-blue)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
+          <motion.button type="button" onClick={() => window.open(product.xhsUrl, '_blank')} className="w-full h-11 rounded-xl flex items-center justify-center gap-1.5 mb-2" style={{ background: 'var(--soft-blue)', color: 'var(--text-on-primary)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
             查看小红书商品
           </motion.button>
-          <motion.button type="button" onClick={() => { downlistProduct(product.id); setActiveTab('downlisted'); onClose(); }} className="w-full h-11 rounded-xl" style={{ background: 'var(--warm-orange)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
+          <motion.button type="button" onClick={() => { downlistProduct(product.id); setActiveTab('downlisted'); onClose(); }} className="w-full h-11 rounded-xl" style={{ background: 'var(--warm-orange)', color: 'var(--text-on-primary)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
             下架商品
           </motion.button>
           <div className="pt-3 mt-3" style={{ borderTop: '1px solid var(--cream-border)' }}>

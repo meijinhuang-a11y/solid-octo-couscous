@@ -103,7 +103,7 @@ export default function IndustryReport() {
               key={report.id}
               className="flex items-start gap-3 p-4 rounded-xl"
               style={{
-                background: 'rgba(255,255,255,0.7)',
+                background: 'var(--surface)',
                 border: '1px solid rgba(232,230,220,0.8)',
               }}
               initial={{ opacity: 0, y: 10 }}

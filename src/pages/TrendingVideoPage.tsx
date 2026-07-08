@@ -238,7 +238,7 @@ export default function TrendingVideoPage() {
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.4)' }}>
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.95)' }}>
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'var(--surface-solid)' }}>
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cream-dark)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '2px' }}>
                       <polygon points="5 3 19 12 5 21 5 3" />
                     </svg>
@@ -248,7 +248,7 @@ export default function TrendingVideoPage() {
                   className="absolute top-2 left-2 px-2 py-0.5 rounded-full"
                   style={{
                     background: platformColors[video.platform] || 'var(--warm-orange)',
-                    color: '#fff',
+                    color: 'var(--text-on-primary)',
                     fontFamily: "'Poppins',var(--font-sans)",
                     fontSize: '0.75rem',
                     fontWeight: 500,
@@ -260,7 +260,7 @@ export default function TrendingVideoPage() {
                   className="absolute top-2 right-2 px-2 py-0.5 rounded-full flex items-center gap-1"
                   style={{
                     background: 'rgba(0,0,0,0.6)',
-                    color: '#fff',
+                    color: 'var(--text-on-primary)',
                     fontFamily: "'Poppins',var(--font-sans)",
                     fontSize: '0.75rem',
                   }}
@@ -276,7 +276,7 @@ export default function TrendingVideoPage() {
                     className="absolute bottom-2 left-2 w-7 h-7 rounded-lg flex items-center justify-center"
                     style={{
                       background: 'var(--warm-orange)',
-                      color: '#fff',
+                      color: 'var(--text-on-primary)',
                       fontFamily: "'Poppins',var(--font-sans)",
                       fontSize: '0.75rem',
                       fontWeight: 700,
@@ -436,7 +436,7 @@ export default function TrendingVideoPage() {
                         fontFamily: "'Poppins',var(--font-sans)",
                         fontSize: '0.75rem',
                         fontWeight: 500,
-                        color: '#fff',
+                        color: 'var(--text-on-primary)',
                         background: platformColors[selectedVideo.platform] || 'var(--warm-orange)',
                       }}
                     >
@@ -503,7 +503,7 @@ export default function TrendingVideoPage() {
                       className="px-4 py-2 rounded-full min-h-11"
                       style={{
                         background: 'var(--warm-orange)',
-                        color: '#fff',
+                        color: 'var(--text-on-primary)',
                         border: 'none',
                         fontFamily: "'Poppins',var(--font-sans)",
                         fontSize: '0.75rem',
@@ -586,7 +586,7 @@ export default function TrendingVideoPage() {
                       type="button"
                       className="flex-1 py-2.5 rounded-xl min-h-11"
                       style={{
-                        background: 'rgba(255,255,255,0.7)',
+                        background: 'var(--surface)',
                         color: 'var(--cream-dark)',
                         border: '1px solid var(--cream-border)',
                         fontFamily: "'Poppins',var(--font-sans)",
@@ -603,7 +603,7 @@ export default function TrendingVideoPage() {
                       className="flex-1 py-2.5 rounded-xl min-h-11"
                       style={{
                         background: 'var(--warm-orange)',
-                        color: '#fff',
+                        color: 'var(--text-on-primary)',
                         border: 'none',
                         fontFamily: "'Poppins',var(--font-sans)",
                         fontSize: '0.8125rem',
