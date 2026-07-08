@@ -1,6 +1,5 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -8,58 +7,15 @@ const DEFAULT_LNG = 116.4551;
 const DEFAULT_LAT = 39.9269;
 const DEFAULT_ZOOM = 13;
 
-function createCustomIcon() {
-  return L.divIcon({
-    className: 'custom-marker',
-    html: `<div style="
-      width: 28px;
-      height: 28px;
-      background: #FF6B35;
-      border: 3px solid white;
-      border-radius: 50% 50% 50% 0;
-      transform: rotate(-45deg);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      position: relative;
-    ">
-      <div style="
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) rotate(45deg);
-        width: 8px;
-        height: 8px;
-        background: white;
-        border-radius: 50%;
-      "></div>
-    </div>`,
-    iconSize: [28, 28],
-    iconAnchor: [14, 28],
-  });
-}
-
-function MapController({ zoom }: { zoom: number }) {
-  const map = useMap();
-  useEffect(() => {
-    map.setZoom(zoom);
-  }, [zoom, map]);
-  return null;
-}
-
-function ChangeView({ center, zoom }: { center: [number, number]; zoom: number }) {
-  const map = useMap();
-  useEffect(() => {
-    map.setView(center, zoom);
-  }, [center, zoom, map]);
-  return null;
-}
-
 export default function WeatherWidget() {
   const [location, setLocation] = useState('北京市 · 朝阳区');
   const [lng, setLng] = useState(DEFAULT_LNG);
   const [lat, setLat] = useState(DEFAULT_LAT);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [isLoading, setIsLoading] = useState(false);
-  const [mapKey, setMapKey] = useState(0);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markerRef = useRef<L.Marker | null>(null);
 
   const weatherData = useMemo(() => {
     const now = new Date();
@@ -87,6 +43,71 @@ export default function WeatherWidget() {
     return result;
   }, []);
 
+  const customIcon = useMemo(() => {
+    return L.divIcon({
+      className: 'custom-marker',
+      html: `<div style="
+        width: 28px;
+        height: 28px;
+        background: #FF6B35;
+        border: 3px solid white;
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        position: relative;
+      ">
+        <div style="
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) rotate(45deg);
+          width: 8px;
+          height: 8px;
+          background: white;
+          border-radius: 50%;
+        "></div>
+      </div>`,
+      iconSize: [28, 28],
+      iconAnchor: [14, 28],
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    const map = L.map(mapRef.current, {
+      center: [lat, lng],
+      zoom: zoom,
+      zoomControl: false,
+      attributionControl: false,
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19,
+    }).addTo(map);
+
+    const marker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
+
+    mapInstanceRef.current = map;
+    markerRef.current = marker;
+
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mapInstanceRef.current && markerRef.current) {
+      mapInstanceRef.current.setView([lat, lng], zoom);
+      markerRef.current.setLatLng([lat, lng]);
+    }
+  }, [lat, lng, zoom]);
+
   const handleLocationClick = () => {
     const mapUrl = `https://uri.amap.com/marker?position=${lng},${lat}&name=${encodeURIComponent(location)}`;
     window.open(mapUrl, '_blank');
@@ -113,14 +134,12 @@ export default function WeatherWidget() {
             setLng(longitude);
             setLat(latitude);
             setLocation(`当前位置`);
-            setMapKey((k) => k + 1);
             setTimeout(() => setIsLoading(false), 1000);
           },
           () => {
             setLocation('北京市 · 朝阳区');
             setLng(DEFAULT_LNG);
             setLat(DEFAULT_LAT);
-            setMapKey((k) => k + 1);
             setTimeout(() => setIsLoading(false), 1000);
           },
           { timeout: 10000 }
@@ -132,9 +151,6 @@ export default function WeatherWidget() {
       setTimeout(() => setIsLoading(false), 1000);
     }
   };
-
-  const customIcon = useMemo(() => createCustomIcon(), []);
-  const center: [number, number] = [lat, lng];
 
   return (
     <motion.section
@@ -227,31 +243,13 @@ export default function WeatherWidget() {
         onClick={handleLocationClick}
       >
         <div
+          ref={mapRef}
           style={{
             position: 'absolute',
             inset: 0,
             zIndex: 0,
           }}
-        >
-          <MapContainer
-            key={mapKey}
-            center={center}
-            zoom={zoom}
-            zoomControl={false}
-            attributionControl={false}
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-          >
-            <ChangeView center={center} zoom={zoom} />
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            />
-            <Marker position={center} icon={customIcon} />
-          </MapContainer>
-        </div>
+        />
 
         <AnimatePresence>
           {isLoading && (
