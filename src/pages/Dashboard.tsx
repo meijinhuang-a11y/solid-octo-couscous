@@ -23,14 +23,16 @@ export default function Dashboard() {
         <QuickActions />
       </div>
 
-      {/* Row 3-7: 今日任务、最新动态、行业日报、爆款视频、爆款产品 — 自适应高度 */}
-      <div className="flex flex-col gap-4">
-        <TodayTasks />
-        <RecentActivity />
-        <IndustryReport />
-        <TrendingVideoSummary />
-        <TrendingProductSummary />
-      </div>
+      {/* Row 3-7: 今日任务、最新动态、行业日报、爆款视频、爆款产品 — 网格布局 */}
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div className="lg:col-span-2">
+      <TodayTasks />
+    </div>
+    <RecentActivity />
+    <IndustryReport />
+    <TrendingVideoSummary />
+    <TrendingProductSummary />
+  </div>
     </div>
   );
 }

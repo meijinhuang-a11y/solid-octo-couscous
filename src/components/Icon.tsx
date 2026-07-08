@@ -35,14 +35,14 @@ export default function Icon({ name, size = 20, className = '', color, style }: 
   const iconUrl = iconMap[name] || iconMap.dashboard;
 
   return (
-    <span
-      className={`icon-mask shrink-0 inline-flex ${className}`}
+    <img
+      src={iconUrl}
+      alt={name}
+      className={className}
       style={{
         width: typeof size === 'number' ? `${size}px` : size,
         height: typeof size === 'number' ? `${size}px` : size,
         color: color || 'currentColor',
-        WebkitMaskImage: `url(${iconUrl})`,
-        maskImage: `url(${iconUrl})`,
         ...style,
       }}
     />

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 const weatherData = [
@@ -11,6 +12,37 @@ const weatherData = [
 ];
 
 export default function WeatherWidget() {
+  const [location, setLocation] = useState('北京市 · 朝阳区');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLocationClick = () => {
+    window.open(`https://maps.google.com/?q=${encodeURIComponent(location)}`, '_blank');
+  };
+
+  const handleRefreshLocation = async () => {
+    setIsLoading(true);
+    try {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setLocation(`纬度: ${latitude.toFixed(4)} · 经度: ${longitude.toFixed(4)}`);
+          },
+          (error) => {
+            console.error('获取位置失败:', error);
+            setLocation('定位失败，请手动选择');
+          }
+        );
+      } else {
+        setLocation('您的浏览器不支持定位');
+      }
+    } catch (error) {
+      setLocation('定位失败');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <motion.section
       className="p-4 rounded-2xl flex flex-col"
@@ -39,18 +71,27 @@ export default function WeatherWidget() {
         >
           我的位置与天气
         </motion.h3>
-        <motion.span
+        <motion.button
+          type="button"
+          onClick={handleLocationClick}
           style={{
             fontFamily: "'Lora',var(--font-sans)",
             fontSize: '0.75rem',
-            color: 'var(--cream-text-muted)',
+            color: 'var(--soft-blue)',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            textDecorationColor: 'color-mix(in srgb, var(--soft-blue) 30%, transparent)',
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.3 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
-          北京市 · 朝阳区
-        </motion.span>
+          {location}
+        </motion.button>
       </div>
       <motion.div
         style={{
@@ -66,20 +107,24 @@ export default function WeatherWidget() {
         transition={{ delay: 0.3, duration: 0.3 }}
       />
 
-      <motion.div
-        className="w-full rounded-2xl relative overflow-hidden mb-3 flex-shrink-0"
+      <motion.button
+        type="button"
+        onClick={handleRefreshLocation}
+        className="w-full rounded-2xl relative overflow-hidden mb-3 flex-shrink-0 flex items-center justify-center gap-2"
         style={{
           aspectRatio: '16/7',
           background: 'linear-gradient(135deg, var(--cream-border), color-mix(in srgb, var(--cream-bg) 50%, var(--cream-border)))',
+          border: '1px solid var(--cream-border)',
+          cursor: 'pointer',
         }}
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.35, duration: 0.3 }}
+        whileHover={{ scale: 1.01 }}
+        whileTap={{ scale: 0.99 }}
       >
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1"
-        >
-          <div
+        <div className="flex flex-col items-center gap-1">
+          <motion.div
             style={{
               width: '10px',
               height: '10px',
@@ -87,6 +132,8 @@ export default function WeatherWidget() {
               background: 'var(--warm-orange)',
               boxShadow: '0 0 0 3px color-mix(in srgb, var(--warm-orange) 30%, transparent)',
             }}
+            animate={{ scale: isLoading ? [1, 1.2, 1] : 1 }}
+            transition={{ duration: 0.8, repeat: isLoading ? Infinity : 0 }}
           />
           <span
             style={{
@@ -98,10 +145,10 @@ export default function WeatherWidget() {
               borderRadius: '4px',
             }}
           >
-            当前位置
+            {isLoading ? '定位中...' : '点击查看地图'}
           </span>
         </div>
-      </motion.div>
+      </motion.button>
 
       <div
         className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 hide-scrollbar"
