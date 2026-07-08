@@ -1,0 +1,770 @@
+import { useState, useRef, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useProductExtractorStore } from '@/store/productExtractor';
+import type { ProductInfo, ProductStatus } from '@/types';
+import DashboardPanel from '@/components/ai-assistant/DashboardPanel';
+import { useDeviceDetect } from '@/hooks/useDeviceDetect';
+
+const tabOptions: { value: ProductStatus | 'all'; label: string; desc: string }[] = [
+  { value: 'pending', label: '未上架', desc: '1688提取，待评估' },
+  { value: 'ready', label: '准备上架', desc: '利润已测算' },
+  { value: 'listed', label: '已上架', desc: '小红书在售' },
+  { value: 'downlisted', label: '已下架', desc: '已下架商品' },
+];
+
+export default function ProductExtractorPage() {
+  const {
+    isExtracting,
+    refresh,
+    lastRefresh,
+    isRefreshing,
+    activeTab,
+    setActiveTab,
+    extractFromUrl,
+    getFilteredProducts,
+    getStats,
+    updateProductProfit,
+    updateProductNotes,
+    updateDropshippingRules,
+    updateProductStatus,
+    deleteProduct,
+    listProduct,
+    downlistProduct,
+  } = useProductExtractorStore();
+
+  const device = useDeviceDetect();
+  const [url, setUrl] = useState('');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [sellingPriceInput, setSellingPriceInput] = useState('');
+  const [shippingCostInput, setShippingCostInput] = useState('');
+  const [notesInput, setNotesInput] = useState('');
+  const [xhsUrlInput, setXhsUrlInput] = useState('');
+  const [xhsTitleInput, setXhsTitleInput] = useState('');
+  const [xhsPriceInput, setXhsPriceInput] = useState('');
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+
+  const filteredProducts = useMemo(() => getFilteredProducts(), [getFilteredProducts]);
+  const stats = useMemo(() => getStats(), [getStats]);
+  const selectedProduct = filteredProducts.find((p) => p.id === selectedId) || null;
+
+  const handleExtract = async () => {
+    if (!url.trim()) return;
+    await extractFromUrl(url.trim());
+    setUrl('');
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleExtract();
+  };
+
+  const handleSelectProduct = (product: ProductInfo) => {
+    setSelectedId(product.id);
+    setActiveImageIndex(0);
+    setSellingPriceInput(product.profit.sellingPrice > 0 ? product.profit.sellingPrice.toString() : '');
+    setShippingCostInput(product.profit.shippingCost.toString());
+    setNotesInput(product.notes);
+    setXhsUrlInput(product.xhsUrl || '');
+    setXhsTitleInput(product.xhsTitle || product.title);
+    setXhsPriceInput(product.xhsPrice ? product.xhsPrice.toString() : product.profit.sellingPrice.toString());
+    if (device.isMobile) {
+      setSheetOpen(true);
+    }
+  };
+
+  const handleUpdateProfit = () => {
+    if (!selectedProduct) return;
+    const sp = parseFloat(sellingPriceInput);
+    const sc = parseFloat(shippingCostInput);
+    if (!isNaN(sp) && !isNaN(sc) && sp > 0) {
+      updateProductProfit(selectedProduct.id, sp, sc);
+      // 保存后保持在当前 Tab，用户可手动切换到准备上架
+    }
+  };
+
+  const handleUpdateNotes = () => {
+    if (!selectedProduct) return;
+    updateProductNotes(selectedProduct.id, notesInput);
+  };
+
+  const handleOpenListModal = () => {
+    if (!selectedProduct || !xhsUrlInput.trim()) return;
+    const xhsPrice = parseFloat(xhsPriceInput);
+    listProduct(selectedProduct.id, xhsUrlInput.trim(), xhsTitleInput.trim(), isNaN(xhsPrice) ? selectedProduct.profit.sellingPrice : xhsPrice);
+    setActiveTab('listed');
+    if (device.isMobile) {
+      setSheetOpen(false);
+    }
+  };
+
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return `${d.getMonth() + 1}月${d.getDate()}日 ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+  };
+
+  const tabCounts = {
+    pending: stats.pending,
+    ready: stats.ready,
+    listed: stats.listed,
+    downlisted: stats.downlisted || 0,
+  };
+
+  const tabColorMap: Record<string, string> = {
+    pending: 'var(--warm-orange)',
+    ready: 'var(--moss-green)',
+    listed: 'var(--soft-blue)',
+    downlisted: 'var(--cream-text-muted)',
+  };
+
+  // 移动端禁止背景滚动
+  useEffect(() => {
+    if (device.isMobile && sheetOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [sheetOpen, device.isMobile]);
+
+  return (
+    <div className="p-4 sm:p-6">
+      {/* Header */}
+      <motion.div className="mb-4" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+        <div className="flex flex-wrap items-center gap-2.5 mb-1">
+          <h2 className="m-0" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '1.125rem', fontWeight: 600, color: 'var(--cream-dark)' }}>
+            商品选品中心
+          </h2>
+          <span
+            className="px-2.5 py-0.5 rounded-full"
+            style={{
+              fontFamily: "'Poppins',var(--font-sans)",
+              fontSize: '0.6875rem',
+              fontWeight: 500,
+              color: 'var(--cream-text-muted)',
+              background: 'var(--cream-border)',
+            }}
+            title="链接提取为模拟演示，接入1688 API后将获取真实商品信息"
+          >
+            模拟提取
+          </span>
+        </div>
+        <p className="m-0" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>
+          1688 选品 → 利润测算 → 小红书上架，全流程管理
+        </p>
+      </motion.div>
+
+      {/* Dashboard */}
+      <DashboardPanel />
+
+      {/* URL Input */}
+      <motion.div className="flex flex-col sm:flex-row gap-3 mb-4" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.4 }}>
+        <div className="relative flex-1 w-full">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--cream-text-muted)', position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}>
+            <path d="M10 13a5 5 0 0 1 5-5h4a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-4a5 5 0 0 1-5-5z" />
+            <polyline points="10 13 7 16 10 19" />
+          </svg>
+          <input
+            ref={inputRef}
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="粘贴1688商品网址，按回车提取..."
+            className="w-full h-11 pl-11 pr-4 rounded-xl outline-none transition-all"
+            style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', color: 'var(--cream-dark)' }}
+            disabled={isExtracting}
+          />
+        </div>
+        <div className="flex gap-2">
+          <motion.button
+            type="button"
+            onClick={handleExtract}
+            disabled={!url.trim() || isExtracting}
+            className="flex-1 sm:flex-none h-11 px-5 rounded-xl flex items-center justify-center gap-2 transition-all"
+            style={{ background: isExtracting ? 'var(--cream-border)' : 'var(--moss-green)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.875rem', fontWeight: 500, cursor: (!url.trim() || isExtracting) ? 'not-allowed' : 'pointer', boxShadow: isExtracting ? 'none' : '0 4px 12px rgba(120,140,93,0.3)' }}
+            whileTap={(!url.trim() || isExtracting) ? {} : { scale: 0.97 }}
+          >
+            {isExtracting ? (
+              <>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                提取中...
+              </>
+            ) : (
+              <>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v14" /><polyline points="7 12 12 17 17 12" /></svg>
+                提取
+              </>
+            )}
+          </motion.button>
+          <motion.button
+            type="button"
+            onClick={refresh}
+            disabled={isRefreshing || isExtracting}
+            className="w-11 h-11 rounded-xl flex items-center justify-center transition-all flex-shrink-0"
+            style={{ background: 'transparent', color: 'var(--soft-blue)', border: '1px solid var(--cream-border)', cursor: (isRefreshing || isExtracting) ? 'not-allowed' : 'pointer' }}
+            whileTap={(isRefreshing || isExtracting) ? {} : { scale: 0.97 }}
+          >
+            {isRefreshing ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" /></svg>
+            )}
+          </motion.button>
+        </div>
+      </motion.div>
+      <div className="mb-4 text-right hidden sm:block" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.6875rem', color: 'var(--cream-text-muted)' }}>
+        {formatDate(lastRefresh)} 更新
+      </div>
+
+      {/* Tabs - Segmented Control */}
+      <motion.div className="mb-4" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}>
+        <div className="flex gap-1.5 p-1 rounded-xl overflow-x-auto no-scrollbar" style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)' }}>
+          {tabOptions.map((tab) => {
+            const count = tabCounts[tab.value as keyof typeof tabCounts] || 0;
+            const isActive = activeTab === tab.value;
+            const color = tabColorMap[tab.value];
+            return (
+              <motion.button
+                key={tab.value}
+                type="button"
+                onClick={() => { setActiveTab(tab.value); setSelectedId(null); }}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg flex-shrink-0 transition-all"
+                style={{
+                  background: isActive ? color : 'transparent',
+                  color: isActive ? '#fff' : 'var(--cream-dark)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: "'Poppins',var(--font-sans)",
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  minHeight: '36px',
+                }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <span>{tab.label}</span>
+                <span
+                  className="px-1.5 py-0.5 rounded-full"
+                  style={{
+                    fontSize: '0.625rem',
+                    fontWeight: 600,
+                    background: isActive ? 'rgba(255,255,255,0.25)' : `${color}20`,
+                    color: isActive ? '#fff' : color,
+                    minWidth: '18px',
+                    textAlign: 'center',
+                  }}
+                >
+                  {count}
+                </span>
+              </motion.button>
+            );
+          })}
+        </div>
+      </motion.div>
+
+      {/* Main Content */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Product List */}
+        <motion.div className="w-full lg:w-[340px] flex flex-col" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.4 }}>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="m-0 uppercase" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 600, color: 'var(--cream-dark)' }}>商品列表</h3>
+            <span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>{filteredProducts.length} 个商品</span>
+          </div>
+          <div className="space-y-3">
+            <AnimatePresence mode="popLayout">
+              {filteredProducts.map((product, index) => {
+                const stColors: Record<ProductStatus, { label: string; color: string; bg: string }> = {
+                  pending: { label: '未上架', color: 'var(--warm-orange)', bg: 'color-mix(in srgb, var(--warm-orange) 12%, transparent)' },
+                  ready: { label: '准备上架', color: 'var(--moss-green)', bg: 'color-mix(in srgb, var(--moss-green) 12%, transparent)' },
+                  listed: { label: '已上架', color: 'var(--soft-blue)', bg: 'color-mix(in srgb, var(--soft-blue) 12%, transparent)' },
+                  downlisted: { label: '已下架', color: 'var(--cream-text-muted)', bg: 'color-mix(in srgb, var(--cream-text-muted) 12%, transparent)' },
+                  rejected: { label: '已驳回', color: 'var(--cream-text-muted)', bg: 'color-mix(in srgb, var(--cream-text-muted) 12%, transparent)' },
+                };
+                const st = stColors[product.status];
+                const categoryColors: Record<string, string> = {
+                  '服饰': '#E87C6B', '家居': '#7BA3A8', '数码': '#5B8DB8', '美妆': '#D478A8',
+                  '食品': '#C4A35A', '母婴': '#8FB8A8', '运动': '#7A9E7E', '配饰': '#A890C4', '其他': '#B8B0A0',
+                };
+                const catColor = categoryColors[product.category] || '#B8B0A0';
+                return (
+                  <motion.div
+                    key={product.id}
+                    layout
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ delay: index * 0.03, duration: 0.3 }}
+                    className="p-3 rounded-2xl cursor-pointer group relative"
+                    style={{
+                      background: 'var(--cream-bg)',
+                      border: `1px solid ${selectedId === product.id && !device.isMobile ? 'var(--soft-blue)' : 'var(--cream-border)'}`,
+                    }}
+                    onClick={() => handleSelectProduct(product)}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <motion.button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); deleteProduct(product.id); }}
+                      className="absolute top-2.5 right-2.5 w-8 h-8 rounded-md flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all z-10"
+                      style={{ background: 'rgba(217,119,87,0.1)', border: 'none', color: 'var(--warm-orange)', cursor: 'pointer' }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                    </motion.button>
+                    <div className="flex gap-3">
+                      <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0" style={{ background: 'var(--cream-border)' }}>
+                        <img src={product.images[0]?.url} alt={product.images[0]?.alt} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0 pr-6">
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <span className="px-1.5 py-0.5 rounded flex-shrink-0" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', fontWeight: 500, color: st.color, background: st.bg }}>{st.label}</span>
+                          <span className="px-1.5 py-0.5 rounded flex-shrink-0" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', fontWeight: 500, color: catColor, background: `${catColor}18` }}>{product.category}</span>
+                        </div>
+                        <h4 className="m-0 mb-1.5" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 600, color: 'var(--cream-dark)', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          {product.title}
+                        </h4>
+                        {product.supplier.tags && product.supplier.tags.length > 0 && (
+                          <div className="flex flex-nowrap gap-1 mb-1.5">
+                            {product.supplier.tags.slice(0, 2).map((tag, idx) => (
+                              <span key={idx} className="px-1.5 py-0.5 rounded text-xs font-medium" style={{
+                                background: tag === '超级工厂' ? 'linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)' :
+                                  tag === '源头旗舰' ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' :
+                                  tag === '实力商家' ? 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)' :
+                                  'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+                                color: '#fff',
+                                fontFamily: "'Poppins',var(--font-sans)",
+                                fontSize: '0.625rem',
+                              }}>
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.875rem', fontWeight: 600, color: 'var(--warm-orange)' }}>{product.price}</span>
+                          {product.profit.sellingPrice > 0 && (
+                            <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ fontFamily: "'Poppins',var(--font-sans)", color: '#fff', background: product.profit.profitMargin >= 50 ? 'var(--moss-green)' : 'var(--warm-orange)' }}>
+                              利润 {product.profit.profitMargin}%
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+            {filteredProducts.length === 0 && (
+              <motion.div className="text-center py-12 rounded-2xl" style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)' }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--cream-text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 1 5-5h4a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-4a5 5 0 0 1-5-5z" /><polyline points="10 13 7 16 10 19" /></svg>
+                <p className="m-0 mt-2" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>
+                  {activeTab === 'pending' ? '暂无未上架商品，粘贴1688链接开始选品' : activeTab === 'ready' ? '暂无准备上架商品' : activeTab === 'listed' ? '暂无已上架商品' : '暂无已下架商品'}
+                </p>
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Product Detail - Desktop Only */}
+        {!device.isMobile && (
+          <motion.div className="flex-1" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.4 }}>
+            {selectedProduct ? (
+              <ProductDetail
+                product={selectedProduct}
+                activeImageIndex={activeImageIndex}
+                setActiveImageIndex={setActiveImageIndex}
+                sellingPriceInput={sellingPriceInput}
+                setSellingPriceInput={setSellingPriceInput}
+                shippingCostInput={shippingCostInput}
+                setShippingCostInput={setShippingCostInput}
+                notesInput={notesInput}
+                setNotesInput={setNotesInput}
+                xhsUrlInput={xhsUrlInput}
+                setXhsUrlInput={setXhsUrlInput}
+                handleUpdateProfit={handleUpdateProfit}
+                handleUpdateNotes={handleUpdateNotes}
+                handleOpenListModal={handleOpenListModal}
+                updateDropshippingRules={updateDropshippingRules}
+                updateProductStatus={updateProductStatus}
+                downlistProduct={downlistProduct}
+                setActiveTab={setActiveTab}
+                onClose={() => setSelectedId(null)}
+                isSheet={false}
+              />
+            ) : (
+              <div className="h-full rounded-2xl flex flex-col items-center justify-center py-20" style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)' }}>
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--cream-text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 1 5-5h4a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-4a5 5 0 0 1-5-5z" /><polyline points="10 13 7 16 10 19" /></svg>
+                <p className="m-0 mt-4" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.875rem', color: 'var(--cream-text-muted)' }}>选择商品查看详情</p>
+                <p className="m-0 mt-1" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>或粘贴1688网址提取新商品</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </div>
+
+      {/* Bottom Sheet - Mobile Only */}
+      {device.isMobile && (
+        <AnimatePresence>
+          {sheetOpen && selectedProduct && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                className="fixed inset-0 z-40"
+                style={{ background: 'rgba(0,0,0,0.4)' }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setSheetOpen(false)}
+              />
+              {/* Sheet */}
+              <motion.div
+                ref={sheetRef}
+                className="fixed left-0 right-0 bottom-0 z-50 flex flex-col"
+                style={{
+                  maxHeight: '85vh',
+                  background: 'var(--cream-bg)',
+                  borderTopLeftRadius: '24px',
+                  borderTopRightRadius: '24px',
+                }}
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', stiffness: 300, damping: 35, mass: 0.9 }}
+              >
+                {/* Drag Handle */}
+                <div className="flex justify-center pt-3 pb-2">
+                  <div className="w-10 h-1 rounded-full" style={{ background: 'var(--cream-border)' }} />
+                </div>
+
+                {/* Close Button */}
+                <div className="flex justify-end px-4 pb-2">
+                  <motion.button
+                    type="button"
+                    onClick={() => setSheetOpen(false)}
+                    className="w-9 h-9 rounded-full flex items-center justify-center"
+                    style={{ background: 'var(--cream-border)', border: 'none', color: 'var(--cream-dark)', cursor: 'pointer' }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                  </motion.button>
+                </div>
+
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto px-4 pb-8">
+                  <ProductDetail
+                    product={selectedProduct}
+                    activeImageIndex={activeImageIndex}
+                    setActiveImageIndex={setActiveImageIndex}
+                    sellingPriceInput={sellingPriceInput}
+                    setSellingPriceInput={setSellingPriceInput}
+                    shippingCostInput={shippingCostInput}
+                    setShippingCostInput={setShippingCostInput}
+                    notesInput={notesInput}
+                    setNotesInput={setNotesInput}
+                    xhsUrlInput={xhsUrlInput}
+                    setXhsUrlInput={setXhsUrlInput}
+                    handleUpdateProfit={handleUpdateProfit}
+                    handleUpdateNotes={handleUpdateNotes}
+                    handleOpenListModal={handleOpenListModal}
+                    updateDropshippingRules={updateDropshippingRules}
+                    updateProductStatus={updateProductStatus}
+                    downlistProduct={downlistProduct}
+                    setActiveTab={setActiveTab}
+                    onClose={() => setSheetOpen(false)}
+                    isSheet={true}
+                  />
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      )}
+    </div>
+  );
+}
+
+interface ProductDetailProps {
+  product: ProductInfo;
+  activeImageIndex: number;
+  setActiveImageIndex: (i: number) => void;
+  sellingPriceInput: string;
+  setSellingPriceInput: (v: string) => void;
+  shippingCostInput: string;
+  setShippingCostInput: (v: string) => void;
+  notesInput: string;
+  setNotesInput: (v: string) => void;
+  xhsUrlInput: string;
+  setXhsUrlInput: (v: string) => void;
+  handleUpdateProfit: () => void;
+  handleUpdateNotes: () => void;
+  handleOpenListModal: () => void;
+  updateDropshippingRules: (id: string, rules: Partial<ProductInfo['dropshipping']>) => void;
+  updateProductStatus: (id: string, status: ProductStatus) => void;
+  downlistProduct: (id: string) => void;
+  setActiveTab: (tab: ProductStatus | 'all') => void;
+  onClose: () => void;
+  isSheet?: boolean;
+}
+
+function ProductDetail(props: ProductDetailProps) {
+  const { product, activeImageIndex, setActiveImageIndex, sellingPriceInput, setSellingPriceInput, shippingCostInput, setShippingCostInput, notesInput, setNotesInput, xhsUrlInput, setXhsUrlInput, handleUpdateProfit, handleUpdateNotes, handleOpenListModal, updateDropshippingRules, updateProductStatus, downlistProduct, setActiveTab, onClose } = props;
+
+  const categoryColors: Record<string, string> = {
+    '服饰': '#E87C6B', '家居': '#7BA3A8', '数码': '#5B8DB8', '美妆': '#D478A8',
+    '食品': '#C4A35A', '母婴': '#8FB8A8', '运动': '#7A9E7E', '配饰': '#A890C4', '其他': '#B8B0A0',
+  };
+  const catColor = categoryColors[product.category] || '#B8B0A0';
+
+  return (
+    <motion.div key={product.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="space-y-4">
+      {/* Top Section */}
+      <div className="flex flex-col gap-4">
+        <div className="w-full flex flex-col">
+          <div className="aspect-[4/3] rounded-2xl overflow-hidden mb-3" style={{ background: 'var(--cream-border)' }}>
+            <img src={product.images[activeImageIndex]?.url} alt={product.images[activeImageIndex]?.alt} className="w-full h-full object-cover" />
+          </div>
+          {product.images.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+              {product.images.map((img, idx) => (
+                <motion.button key={idx} type="button" onClick={() => setActiveImageIndex(idx)} className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 transition-all" style={{ border: `2px solid ${activeImageIndex === idx ? 'var(--soft-blue)' : 'transparent'}`, cursor: 'pointer', background: 'var(--cream-border)' }} whileTap={{ scale: 0.97 }}>
+                  <img src={img.url} alt={img.alt} className="w-full h-full object-cover" />
+                </motion.button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded-full" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', fontWeight: 500, color: 'var(--soft-blue)', background: 'color-mix(in srgb, var(--soft-blue) 15%, transparent)' }}>1688</span>
+              <span className="px-2 py-0.5 rounded-full" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', fontWeight: 500, color: catColor, background: `${catColor}18` }}>{product.category}</span>
+            </div>
+            <motion.button type="button" onClick={() => window.open(product.url, '_blank')} className="h-10 px-3 rounded-lg flex items-center gap-1 flex-shrink-0" style={{ background: 'color-mix(in srgb, var(--soft-blue) 10%, transparent)', color: 'var(--soft-blue)', border: '1px solid var(--soft-blue)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.6875rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+              原链接
+            </motion.button>
+          </div>
+          <h1 className="m-0 mb-3" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '1.0625rem', fontWeight: 600, color: 'var(--cream-dark)', lineHeight: 1.4 }}>{product.title}</h1>
+          <div className="flex items-baseline gap-3 mb-2">
+            <span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '1.25rem', fontWeight: 700, color: 'var(--warm-orange)' }}>{product.price}</span>
+            {product.originalPrice && <span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.875rem', color: 'var(--cream-text-muted)', textDecoration: 'line-through' }}>{product.originalPrice}</span>}
+            <span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>已售 {product.sales}</span>
+          </div>
+          <p className="m-0" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)', lineHeight: 1.5 }}>{product.description}</p>
+        </div>
+      </div>
+
+      {/* Supplier Card */}
+      <div className="p-4 rounded-2xl" style={{ background: 'var(--background)', border: '1px solid var(--cream-border)' }}>
+        <h3 className="m-0 mb-3 uppercase" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 600, color: 'var(--cream-dark)' }}>供应商评估</h3>
+        <div className="space-y-2.5 mb-3">
+          <div>
+            <div className="flex items-center justify-between mb-1"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>店铺</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>{product.supplier.name}</span></div>
+            {product.supplier.tags && product.supplier.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {product.supplier.tags.map((tag, idx) => (
+                  <span key={idx} className="px-2 py-0.5 rounded text-xs font-medium" style={{
+                    background: tag === '超级工厂' ? 'linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)' :
+                      tag === '源头旗舰' ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' :
+                      tag === '实力商家' ? 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)' :
+                      'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+                    color: '#fff',
+                    fontFamily: "'Poppins',var(--font-sans)",
+                    fontSize: '0.625rem',
+                  }}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>评分</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 600, color: 'var(--warm-orange)' }}>{product.supplier.rating} ★</span></div>
+          <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>经营年限</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>{product.supplier.yearsInBusiness} 年</span></div>
+          <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>响应时间</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>{product.supplier.responseTime}</span></div>
+        </div>
+        <div className="pt-3 space-y-2" style={{ borderTop: '1px solid var(--cream-border)' }}>
+          <CheckItem label="一件代发" checked={product.dropshipping.supportsDropshipping} onToggle={() => updateDropshippingRules(product.id, { supportsDropshipping: !product.dropshipping.supportsDropshipping })} />
+          <CheckItem label="小红书面单" checked={product.dropshipping.providesXhsWaybill} onToggle={() => updateDropshippingRules(product.id, { providesXhsWaybill: !product.dropshipping.providesXhsWaybill })} />
+          <CheckItem label="包邮退货" checked={product.dropshipping.supportsFreeReturn} onToggle={() => updateDropshippingRules(product.id, { supportsFreeReturn: !product.dropshipping.supportsFreeReturn })} />
+        </div>
+        <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--cream-border)' }}>
+          <p className="m-0 mb-1" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', fontWeight: 600, color: 'var(--cream-text-muted)' }}>退货政策</p>
+          <p className="m-0" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.6875rem', color: 'var(--cream-dark)', lineHeight: 1.4 }}>{product.dropshipping.returnPolicy}</p>
+        </div>
+      </div>
+
+      {/* Profit / Product Info */}
+      {product.status !== 'listed' && product.status !== 'downlisted' && (
+        <>
+          <div className="p-4 rounded-2xl" style={{ background: 'var(--background)', border: '1px solid var(--cream-border)' }}>
+            <h3 className="m-0 mb-3 uppercase" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 600, color: 'var(--cream-dark)' }}>利润测算</h3>
+            <div className="space-y-2.5 mb-3">
+              <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>1688进价</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>¥{product.profit.costPrice}</span></div>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>小红书售价</span>
+                </div>
+                <input
+                  type="number"
+                  value={sellingPriceInput}
+                  onChange={(e) => setSellingPriceInput(e.target.value)}
+                  placeholder="输入售价"
+                  className="w-full h-11 px-3 rounded-lg outline-none"
+                  style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', color: 'var(--cream-dark)' }}
+                />
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>运费成本</span>
+                </div>
+                <input
+                  type="number"
+                  value={shippingCostInput}
+                  onChange={(e) => setShippingCostInput(e.target.value)}
+                  placeholder="运费"
+                  className="w-full h-11 px-3 rounded-lg outline-none"
+                  style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', color: 'var(--cream-dark)' }}
+                />
+              </div>
+              <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>平台服务费(5%)</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>¥{sellingPriceInput ? (parseFloat(sellingPriceInput) * 0.05).toFixed(2) : '0.00'}</span></div>
+            </div>
+            <div className="pt-3 space-y-1.5" style={{ borderTop: '1px solid var(--cream-border)' }}>
+              <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>单件利润</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.875rem', fontWeight: 700, color: 'var(--moss-green)' }}>¥{sellingPriceInput && shippingCostInput ? (parseFloat(sellingPriceInput) - product.profit.costPrice - parseFloat(shippingCostInput) - parseFloat(sellingPriceInput) * 0.05).toFixed(2) : '0.00'}</span></div>
+              <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>利润率</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.875rem', fontWeight: 700, color: (() => { const sp = parseFloat(sellingPriceInput); if (!sp || sp <= 0) return 'var(--cream-text-muted)'; const sc = parseFloat(shippingCostInput) || 0; const margin = ((sp - product.profit.costPrice - sc - sp * 0.05) / sp) * 100; return margin >= 50 ? 'var(--moss-green)' : 'var(--warm-orange)'; })() }}>{(() => { const sp = parseFloat(sellingPriceInput); if (!sp || sp <= 0) return '0'; const sc = parseFloat(shippingCostInput) || 0; return (((sp - product.profit.costPrice - sc - sp * 0.05) / sp) * 100).toFixed(1); })()}%</span></div>
+            </div>
+            <motion.button
+              type="button"
+              onClick={handleUpdateProfit}
+              disabled={!sellingPriceInput || parseFloat(sellingPriceInput) <= 0}
+              className="w-full mt-3 h-11 rounded-xl"
+              style={{ background: (!sellingPriceInput || parseFloat(sellingPriceInput) <= 0) ? 'var(--cream-border)' : 'var(--soft-blue)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: (!sellingPriceInput || parseFloat(sellingPriceInput) <= 0) ? 'not-allowed' : 'pointer' }}
+              whileTap={(!sellingPriceInput || parseFloat(sellingPriceInput) <= 0) ? {} : { scale: 0.97 }}
+            >
+              保存利润测算
+            </motion.button>
+          </div>
+
+          <div className="p-4 rounded-2xl" style={{ background: 'var(--background)', border: '1px solid var(--cream-border)' }}>
+            <h3 className="m-0 mb-3 uppercase" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 600, color: 'var(--cream-dark)' }}>商品信息</h3>
+            <div className="space-y-2.5 mb-3">
+              <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>发货地</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>{product.location}</span></div>
+              <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>运费</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>{product.shipping}</span></div>
+              <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>发货时间</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>{product.deliveryTime}</span></div>
+              <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>起订量</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>{product.dropshipping.minOrderQuantity} 件</span></div>
+            </div>
+            <div className="pt-3 mb-3" style={{ borderTop: '1px solid var(--cream-border)' }}>
+              <p className="m-0 mb-2 uppercase" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', fontWeight: 600, color: 'var(--cream-text-muted)' }}>商品标签</p>
+              <div className="flex flex-wrap gap-1.5">
+                {product.tags.map((tag) => (
+                  <span key={tag} className="px-2 py-0.5 rounded-full" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', color: 'var(--soft-blue)', background: 'color-mix(in srgb, var(--soft-blue) 10%, transparent)' }}>{tag}</span>
+                ))}
+              </div>
+            </div>
+            <div className="pt-3 mb-3" style={{ borderTop: '1px solid var(--cream-border)' }}>
+              <p className="m-0 mb-2 uppercase" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', fontWeight: 600, color: 'var(--cream-text-muted)' }}>小红书商品链接</p>
+              <div className="flex flex-col gap-2">
+                <input
+                  type="text"
+                  value={xhsUrlInput}
+                  onChange={(e) => setXhsUrlInput(e.target.value)}
+                  placeholder="商品上线后粘贴链接..."
+                  className="w-full h-11 px-3 rounded-lg outline-none"
+                  style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', color: 'var(--cream-dark)' }}
+                />
+                <motion.button
+                  type="button"
+                  onClick={handleOpenListModal}
+                  disabled={!xhsUrlInput.trim()}
+                  className="w-full h-11 rounded-lg"
+                  style={{ background: !xhsUrlInput.trim() ? 'var(--cream-border)' : 'var(--moss-green)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: !xhsUrlInput.trim() ? 'not-allowed' : 'pointer' }}
+                  whileTap={!xhsUrlInput.trim() ? {} : { scale: 0.97 }}
+                >
+                  绑定上架
+                </motion.button>
+              </div>
+            </div>
+            {product.xhsUrl && (
+              <motion.button type="button" onClick={() => window.open(product.xhsUrl, '_blank')} className="w-full h-11 rounded-xl flex items-center justify-center gap-1.5 mb-2" style={{ background: 'var(--soft-blue)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+                查看小红书商品
+              </motion.button>
+            )}
+            {product.status === 'pending' && product.profit.sellingPrice > 0 && (
+              <motion.button type="button" onClick={() => { updateProductStatus(product.id, 'ready'); setActiveTab('ready'); onClose(); }} className="w-full h-11 rounded-xl" style={{ background: 'var(--moss-green)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
+                准备上架
+              </motion.button>
+            )}
+            {product.status === 'ready' && (
+              <motion.button type="button" onClick={() => { updateProductStatus(product.id, 'pending'); setActiveTab('pending'); onClose(); }} className="w-full h-11 rounded-xl" style={{ background: 'var(--cream-border)', color: 'var(--cream-dark)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
+                退回未上架
+              </motion.button>
+            )}
+          </div>
+        </>
+      )}
+
+      {product.status === 'listed' && (
+        <div className="p-4 rounded-2xl" style={{ background: 'var(--background)', border: '1px solid var(--cream-border)' }}>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="m-0 uppercase" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 600, color: 'var(--cream-dark)' }}>小红书上架</h3>
+            {product.matchScore !== undefined && (
+              <span className="px-2 py-0.5 rounded-full" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', fontWeight: 600, color: product.matchScore >= 80 ? 'var(--moss-green)' : 'var(--warm-orange)', background: product.matchScore >= 80 ? 'color-mix(in srgb, var(--moss-green) 12%, transparent)' : 'color-mix(in srgb, var(--warm-orange) 12%, transparent)' }}>
+                匹配度 {product.matchScore}分
+              </span>
+            )}
+          </div>
+          <div className="space-y-2.5 mb-3">
+            <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>上架时间</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>{product.listedAt ? new Date(product.listedAt).toLocaleDateString('zh-CN') : '-'}</span></div>
+            <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>1688进价</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>¥{product.profit.costPrice}</span></div>
+            <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>小红书售价</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 600, color: 'var(--warm-orange)' }}>¥{product.xhsPrice || product.profit.sellingPrice}</span></div>
+            <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>单件毛利</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 600, color: 'var(--moss-green)' }}>¥{product.profit.profitPerUnit.toFixed(2)}</span></div>
+            <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>利润率</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 600, color: product.profit.profitMargin >= 50 ? 'var(--moss-green)' : 'var(--warm-orange)' }}>{product.profit.profitMargin}%</span></div>
+            <div className="flex items-center justify-between"><span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>运费成本</span><span style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, color: 'var(--cream-dark)' }}>¥{product.profit.shippingCost}</span></div>
+          </div>
+          <motion.button type="button" onClick={() => window.open(product.xhsUrl, '_blank')} className="w-full h-11 rounded-xl flex items-center justify-center gap-1.5 mb-2" style={{ background: 'var(--soft-blue)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+            查看小红书商品
+          </motion.button>
+          <motion.button type="button" onClick={() => { downlistProduct(product.id); setActiveTab('downlisted'); onClose(); }} className="w-full h-11 rounded-xl" style={{ background: 'var(--warm-orange)', color: '#fff', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>
+            下架商品
+          </motion.button>
+          <div className="pt-3 mt-3" style={{ borderTop: '1px solid var(--cream-border)' }}>
+            <p className="m-0 mb-1" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', fontWeight: 600, color: 'var(--cream-text-muted)' }}>匹配分析</p>
+            <p className="m-0" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.6875rem', color: 'var(--cream-dark)', lineHeight: 1.5 }}>{product.matchAnalysis || '正在分析中...'}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Notes */}
+      <div className="p-4 rounded-2xl" style={{ background: 'var(--background)', border: '1px solid var(--cream-border)' }}>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="m-0 uppercase" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 600, color: 'var(--cream-dark)' }}>选品备注</h3>
+          <motion.button type="button" onClick={handleUpdateNotes} className="px-4 h-10 rounded-lg" style={{ background: 'transparent', color: 'var(--soft-blue)', border: '1px solid var(--soft-blue)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, cursor: 'pointer' }} whileTap={{ scale: 0.97 }}>保存</motion.button>
+        </div>
+        <textarea
+          value={notesInput}
+          onChange={(e) => setNotesInput(e.target.value)}
+          placeholder="记录选品评估要点、供应商沟通情况..."
+          className="w-full px-3 py-2 rounded-xl outline-none resize-none"
+          style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', fontFamily: "'Lora',var(--font-sans)", fontSize: '0.8125rem', color: 'var(--cream-dark)', minHeight: '100px' }}
+          rows={4}
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+function CheckItem({ label, checked, onToggle }: { label: string; checked: boolean; onToggle: () => void }) {
+  return (
+    <motion.button type="button" onClick={onToggle} className="w-full min-h-11 flex items-center justify-between" style={{ background: 'transparent', border: 'none', cursor: 'pointer' }} whileTap={{ scale: 0.99 }}>
+      <span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.8125rem', color: 'var(--cream-dark)' }}>{label}</span>
+      <span className="px-2 py-0.5 rounded-full" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.625rem', fontWeight: 500, color: checked ? 'var(--moss-green)' : 'var(--warm-orange)', background: checked ? 'color-mix(in srgb, var(--moss-green) 12%, transparent)' : 'color-mix(in srgb, var(--warm-orange) 12%, transparent)' }}>
+        {checked ? '✓ 支持' : '✗ 不支持'}
+      </span>
+    </motion.button>
+  );
+}

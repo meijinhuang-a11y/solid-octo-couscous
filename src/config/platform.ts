@@ -1,0 +1,235 @@
+import type { PlatformSpec, AIModel, PlatformType, ExportFormat } from '@/types';
+
+// 平台规格配置
+export const PLATFORM_SPECS: Record<PlatformType, PlatformSpec> = {
+  xiaohongshu: {
+    type: 'xiaohongshu',
+    name: '小红书',
+    icon: '📕',
+    imageRatio: '3:4',
+    imageSize: '1242x1656',
+    imageMaxCount: 9,
+    videoRatio: '9:16',
+    videoResolution: '1080x1920',
+    videoMaxDuration: 300,
+    videoMaxSize: '300MB',
+    titleMaxLength: 20,
+    contentMaxLength: 1000,
+    rules: [
+      '图片建议 3:4 竖版，分辨率不低于 1080px',
+      '首图最重要，决定点击率',
+      '标题控制在20字以内，带emoji更吸睛',
+      '正文使用分段+emoji，阅读体验更好',
+      '话题标签 3-10 个，放在正文末尾',
+      '视频时长建议 30s-3min，9:16 竖屏',
+    ],
+    hashtagLimit: 10,
+  },
+  douyin: {
+    type: 'douyin',
+    name: '抖音',
+    icon: '🎵',
+    imageRatio: '9:16',
+    imageSize: '1080x1920',
+    imageMaxCount: 6,
+    videoRatio: '9:16',
+    videoResolution: '1080x1920',
+    videoMaxDuration: 600,
+    videoMaxSize: '500MB',
+    titleMaxLength: 55,
+    contentMaxLength: 500,
+    rules: [
+      '视频必须 9:16 竖屏，分辨率 1080x1920',
+      '视频时长 15s-5min，前3秒决定完播率',
+      '封面建议清晰有冲击力',
+      '文案简短有力，55字以内',
+      '话题标签 3-5 个，用 # 开头',
+      '支持图文模式，最多6张图片',
+    ],
+    hashtagLimit: 5,
+  },
+  wechat_video: {
+    type: 'wechat_video',
+    name: '视频号',
+    icon: '💬',
+    imageRatio: '1:1',
+    imageSize: '1080x1080',
+    imageMaxCount: 9,
+    videoRatio: '9:16',
+    videoResolution: '1080x1920',
+    videoMaxDuration: 600,
+    videoMaxSize: '200MB',
+    titleMaxLength: 30,
+    contentMaxLength: 800,
+    rules: [
+      '视频建议 9:16 竖屏或 16:9 横屏',
+      '图片推荐 1:1 正方形',
+      '标题 30 字以内，简洁明了',
+      '内容注重真实性和实用性',
+      '话题标签 3-8 个',
+    ],
+    hashtagLimit: 8,
+  },
+  bilibili: {
+    type: 'bilibili',
+    name: 'B站',
+    icon: '📺',
+    imageRatio: '16:9',
+    imageSize: '1920x1080',
+    imageMaxCount: 1,
+    videoRatio: '16:9',
+    videoResolution: '1920x1080',
+    videoMaxDuration: 3600,
+    videoMaxSize: '8GB',
+    titleMaxLength: 80,
+    contentMaxLength: 2000,
+    rules: [
+      '视频推荐 16:9 横屏，分辨率 1920x1080',
+      '封面 16:9，尺寸 1920x1080',
+      '标题 80 字以内，含关键词利于搜索',
+      '简介可以详细，2000字以内',
+      '标签 5-10 个，用逗号分隔',
+      '支持长视频，最长 60 分钟',
+    ],
+    hashtagLimit: 10,
+  },
+};
+
+// 大模型选项
+export const AI_MODELS: AIModel[] = [
+  {
+    id: 'qwen-free',
+    name: '通义千问',
+    provider: '阿里云',
+    isFree: true,
+    description: '免费使用，支持文本/图片生成，中文理解能力强',
+    capabilities: ['text', 'image'],
+  },
+  {
+    id: 'baichuan-free',
+    name: '百川大模型',
+    provider: '百川智能',
+    isFree: true,
+    description: '免费使用，擅长文案创作和内容生成',
+    capabilities: ['text'],
+  },
+  {
+    id: 'glm-free',
+    name: '智谱GLM',
+    provider: '智谱AI',
+    isFree: true,
+    description: '免费使用，支持文本和图片生成，多模态能力',
+    capabilities: ['text', 'image'],
+  },
+  {
+    id: 'sd-free',
+    name: 'Stable Diffusion',
+    provider: '开源社区',
+    isFree: true,
+    description: '免费开源，图片生成质量高，支持多种风格',
+    capabilities: ['image'],
+  },
+  {
+    id: 'kling-free',
+    name: '可灵AI',
+    provider: '快手',
+    isFree: true,
+    description: '免费使用，视频生成能力强，支持文生视频',
+    capabilities: ['video'],
+  },
+  {
+    id: 'gpt-4o',
+    name: 'GPT-4o',
+    provider: 'OpenAI',
+    isFree: false,
+    description: '付费使用，最强多模态模型，支持文本/图片/视频',
+    capabilities: ['text', 'image', 'video'],
+  },
+];
+
+// 滤镜预设
+export const FILTER_PRESETS: { id: string; name: string; icon: string; params: Partial<import('@/types').FilterParams> }[] = [
+  { id: 'none', name: '原图', icon: '🖼️', params: { filterPreset: 'none' } },
+  { id: 'fresh', name: '清新', icon: '🌿', params: { brightness: 110, saturation: 115, warmth: 30, filterPreset: 'fresh' } },
+  { id: 'warm', name: '暖阳', icon: '☀️', params: { brightness: 105, warmth: 70, saturation: 105, filterPreset: 'warm' } },
+  { id: 'vintage', name: '复古', icon: '📷', params: { brightness: 95, contrast: 110, saturation: 85, warmth: 50, filterPreset: 'vintage' } },
+  { id: 'cool', name: '冷调', icon: '❄️', params: { brightness: 100, contrast: 105, saturation: 90, warmth: 10, filterPreset: 'cool' } },
+  { id: 'bright', name: '明亮', icon: '✨', params: { brightness: 120, contrast: 110, saturation: 110, filterPreset: 'bright' } },
+  { id: 'film', name: '胶片', icon: '🎞️', params: { brightness: 98, contrast: 115, saturation: 95, warmth: 40, sharpness: 30, filterPreset: 'film' } },
+  { id: 'beauty', name: '美颜', icon: '💄', params: { brightness: 108, saturation: 102, warmth: 35, sharpness: 20, filterPreset: 'beauty' } },
+];
+
+// 视频滤镜预设
+export const VIDEO_FILTER_PRESETS: { id: string; name: string; icon: string; params: Partial<import('@/types').VideoAdjustParams> }[] = [
+  { id: 'none', name: '原图', icon: '🎬', params: { filterPreset: 'none' } },
+  { id: 'cinema', name: '电影感', icon: '🎥', params: { contrast: 115, saturation: 95, filterPreset: 'cinema' } },
+  { id: 'vivid', name: '鲜艳', icon: '🌈', params: { brightness: 105, saturation: 125, filterPreset: 'vivid' } },
+  { id: 'vlog', name: 'Vlog', icon: '📹', params: { brightness: 108, saturation: 108, filterPreset: 'vlog' } },
+  { id: 'nostalgic', name: '怀旧', icon: '📽️', params: { brightness: 95, saturation: 80, filterPreset: 'nostalgic' } },
+  { id: 'cool', name: '冷色', icon: '🔵', params: { saturation: 85, filterPreset: 'cool' } },
+];
+
+// 导出格式选项
+export const EXPORT_OPTIONS: { platform: PlatformType; formats: { format: ExportFormat; label: string; desc: string }[] }[] = [
+  {
+    platform: 'xiaohongshu',
+    formats: [
+      { format: 'png', label: 'PNG 高清', desc: '无损画质，推荐首图' },
+      { format: 'jpg', label: 'JPG 压缩', desc: '体积小，适合多图' },
+      { format: 'mp4', label: 'MP4 视频', desc: '9:16 竖屏视频' },
+    ],
+  },
+  {
+    platform: 'douyin',
+    formats: [
+      { format: 'mp4', label: 'MP4 视频', desc: '9:16 竖屏，推荐' },
+      { format: 'jpg', label: 'JPG 图文', desc: '9:16 竖版图片' },
+      { format: 'webp', label: 'WebP', desc: '小体积高质量' },
+    ],
+  },
+  {
+    platform: 'wechat_video',
+    formats: [
+      { format: 'mp4', label: 'MP4 视频', desc: '通用格式' },
+      { format: 'mov', label: 'MOV 高清', desc: '高质量视频' },
+      { format: 'png', label: 'PNG 封面', desc: '1:1 正方形封面' },
+    ],
+  },
+  {
+    platform: 'bilibili',
+    formats: [
+      { format: 'mp4', label: 'MP4 视频', desc: '16:9 横屏，推荐' },
+      { format: 'mov', label: 'MOV 高清', desc: '无损画质' },
+      { format: 'jpg', label: 'JPG 封面', desc: '16:9 封面图' },
+    ],
+  },
+];
+
+// 生成变体内容的辅助函数（最多10版）
+export const VARIANT_SUFFIXES = [
+  '— 极简风格',
+  '— 情感共鸣版',
+  '— 数据驱动版',
+  '— 故事化叙述',
+  '— 热点借势版',
+  '— 专业权威版',
+  '— 轻松幽默版',
+  '— 深度解析版',
+  '— 干货合集版',
+  '— 创意脑洞版',
+];
+
+export const VARIANT_NAMES = [
+  '极简风格',
+  '情感共鸣',
+  '数据驱动',
+  '故事叙述',
+  '热点借势',
+  '专业权威',
+  '轻松幽默',
+  '深度解析',
+  '干货合集',
+  '创意脑洞',
+];
+
+export const MAX_VARIANTS = 10;

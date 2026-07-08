@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文案优化</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <style id="theme-vars">
+:root {
+  --apple-background: var(--background, #ffffff);
+  --apple-foreground: var(--foreground, #0f172a);
+  --apple-card: var(--card, var(--background));
+  --apple-card-foreground: var(--card-foreground, var(--foreground));
+  --apple-popover: var(--popover, var(--card));
+  --apple-popover-foreground: var(--popover-foreground, var(--card-foreground, var(--foreground)));
+  --apple-primary: var(--primary, #111827);
+  --apple-primary-foreground: var(--primary-foreground, #ffffff);
+  --apple-secondary: var(--secondary, var(--muted, var(--card)));
+  --apple-secondary-foreground: var(--secondary-foreground, var(--foreground));
+  --apple-muted: var(--muted, var(--card));
+  --apple-muted-foreground: var(--muted-foreground, var(--foreground));
+  --apple-accent: var(--accent, var(--secondary, var(--muted, var(--card))));
+  --apple-accent-foreground: var(--accent-foreground, var(--foreground));
+  --apple-destructive: var(--destructive, #ef4444);
+  --apple-destructive-foreground: var(--destructive-foreground, #ffffff);
+  --apple-border: var(--border, currentColor);
+  --apple-input: var(--input, var(--border));
+  --apple-ring: var(--ring, var(--primary));
+  --apple-chart-1: var(--chart-1, var(--primary));
+  --apple-chart-2: var(--chart-2, var(--secondary, var(--primary)));
+  --apple-chart-3: var(--chart-3, var(--accent, var(--primary)));
+  --apple-chart-4: var(--chart-4, var(--muted-foreground, var(--foreground)));
+  --apple-chart-5: var(--chart-5, var(--foreground));
+  --apple-sidebar: var(--sidebar, var(--background));
+  --apple-sidebar-foreground: var(--sidebar-foreground, var(--foreground));
+  --apple-sidebar-primary: var(--sidebar-primary, var(--primary));
+  --apple-sidebar-primary-foreground: var(--sidebar-primary-foreground, var(--primary-foreground));
+  --apple-sidebar-accent: var(--sidebar-accent, var(--accent, var(--muted, var(--card))));
+  --apple-sidebar-accent-foreground: var(--sidebar-accent-foreground, var(--accent-foreground, var(--foreground)));
+
+  --brand-50: #e8f2ff; --brand-100: #cfe5ff; --brand-200: #9fcbff; --brand-300: #66abff;
+  --brand-400: #2e8dff; --brand-500: #007aff; --brand-600: #0064d6; --brand-700: #004fad;
+  --brand-800: #003b82; --brand-900: #00275a;
+
+  --background-50: #ffffff; --background-100: #f7f7fa; --background-200: #f2f2f7;
+  --background-300: #e5e5ea; --background-400: #d1d1d6; --background-500: #aeaeb2;
+  --background-600: #8e8e93; --background-700: #3a3a3c; --background-800: #1c1c1e;
+  --background-900: #000000;
+
+  --text-50: #f5f5f7; --text-100: #e3e3e8; --text-200: #c7c7cc; --text-300: #aeaeb2;
+  --text-400: #8e8e93; --text-500: #6e6e73; --text-600: #48484a; --text-700: #3c3c43;
+  --text-800: #1d1d1f; --text-900: #000000;
+
+  --icon-50: #f5f5f7; --icon-100: #e5e5ea; --icon-200: #d1d1d6; --icon-300: #c7c7cc;
+  --icon-400: #aeaeb2; --icon-500: #8e8e93; --icon-600: #6e6e73; --icon-700: #48484a;
+  --icon-800: #2c2c2e; --icon-900: #1d1d1f;
+
+  --state-success: #34c759; --state-success-dark: #30d158; --state-success-surface: #e9f9ee;
+  --state-success-foreground: #ffffff; --state-error: #ff3b30; --state-error-dark: #ff453a;
+  --state-error-surface: #ffecea; --state-error-foreground: #ffffff;
+
+  --background: var(--background-50); --foreground: var(--text-800);
+  --card: var(--background-50); --card-foreground: var(--text-800);
+  --popover: var(--background-50); --popover-foreground: var(--text-900);
+  --primary: var(--brand-500); --primary-foreground: var(--background-50);
+  --secondary: var(--background-200); --secondary-foreground: var(--text-800);
+  --muted: var(--background-200); --muted-foreground: var(--text-400);
+  --accent: var(--background-100); --accent-foreground: var(--text-800);
+  --destructive: var(--state-error); --destructive-foreground: var(--state-error-foreground);
+  --success: var(--state-success); --success-foreground: var(--state-success-foreground);
+  --border: var(--background-300); --input: var(--background-400);
+  --ring: var(--brand-500);
+  --icon: var(--icon-900); --icon-muted: var(--icon-500);
+  --chart-1: var(--state-success); --chart-2: var(--brand-500); --chart-3: #ff9500;
+  --chart-4: #5856d6; --chart-5: #af52de;
+  --sidebar: var(--background-200); --sidebar-foreground: var(--text-800);
+  --sidebar-primary: var(--brand-500); --sidebar-primary-foreground: var(--background-50);
+  --sidebar-accent: var(--background-300); --sidebar-accent-foreground: var(--text-800);
+  --sidebar-border: var(--background-300); --sidebar-ring: var(--brand-500);
+  --font-sans: DM Sans, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: DM Sans, ui-sans-serif, sans-serif, system-ui;
+  --font-mono: JetBrains Mono, monospace;
+  --tracking-normal: 0em; --radius: 1.2rem; --spacing: 0.24rem;
+  --shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px -1px rgba(0, 0, 0, 0.05);
+  --shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 8px 24px -8px rgba(0, 0, 0, 0.08), 0 4px 8px -4px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 16px 40px -10px rgba(0, 0, 0, 0.10), 0 8px 16px -8px rgba(0, 0, 0, 0.06);
+  --shadow-2xl: 0 24px 64px -12px rgba(0, 0, 0, 0.12);
+}
+.dark {
+  --background: var(--background-900); --foreground: var(--text-50);
+  --card: var(--background-800); --card-foreground: var(--text-50);
+  --popover: var(--background-700); --popover-foreground: var(--text-50);
+  --primary: var(--brand-400); --primary-foreground: var(--background-900);
+  --secondary: var(--background-800); --secondary-foreground: var(--text-50);
+  --muted: var(--background-800); --muted-foreground: var(--text-400);
+  --accent: var(--background-700); --accent-foreground: var(--text-50);
+  --destructive: var(--state-error-dark); --destructive-foreground: var(--state-error-foreground);
+  --success: var(--state-success-dark); --success-foreground: var(--state-success-foreground);
+  --border: var(--background-700); --input: var(--background-700);
+  --ring: var(--brand-400);
+  --icon: var(--icon-50); --icon-muted: var(--icon-500);
+  --chart-1: var(--state-success-dark); --chart-2: var(--brand-400); --chart-3: #ff9f0a;
+  --chart-4: #5e5ce6; --chart-5: #bf5af2;
+  --sidebar: var(--background-800); --sidebar-foreground: var(--text-50);
+  --sidebar-primary: var(--brand-400); --sidebar-primary-foreground: var(--background-900);
+  --sidebar-accent: var(--background-700); --sidebar-accent-foreground: var(--text-50);
+  --sidebar-border: var(--background-700); --sidebar-ring: var(--brand-400);
+  --shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.30);
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.36), 0 1px 3px -1px rgba(0, 0, 0, 0.36);
+  --shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.40), 0 1px 2px -1px rgba(0, 0, 0, 0.36);
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.44), 0 2px 4px -2px rgba(0, 0, 0, 0.36);
+  --shadow-lg: 0 8px 24px -8px rgba(0, 0, 0, 0.50), 0 4px 8px -4px rgba(0, 0, 0, 0.40);
+  --shadow-xl: 0 16px 40px -10px rgba(0, 0, 0, 0.55), 0 8px 16px -8px rgba(0, 0, 0, 0.44);
+  --shadow-2xl: 0 24px 64px -12px rgba(0, 0, 0, 0.60);
+}
+    </style>
+    <style id="component-vars">
+body{margin:0;padding:12px;background:var(--background);color:var(--foreground);font-family:var(--font-sans);letter-spacing:var(--tracking-normal)}.row{display:flex;align-items:center;gap:calc(var(--spacing)*3);flex-wrap:wrap;margin:0 0 calc(var(--spacing)*3)}.label{min-width:72px;color:var(--muted-foreground);font:600 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}.btn{display:inline-flex;align-items:center;justify-content:center;gap:calc(var(--spacing)*1.5);height:40px;padding:0 20px;border:none;border-radius:calc(var(--radius)*2);background:transparent;color:var(--foreground);font:600 14px/1 var(--font-sans);letter-spacing:var(--tracking-normal);white-space:nowrap;box-shadow:var(--shadow-sm);cursor:pointer;transition:background-color .18s ease,color .18s ease,opacity .18s ease,filter .18s ease}.btn:focus-visible{outline:2px solid var(--ring);outline-offset:2px}.btn:disabled{opacity:.42;cursor:not-allowed}.btn-primary{background:var(--primary);color:var(--primary-foreground)}.btn-primary:hover{filter:brightness(.96)}.btn-secondary{height:48px;padding:0 24px;background:var(--secondary);color:var(--secondary-foreground)}.btn-secondary:hover{background:var(--muted)}.btn-text{height:48px;padding:0 4px;box-shadow:none}.btn-text:hover{color:var(--primary)}.btn-lg{height:56px;padding:0 28px;font-size:16px}.divider{border:0;border-top:1px solid var(--border);margin:calc(var(--spacing)*4) 0}
+body{margin:0;padding:12px;background:var(--background);color:var(--foreground);font:500 14px/1.45 var(--font-sans);letter-spacing:var(--tracking-normal)}.row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}.label{width:72px;padding-top:10px;color:var(--muted-foreground);font:700 10px/1 var(--font-sans);letter-spacing:.12em;text-transform:uppercase}.divider{margin:12px 0;border:0;border-top:1px solid var(--border)}.card{width:188px;min-height:148px;padding:calc(var(--spacing)*5);display:flex;flex-direction:column;justify-content:space-between;background:var(--card);color:var(--card-foreground);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-md);transition:transform .18s ease,box-shadow .18s ease}.card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}.card.disabled,.card.disabled:hover{opacity:.5;transform:none;box-shadow:var(--shadow-md)}.eyebrow,.meta{color:var(--muted-foreground);font-size:11px;letter-spacing:.08em;text-transform:uppercase}.title{margin:6px 0 8px;font-size:18px;line-height:1.15}.body-copy{margin:0;color:var(--muted-foreground);font-size:13px}.cta{display:inline-flex;align-items:center;justify-content:center;width:max-content;margin-top:12px;padding:calc(var(--spacing)*2) calc(var(--spacing)*3.5);border-radius:999px;background:var(--primary);color:var(--primary-foreground);font-size:12px;font-weight:700;text-decoration:none}.media{aspect-ratio:4/3;border-radius:calc(var(--radius) - 4px);background:linear-gradient(135deg,var(--secondary),var(--accent));border:1px solid var(--border)}.media-card{min-height:212px;padding:calc(var(--spacing)*4)}.media-card .title{font-size:16px;margin:10px 0 6px}.price{font-size:12px;color:var(--muted-foreground)}.dark{background:var(--card);color:var(--card-foreground)}
+body{margin:0;padding:12px;background:var(--background);color:var(--foreground);font:500 13px/1.4 var(--font-sans);letter-spacing:var(--tracking-normal)}.row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:8px}.label{width:72px;padding-top:10px;color:var(--muted-foreground);font:700 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}.divider{margin:12px 0;border:0;border-top:1px solid var(--border)}.t{display:grid;grid-template-columns:96px repeat(3,1fr);overflow:hidden;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--card-foreground);box-shadow:var(--shadow-sm)}.q{grid-template-columns:82px repeat(4,1fr)}.c{padding:10px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}.t>.c:nth-child(4n),.q>.c:nth-child(5n){border-right:0}.t>.c:nth-last-child(-n+4),.q>.c:nth-last-child(-n+5){border-bottom:0}.m{background:var(--background);color:var(--muted-foreground);font:700 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}.h{background:var(--background);font-weight:700}.k{display:block;font-size:14px;line-height:1.1}.s{display:block;margin-top:4px;color:var(--chart-2);font-size:11px;font-weight:700}.b .k{color:var(--chart-2)}.v{font-weight:600}.n{color:var(--muted-foreground);font-size:12px}.x{opacity:.45}
+body{margin:0;padding:12px;background:var(--background);color:var(--foreground);font:500 13px/1.4 var(--font-sans)}.row{display:flex;align-items:center;gap:calc(var(--spacing)*3);flex-wrap:wrap;margin-bottom:8px}.label{min-width:58px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-foreground)}.divider{border:0;border-top:1px solid var(--border);margin:10px 0}.surface{display:flex;gap:calc(var(--spacing)*2);padding:calc(var(--spacing)*3);border:1px solid var(--border);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow-sm)}.dark{background:var(--background);color:var(--foreground)}.field{display:flex;align-items:center;gap:calc(var(--spacing)*2);min-width:240px;height:44px;padding:0 calc(var(--spacing)*3);border:1px solid var(--input);border-radius:var(--radius);background:var(--background);color:var(--foreground);box-shadow:var(--shadow-xs)}.field.small{height:40px}.field:focus-within{border-color:var(--ring);box-shadow:0 0 0 1px var(--ring)}.field.disabled{opacity:.55}.icon,.clear{padding:0;border:0;background:transparent;color:var(--icon-muted);font:inherit}.icon{font-size:13px}.control{flex:1;border:0;outline:0;background:transparent;color:inherit;font:inherit}.control::placeholder{color:var(--muted-foreground)}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--apple-background);
+    --color-foreground: var(--apple-foreground);
+    --color-card: var(--apple-card);
+    --color-card-foreground: var(--apple-card-foreground);
+    --color-popover: var(--apple-popover);
+    --color-popover-foreground: var(--apple-popover-foreground);
+    --color-primary: var(--apple-primary);
+    --color-primary-foreground: var(--apple-primary-foreground);
+    --color-secondary: var(--apple-secondary);
+    --color-secondary-foreground: var(--apple-secondary-foreground);
+    --color-muted: var(--apple-muted);
+    --color-muted-foreground: var(--apple-muted-foreground);
+    --color-accent: var(--apple-accent);
+    --color-accent-foreground: var(--apple-accent-foreground);
+    --color-destructive: var(--apple-destructive);
+    --color-destructive-foreground: var(--apple-destructive-foreground);
+    --color-border: var(--apple-border);
+    --color-input: var(--apple-input);
+    --color-ring: var(--apple-ring);
+    --color-chart-1: var(--apple-chart-1);
+    --color-chart-2: var(--apple-chart-2);
+    --color-chart-3: var(--apple-chart-3);
+    --color-chart-4: var(--apple-chart-4);
+    --color-chart-5: var(--apple-chart-5);
+    --color-sidebar: var(--apple-sidebar);
+    --color-sidebar-foreground: var(--apple-sidebar-foreground);
+    --color-sidebar-primary: var(--apple-sidebar-primary);
+    --color-sidebar-primary-foreground: var(--apple-sidebar-primary-foreground);
+    --color-sidebar-accent: var(--apple-sidebar-accent);
+    --color-sidebar-accent-foreground: var(--apple-sidebar-accent-foreground);
+  }
+  @layer base {
+    body { background: var(--apple-background); color: var(--apple-foreground); }
+    td, th { @apply break-words; word-break:break-all; word-break:auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-block;
+        background-color: currentColor;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+
+<!-- ===== SIDEBAR NAV ===== -->
+<aside id="sidebar-nav" class="fixed left-0 top-0 bottom-0 flex flex-col" style="width:240px; background-image:linear-gradient(180deg, var(--apple-sidebar) 0%, color-mix(in srgb, var(--apple-sidebar) 95%, var(--apple-primary)) 100%); border-right:1px solid var(--apple-border);">
+  <div class="flex items-center px-5" style="height:56px; border-bottom:1px solid var(--apple-border);">
+    <span style="display:flex; align-items:center; gap:10px;"><span style="width:8px; height:8px; border-radius:50%; background:var(--apple-primary);"></span><span style="font-family:var(--font-sans); font-size:1.0625rem; font-weight:700; letter-spacing:-0.02em; color:var(--apple-sidebar-foreground);">个人工作站</span></span>
+  </div>
+  <nav class="flex flex-col flex-1 overflow-y-auto px-3 pt-4 gap-1" aria-label="主导航">
+    <a href="#" onclick="event.preventDefault()" data-nav-key="dashboard" data-dom-id="nav-dashboard" class="flex items-center gap-2.5 rounded-lg truncate" style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;" onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'" onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; background-color:currentColor; -webkit-mask-image:url("../assets/image_0_tgt36j.svg"); mask-image:url("../assets/image_0_tgt36j.svg"); -webkit-mask-size:contain; mask-size:contain; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center; mask-position:center;"></span>
+      <span class="truncate">工作台</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="tasks" data-dom-id="nav-tasks" class="flex items-center gap-2.5 rounded-lg truncate" style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;" onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'" onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; background-color:currentColor; -webkit-mask-image:url("../assets/image_1_tgt36j.svg"); mask-image:url("../assets/image_1_tgt36j.svg"); -webkit-mask-size:contain; mask-size:contain; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center; mask-position:center;"></span>
+      <span class="truncate">每日计划</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="notes" data-dom-id="nav-notes" class="flex items-center gap-2.5 rounded-lg truncate" style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;" onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'" onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; background-color:currentColor; -webkit-mask-image:url("../assets/image_2_tgt36j.svg"); mask-image:url("../assets/image_2_tgt36j.svg"); -webkit-mask-size:contain; mask-size:contain; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center; mask-position:center;"></span>
+      <span class="truncate">杂事记录</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="photo" data-dom-id="nav-photo" class="flex items-center gap-2.5 rounded-lg truncate" style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;" onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'" onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; background-color:currentColor; -webkit-mask-image:url("../assets/image_3_tgt36j.svg"); mask-image:url("../assets/image_3_tgt36j.svg"); -webkit-mask-size:contain; mask-size:contain; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center; mask-position:center;"></span>
+      <span class="truncate">照片优化</span>
+    </a>
+    <!-- 文案优化 (active) -->
+    <a href="#" onclick="event.preventDefault()" data-nav-key="copywriting" data-dom-id="nav-copywriting" data-active="true" class="flex items-center gap-2.5 rounded-lg truncate" style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 12px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-primary); background-color:var(--apple-sidebar-accent); text-decoration:none; border-left:2px solid var(--apple-primary);" aria-current="page">
+      <span class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; background-color:currentColor; -webkit-mask-image:url("../assets/image_4_tgt36j.svg"); mask-image:url("../assets/image_4_tgt36j.svg"); -webkit-mask-size:contain; mask-size:contain; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center; mask-position:center;"></span>
+      <span class="truncate">文案优化</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="video" data-dom-id="nav-video" class="flex items-center gap-2.5 rounded-lg truncate" style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;" onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'" onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; background-color:currentColor; -webkit-mask-image:url("../assets/image_5_tgt36j.svg"); mask-image:url("../assets/image_5_tgt36j.svg"); -webkit-mask-size:contain; mask-size:contain; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center; mask-position:center;"></span>
+      <span class="truncate">视频优化</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="files" data-dom-id="nav-files" class="flex items-center gap-2.5 rounded-lg truncate" style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;" onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'" onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; background-color:currentColor; -webkit-mask-image:url("../assets/image_6_tgt36j.svg"); mask-image:url("../assets/image_6_tgt36j.svg"); -webkit-mask-size:contain; mask-size:contain; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center; mask-position:center;"></span>
+      <span class="truncate">文件整理</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="news" data-dom-id="nav-news" class="flex items-center gap-2.5 rounded-lg truncate" style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;" onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'" onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_7_tgt36j.svg"); mask-image:url("../assets/image_7_tgt36j.svg");"></span>
+      <span class="truncate">行业日报</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="trending-video" data-dom-id="nav-trending-video" class="flex items-center gap-2.5 rounded-lg truncate transition-all" style="padding:9px 14px; border-left:2px solid transparent; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none;" onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'" onmouseout="this.style.backgroundColor='transparent'">
+      <span class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_8_tgt36j.svg"); mask-image:url("../assets/image_8_tgt36j.svg");"></span>
+      <span class="truncate">爆款视频</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="trending-product" data-dom-id="nav-trending-product" class="flex items-center gap-2.5 rounded-lg truncate transition-all" style="padding:9px 14px; border-left:2px solid transparent; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none;" onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'" onmouseout="this.style.backgroundColor='transparent'">
+      <span class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_9_tgt36j.svg"); mask-image:url("../assets/image_9_tgt36j.svg");"></span>
+      <span class="truncate">爆款产品</span>
+    </a>
+  <div style="flex:1;"></div>
+  <script>
+(function(){
+  var nav = document.querySelector('aside nav');
+  if (!nav) return;
+  var items = Array.from(nav.querySelectorAll('a[data-nav-key]'));
+  var dragSrc = null;
+  items.forEach(function(item) {
+    item.setAttribute('draggable', 'true');
+    item.style.cursor = 'grab';
+    item.addEventListener('dragstart', function(e) { dragSrc = item; item.style.opacity = '0.4'; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', item.dataset.navKey); });
+    item.addEventListener('dragend', function() { item.style.opacity = '1'; items.forEach(function(i) { i.style.borderTop = ''; i.style.borderBottom = ''; }); });
+    item.addEventListener('dragover', function(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (item !== dragSrc) { var rect = item.getBoundingClientRect(); var mid = rect.top + rect.height / 2; if (e.clientY < mid) { item.style.borderTop = '2px solid var(--apple-primary)'; item.style.borderBottom = ''; } else { item.style.borderTop = ''; item.style.borderBottom = '2px solid var(--apple-primary)'; } } });
+    item.addEventListener('dragleave', function() { item.style.borderTop = ''; item.style.borderBottom = ''; });
+    item.addEventListener('drop', function(e) { e.preventDefault(); item.style.borderTop = ''; item.style.borderBottom = ''; if (dragSrc !== item) { var rect = item.getBoundingClientRect(); var mid = rect.top + rect.height / 2; if (e.clientY < mid) { nav.insertBefore(dragSrc, item); } else { nav.insertBefore(dragSrc, item.nextSibling); } var order = Array.from(nav.querySelectorAll('a[data-nav-key]')).map(function(a){ return a.dataset.navKey; }); localStorage.setItem('sidebar-order', JSON.stringify(order)); } });
+  });
+  var saved = localStorage.getItem('sidebar-order');
+  if (saved) { try { var order = JSON.parse(saved); order.forEach(function(key) { var el = nav.querySelector('a[data-nav-key="' + key + '"]'); if (el) nav.appendChild(el); }); } catch(e) {} }
+})();
+</script></nav>
+  <div style="padding:12px 16px; border-top:1px solid var(--apple-border);">
+    <p style="margin:0; font-family:var(--font-mono); font-size:0.625rem; color:var(--apple-muted-foreground); letter-spacing:0.05em;">v1.0 — SOLO Design</p>
+  </div>
+</aside>
+
+<!-- ===== MAIN AREA ===== -->
+<div class="flex flex-col" style="margin-left:240px; min-height:100vh;">
+
+  <!-- ===== TOP BAR ===== -->
+  <header id="topbar" class="sticky top-0 flex items-center justify-between px-6 shrink-0 z-10" style="height:56px; background-color:color-mix(in srgb, var(--apple-background) 85%, transparent); -webkit-backdrop-filter:saturate(180%) blur(20px); backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid var(--apple-border);">
+    <h1 id="page-title" class="truncate" style="font-family:var(--font-sans); font-size:1.125rem; font-weight:600; color:var(--apple-foreground);">文案优化</h1>
+    <div class="flex items-center gap-4 shrink-0">
+      <time id="topbar-date" class="whitespace-nowrap" style="font-family:var(--font-mono); font-size:0.8125rem; font-weight:500; letter-spacing:0.01em; color:var(--apple-muted-foreground);"></time>
+      <button type="button" id="theme-toggle" style="display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border:1px solid var(--apple-border); border-radius:50%; background:color-mix(in srgb, var(--background-50) 80%, transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px); cursor:pointer; transition:background-color .15s ease;" onmouseover="this.style.backgroundColor='var(--apple-background-200)'" onmouseout="this.style.backgroundColor='transparent'" aria-label="切换日间/夜间模式">
+        <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <div class="flex items-center justify-center shrink-0" style="width:34px; height:34px; border-radius:12px; background:color-mix(in srgb, var(--brand-500) 85%, transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border:1px solid color-mix(in srgb, var(--brand-500) 30%, transparent); color:var(--apple-primary-foreground);">
+        <span style="font-family:var(--font-sans); font-size:0.75rem; font-weight:600;">U</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== CONTENT AREA ===== -->
+  <main id="main-content" class="flex-1" style="padding:24px 28px;">
+
+    <!-- 1. SECTION HEADER -->
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:28px;">
+      <span style="width:8px; height:8px; border-radius:50%; background:var(--brand-green);"></span>
+      <h2 style="font-family:'Poppins',var(--font-sans); font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--brand-dark); margin:0;">文案优化</h2>
+      <div style="flex:1; height:1px; background:var(--brand-border);"></div>
+    </div>
+
+    <!-- 2. INPUT ZONE -->
+    <div class="brand-card" style="padding:20px 22px; margin-bottom:28px;">
+      <!-- Tabs -->
+      <div style="display:flex; gap:6px; margin-bottom:16px;">
+        <button class="brand-tab active" onclick="switchCopyTab(this,'text')">文字描述</button>
+        <button class="brand-tab" onclick="switchCopyTab(this,'upload')">上传Demo</button>
+      </div>
+
+      <!-- Tab 1: Text Description -->
+      <div id="copy-tab-text">
+        <textarea class="brand-input" rows="4" placeholder="描述你想要的文案类型，如：小红书种草、电商详情、品牌口号..."></textarea>
+      </div>
+
+      <!-- Tab 2: Upload Demo -->
+      <div id="copy-tab-upload" style="display:none;">
+        <div style="border:2px dashed rgba(176,174,165,0.4); border-radius:10px; padding:40px 20px; text-align:center; cursor:pointer; transition:border-color 0.2s ease;" onmouseover="this.style.borderColor='#d97757'" onmouseout="this.style.borderColor='rgba(176,174,165,0.4)'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#b0aea5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 10px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p style="margin:0; font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:var(--brand-gray);">拖拽参考文案到此处或点击上传</p>
+          <p style="margin:4px 0 0; font-family:'Poppins',var(--font-sans); font-size:0.5625rem; color:var(--brand-gray); opacity:0.6;">支持 TXT / DOCX / PDF，最大 5MB</p>
+        </div>
+      </div>
+
+      <!-- Model Selector + Generate Button -->
+      <div style="display:flex; align-items:center; gap:12px; margin-top:16px;">
+        <select class="brand-input" style="width:auto; min-width:160px; resize:none; cursor:pointer; font-family:'Poppins',var(--font-sans); font-size:0.6875rem;">
+          <option>GLM-4</option>
+          <option>GPT-4o</option>
+          <option>Claude 3.5</option>
+        </select>
+        <div style="flex:1;"></div>
+        <button class="brand-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          批量生成
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. BATCH GENERATION QUEUE -->
+    <div style="margin-bottom:32px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <span style="width:6px; height:6px; border-radius:50%; background:var(--brand-orange);"></span>
+        <span style="font-family:'Poppins',var(--font-sans); font-size:0.625rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--brand-gray);">生成队列</span>
+        <span style="font-family:'Poppins',var(--font-sans); font-size:0.5625rem; color:var(--brand-gray); opacity:0.6;">8 篇文案</span>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px;">
+
+        <!-- Copy 1: 完成 -->
+        <div class="brand-card" style="padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; line-height:1.5; color:var(--brand-dark); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">这款面霜质地轻盈，上脸即刻吸收，不黏腻不闷痘。搭配烟酰胺成分，坚持使用两周就能看到肌肤透亮度的明显提升...</p>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span class="category-tag">小红书种草</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:var(--brand-gray);">386 字</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="status-done">完成</span>
+            <button class="brand-btn-outline" style="padding:3px 8px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="5" y="5" rx="2"/><line x1="9" y1="1" x2="9" y2="5"/><line x1="15" y1="1" x2="15" y2="5"/><line x1="9" y1="19" x2="9" y2="23"/><line x1="15" y1="19" x2="15" y2="23"/><line x1="1" y1="9" x2="5" y2="9"/><line x1="1" y1="15" x2="5" y2="15"/><line x1="19" y1="9" x2="23" y2="9"/><line x1="19" y1="15" x2="23" y2="15"/></svg>
+              复制
+            </button>
+          </div>
+        </div>
+
+        <!-- Copy 2: 完成 -->
+        <div class="brand-card" style="padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; line-height:1.5; color:var(--brand-dark); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">限时特惠，原价299元的智能手表，现在仅需199元！IP68防水，7天超长续航，血氧心率实时监测，运动健康全记录...</p>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span class="category-tag" style="background:rgba(217,119,87,0.1); color:#d97757;">电商详情</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:var(--brand-gray);">512 字</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="status-done">完成</span>
+            <button class="brand-btn-outline" style="padding:3px 8px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="5" y="5" rx="2"/><line x1="9" y1="1" x2="9" y2="5"/><line x1="15" y1="1" x2="15" y2="5"/><line x1="9" y1="19" x2="9" y2="23"/><line x1="15" y1="19" x2="15" y2="23"/><line x1="1" y1="9" x2="5" y2="9"/><line x1="1" y1="15" x2="5" y2="15"/><line x1="19" y1="9" x2="23" y2="9"/><line x1="19" y1="15" x2="23" y2="15"/></svg>
+              复制
+            </button>
+          </div>
+        </div>
+
+        <!-- Copy 3: 完成 -->
+        <div class="brand-card" style="padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; line-height:1.5; color:var(--brand-dark); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">让每一次呼吸都充满活力。NaturaPure -- 源自自然的纯净力量，为现代都市人打造专属的身心平衡方案...</p>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span class="category-tag" style="background:rgba(120,140,93,0.1); color:#788c5d;">品牌口号</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:var(--brand-gray);">48 字</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="status-done">完成</span>
+            <button class="brand-btn-outline" style="padding:3px 8px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="5" y="5" rx="2"/><line x1="9" y1="1" x2="9" y2="5"/><line x1="15" y1="1" x2="15" y2="5"/><line x1="9" y1="19" x2="9" y2="23"/><line x1="15" y1="19" x2="15" y2="23"/><line x1="1" y1="9" x2="5" y2="9"/><line x1="1" y1="15" x2="5" y2="15"/><line x1="19" y1="9" x2="23" y2="9"/><line x1="19" y1="15" x2="23" y2="15"/></svg>
+              复制
+            </button>
+          </div>
+        </div>
+
+        <!-- Copy 4: 完成 -->
+        <div class="brand-card" style="padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; line-height:1.5; color:var(--brand-dark); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">大家好，今天给大家分享一个我最近发现的神器！作为一个经常加班的打工人，这款颈椎按摩仪真的救了我的命...</p>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span class="category-tag">小红书种草</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:var(--brand-gray);">428 字</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="status-done">完成</span>
+            <button class="brand-btn-outline" style="padding:3px 8px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="5" y="5" rx="2"/><line x1="9" y1="1" x2="9" y2="5"/><line x1="15" y1="1" x2="15" y2="5"/><line x1="9" y1="19" x2="9" y2="23"/><line x1="15" y1="19" x2="15" y2="23"/><line x1="1" y1="9" x2="5" y2="9"/><line x1="1" y1="15" x2="5" y2="15"/><line x1="19" y1="9" x2="23" y2="9"/><line x1="19" y1="15" x2="23" y2="15"/></svg>
+              复制
+            </button>
+          </div>
+        </div>
+
+        <!-- Copy 5: 生成中 -->
+        <div class="brand-card" style="padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; line-height:1.5; color:var(--brand-gray); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; position:relative;">&nbsp;</p>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span class="category-tag" style="background:rgba(217,119,87,0.1); color:#d97757;">电商详情</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:var(--brand-gray);">-- 字</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="status-running">生成中</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:var(--brand-orange);">85%</span>
+          </div>
+        </div>
+
+        <!-- Copy 6: 生成中 -->
+        <div class="brand-card" style="padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; line-height:1.5; color:var(--brand-gray); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">&nbsp;</p>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span class="category-tag" style="background:rgba(120,140,93,0.1); color:#788c5d;">品牌口号</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:var(--brand-gray);">-- 字</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="status-running">生成中</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:var(--brand-orange);">52%</span>
+          </div>
+        </div>
+
+        <!-- Copy 7: 等待中 -->
+        <div class="brand-card" style="padding:12px; display:flex; flex-direction:column; gap:8px; opacity:0.6;">
+          <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; line-height:1.5; color:var(--brand-gray); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">&nbsp;</p>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span class="category-tag">小红书种草</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:var(--brand-gray);">-- 字</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="status-waiting">等待中</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:var(--brand-gray);">--</span>
+          </div>
+        </div>
+
+        <!-- Copy 8: 等待中 -->
+        <div class="brand-card" style="padding:12px; display:flex; flex-direction:column; gap:8px; opacity:0.6;">
+          <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; line-height:1.5; color:var(--brand-gray); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">&nbsp;</p>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span class="category-tag" style="background:rgba(217,119,87,0.1); color:#d97757;">电商详情</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:var(--brand-gray);">-- 字</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="status-waiting">等待中</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:var(--brand-gray);">--</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 4. HISTORY SECTION -->
+    <div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <span style="width:6px; height:6px; border-radius:50%; background:var(--brand-blue);"></span>
+        <span style="font-family:'Poppins',var(--font-sans); font-size:0.625rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--brand-gray);">历史记录</span>
+      </div>
+
+      <div class="brand-card" style="overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse; font-family:'Poppins',var(--font-sans);">
+          <thead>
+            <tr style="background:rgba(232,230,220,0.3);">
+              <th style="text-align:left; padding:10px 14px; font-size:0.5625rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--brand-gray);">日期</th>
+              <th style="text-align:left; padding:10px 14px; font-size:0.5625rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--brand-gray);">数量</th>
+              <th style="text-align:left; padding:10px 14px; font-size:0.5625rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--brand-gray);">模型</th>
+              <th style="text-align:right; padding:10px 14px; font-size:0.5625rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--brand-gray);">状态</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-top:1px solid rgba(232,230,220,0.5);">
+              <td style="padding:10px 14px; font-size:0.6875rem; color:var(--brand-dark);">2026-07-05</td>
+              <td style="padding:10px 14px; font-size:0.6875rem; color:var(--brand-dark);">10 篇</td>
+              <td style="padding:10px 14px; font-size:0.6875rem; color:var(--brand-gray);">GLM-4</td>
+              <td style="padding:10px 14px; text-align:right;"><span class="status-done">完成</span></td>
+            </tr>
+            <tr style="border-top:1px solid rgba(232,230,220,0.5);">
+              <td style="padding:10px 14px; font-size:0.6875rem; color:var(--brand-dark);">2026-07-04</td>
+              <td style="padding:10px 14px; font-size:0.6875rem; color:var(--brand-dark);">6 篇</td>
+              <td style="padding:10px 14px; font-size:0.6875rem; color:var(--brand-gray);">GPT-4o</td>
+              <td style="padding:10px 14px; text-align:right;"><span class="status-done">完成</span></td>
+            </tr>
+            <tr style="border-top:1px solid rgba(232,230,220,0.5);">
+              <td style="padding:10px 14px; font-size:0.6875rem; color:var(--brand-dark);">2026-07-03</td>
+              <td style="padding:10px 14px; font-size:0.6875rem; color:var(--brand-dark);">12 篇</td>
+              <td style="padding:10px 14px; font-size:0.6875rem; color:var(--brand-gray);">Claude 3.5</td>
+              <td style="padding:10px 14px; text-align:right;"><span class="status-running">生成中</span></td>
+            </tr>
+            <tr style="border-top:1px solid rgba(232,230,220,0.5);">
+              <td style="padding:10px 14px; font-size:0.6875rem; color:var(--brand-dark);">2026-07-02</td>
+              <td style="padding:10px 14px; font-size:0.6875rem; color:var(--brand-dark);">8 篇</td>
+              <td style="padding:10px 14px; font-size:0.6875rem; color:var(--brand-gray);">GLM-4</td>
+              <td style="padding:10px 14px; text-align:right;"><span class="status-done">完成</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+function switchCopyTab(btn, tab) {
+  document.querySelectorAll('#main-content .brand-tab').forEach(function(t){ t.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('copy-tab-text').style.display = tab === 'text' ? 'block' : 'none';
+  document.getElementById('copy-tab-upload').style.display = tab === 'upload' ? 'block' : 'none';
+}
+</script>
+<script>
+(function(){
+  var t=document.getElementById('theme-toggle');
+  var s=document.getElementById('theme-icon-sun');
+  var m=document.getElementById('theme-icon-moon');
+  function apply(dark){
+    document.documentElement.classList.toggle('dark',dark);
+    s.style.display=dark?'none':'block';
+    m.style.display=dark?'block':'none';
+    try{localStorage.setItem('ws-theme',dark?'dark':'light')}catch(e){}
+  }
+  var saved=localStorage.getItem('ws-theme');
+  var start=saved==='dark';
+  apply(start);
+  if(t)t.addEventListener('click',function(){apply(!document.documentElement.classList.contains('dark'))});
+})();
+</script>
+<script>(function(){var d=new Date();var t=document.getElementById('topbar-date');if(t)t.textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';})();</script>
+<script>if(typeof lucide!=='undefined')lucide.createIcons();</script>
+<style>
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+main > div, main > section { animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; opacity: 0; }
+main > *:nth-child(1) { animation-delay: 0.05s; }
+main > *:nth-child(2) { animation-delay: 0.1s; }
+main > *:nth-child(3) { animation-delay: 0.15s; }
+main > *:nth-child(4) { animation-delay: 0.2s; }
+main > *:nth-child(5) { animation-delay: 0.25s; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--apple-muted); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--apple-muted-foreground); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+a[data-nav-key][draggable="true"] { cursor: grab; }
+a[data-nav-key][draggable="true"]:active { cursor: grabbing; }
+</style>
+<style>
+:root { --brand-dark:#141413; --brand-light:#faf9f5; --brand-gray:#b0aea5; --brand-border:#e8e6dc; --brand-orange:#d97757; --brand-blue:#6a9bcc; --brand-green:#788c5d; }
+#main-content { background:var(--brand-light)!important; font-family:'Lora','Georgia',var(--font-sans); color:var(--brand-dark); }
+.brand-card { background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); border-radius:10px; }
+.brand-input { width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(232,230,220,0.8); background:rgba(255,255,255,0.5); font-family:'Lora',var(--font-sans); font-size:0.8125rem; color:#141413; resize:vertical; outline:none; transition:border-color 0.2s ease; }
+.brand-input:focus { border-color:#d97757; }
+.brand-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 18px; border-radius:8px; background:#d97757; color:#faf9f5; font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:600; border:none; cursor:pointer; transition:background 0.2s ease; }
+.brand-btn:hover { background:#c5694a; }
+.brand-btn-outline { display:inline-flex; align-items:center; gap:4px; padding:5px 12px; border-radius:6px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8); font-family:'Poppins',var(--font-sans); font-size:0.625rem; font-weight:500; color:#b0aea5; cursor:pointer; }
+.brand-btn-outline:hover { background:rgba(255,255,255,0.9); color:#141413; }
+.brand-tab { padding:4px 12px; border-radius:6px; font-family:'Poppins',var(--font-sans); font-size:0.625rem; font-weight:500; border:1px solid transparent; background:transparent; color:#b0aea5; cursor:pointer; transition:all 0.2s ease; }
+.brand-tab.active { background:rgba(255,255,255,0.8); border-color:rgba(232,230,220,0.8); color:#141413; }
+.status-done,.status-running,.status-waiting { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:999px; font-family:'Poppins',var(--font-sans); font-size:0.5rem; font-weight:600; }
+.status-done { background:rgba(120,140,93,0.12); color:#788c5d; }
+.status-running { background:rgba(217,119,87,0.12); color:#d97757; }
+.status-waiting { background:rgba(176,174,165,0.12); color:#b0aea5; }
+.category-tag { display:inline-flex; align-items:center; padding:2px 8px; border-radius:6px; font-family:'Poppins',var(--font-sans); font-size:0.5rem; font-weight:500; background:rgba(106,155,204,0.1); color:#6a9bcc; }
+.dark #main-content { --brand-dark:#faf9f5; --brand-light:#1a1a19; --brand-gray:#8a8880; --brand-border:rgba(255,255,255,0.08); background:#1a1a19!important; color:#faf9f5; }
+.dark .brand-card { background:rgba(30,30,28,0.8); border-color:rgba(255,255,255,0.08); }
+.dark .brand-input { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.08); color:#faf9f5; }
+.dark .brand-input:focus { border-color:#d97757; }
+.dark .brand-tab.active { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.08); color:#faf9f5; }
+.dark .brand-btn { background:rgba(120,140,93,0.15); color:#788c5d; border-color:rgba(120,140,93,0.3); }
+.dark .brand-btn:hover { background:rgba(120,140,93,0.25); }
+.dark .brand-btn-outline { border-color:rgba(176,174,165,0.3); color:#ccc; background:transparent; }
+.dark .brand-btn-outline:hover { background:rgba(255,255,255,0.06); border-color:rgba(176,174,165,0.5); }
+.dark .brand-btn-outline.active { border-color:rgba(106,155,204,0.4); color:#6a9bcc; background:rgba(106,155,204,0.1); }
+.dark .status-done { background:rgba(120,140,93,0.15); color:#788c5d; }
+.dark .status-running { background:rgba(217,119,87,0.15); color:#e89a6a; }
+.dark .status-waiting { background:rgba(138,136,128,0.1); color:#8a8880; }
+.dark .category-tag { background:rgba(106,155,204,0.12); color:#6a9bcc; }
+</style>
+</body>
+</html>

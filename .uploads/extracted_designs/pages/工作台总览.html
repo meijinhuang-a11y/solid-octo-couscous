@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作台</title>
+    <style id="theme-vars">
+/*
+ * Pinguo design tokens
+ * Brand: Pinguo
+ * Domain: Consumer imaging product
+ * Style: Restrained, elegant, Apple-inspired
+ * Theme mode: light-dark
+ * Source language: zh
+ * Output language: en
+ *
+ * Color architecture (two layers):
+ *   1. Primitive palette - six categories. brand / background / text / icon
+ *      are each a 10-step scale (50 lightest to 900 darkest). state-success and
+ *      state-error are functional colors anchored on Apple system colors.
+ *      Anchors follow Apple Human Interface Guidelines system colors
+ *      (System Blue #007AFF, System Green #34C759, System Red #FF3B30,
+ *      system grays / label / background colors).
+ *   2. Semantic tokens - :root (light) and .dark map roles onto primitives.
+ *      Components and UI kits must only consume the semantic tokens below.
+ */
+
+/* @group-priority: brand, background, text, icon, state-success, state-error */
+
+:root {
+  
+  /* solo-design consumption aliases: explicit prefix for fill-html-head.mjs */
+  --apple-background: var(--background, #ffffff);
+  --apple-foreground: var(--foreground, #0f172a);
+  --apple-card: var(--card, var(--background));
+  --apple-card-foreground: var(--card-foreground, var(--foreground));
+  --apple-popover: var(--popover, var(--card));
+  --apple-popover-foreground: var(--popover-foreground, var(--card-foreground, var(--foreground)));
+  --apple-primary: var(--primary, #111827);
+  --apple-primary-foreground: var(--primary-foreground, #ffffff);
+  --apple-secondary: var(--secondary, var(--muted, var(--card)));
+  --apple-secondary-foreground: var(--secondary-foreground, var(--foreground));
+  --apple-muted: var(--muted, var(--card));
+  --apple-muted-foreground: var(--muted-foreground, var(--foreground));
+  --apple-accent: var(--accent, var(--secondary, var(--muted, var(--card))));
+  --apple-accent-foreground: var(--accent-foreground, var(--foreground));
+  --apple-destructive: var(--destructive, #ef4444);
+  --apple-destructive-foreground: var(--destructive-foreground, #ffffff);
+  --apple-border: var(--border, currentColor);
+  --apple-input: var(--input, var(--border));
+  --apple-ring: var(--ring, var(--primary));
+  --apple-chart-1: var(--chart-1, var(--primary));
+  --apple-chart-2: var(--chart-2, var(--secondary, var(--primary)));
+  --apple-chart-3: var(--chart-3, var(--accent, var(--primary)));
+  --apple-chart-4: var(--chart-4, var(--muted-foreground, var(--foreground)));
+  --apple-chart-5: var(--chart-5, var(--foreground));
+  --apple-sidebar: var(--sidebar, var(--background));
+  --apple-sidebar-foreground: var(--sidebar-foreground, var(--foreground));
+  --apple-sidebar-primary: var(--sidebar-primary, var(--primary));
+  --apple-sidebar-primary-foreground: var(--sidebar-primary-foreground, var(--primary-foreground));
+  --apple-sidebar-accent: var(--sidebar-accent, var(--accent, var(--muted, var(--card))));
+  --apple-sidebar-accent-foreground: var(--sidebar-accent-foreground, var(--accent-foreground, var(--foreground)));
+
+/* ===== PRIMITIVE PALETTE ===== */
+
+  /* brand */
+  --brand-50: #e8f2ff;
+  --brand-100: #cfe5ff;
+  --brand-200: #9fcbff;
+  --brand-300: #66abff;
+  --brand-400: #2e8dff;
+  --brand-500: #007aff; /* @primary */
+  --brand-600: #0064d6;
+  --brand-700: #004fad;
+  --brand-800: #003b82;
+  --brand-900: #00275a;
+
+  /* background */
+  --background-50: #ffffff;
+  --background-100: #f7f7fa;
+  --background-200: #f2f2f7;
+  --background-300: #e5e5ea;
+  --background-400: #d1d1d6;
+  --background-500: #aeaeb2;
+  --background-600: #8e8e93;
+  --background-700: #3a3a3c;
+  --background-800: #1c1c1e;
+  --background-900: #000000;
+
+  /* text */
+  --text-50: #f5f5f7;
+  --text-100: #e3e3e8;
+  --text-200: #c7c7cc;
+  --text-300: #aeaeb2;
+  --text-400: #8e8e93;
+  --text-500: #6e6e73;
+  --text-600: #48484a;
+  --text-700: #3c3c43;
+  --text-800: #1d1d1f;
+  --text-900: #000000;
+
+  /* icon */
+  --icon-50: #f5f5f7;
+  --icon-100: #e5e5ea;
+  --icon-200: #d1d1d6;
+  --icon-300: #c7c7cc;
+  --icon-400: #aeaeb2;
+  --icon-500: #8e8e93;
+  --icon-600: #6e6e73;
+  --icon-700: #48484a;
+  --icon-800: #2c2c2e;
+  --icon-900: #1d1d1f;
+
+  /* state-success */
+  --state-success: #34c759; /* @primary */
+  --state-success-dark: #30d158;
+  --state-success-surface: #e9f9ee;
+  --state-success-foreground: #ffffff;
+
+  /* state-error */
+  --state-error: #ff3b30; /* @primary */
+  --state-error-dark: #ff453a;
+  --state-error-surface: #ffecea;
+  --state-error-foreground: #ffffff;
+
+  /* ===== SEMANTIC ROLES ===== */
+
+  /* semantic */
+  --background: var(--background-50);
+  --foreground: var(--text-800);
+  --card: var(--background-50);
+  --card-foreground: var(--text-800);
+  --popover: var(--background-50);
+  --popover-foreground: var(--text-900);
+
+  --primary: var(--brand-500);
+  --primary-foreground: var(--background-50);
+  --secondary: var(--background-200);
+  --secondary-foreground: var(--text-800);
+  --muted: var(--background-200);
+  --muted-foreground: var(--text-400);
+  --accent: var(--background-100);
+  --accent-foreground: var(--text-800);
+  --destructive: var(--state-error);
+  --destructive-foreground: var(--state-error-foreground);
+  --success: var(--state-success);
+  --success-foreground: var(--state-success-foreground);
+  --border: var(--background-300);
+  --input: var(--background-400);
+  --ring: var(--brand-500);
+
+  --icon: var(--icon-900);
+  --icon-muted: var(--icon-500);
+
+  /* chart */
+  --chart-1: var(--state-success);
+  --chart-2: var(--brand-500);
+  --chart-3: #ff9500;
+  --chart-4: #5856d6;
+  --chart-5: #af52de;
+
+  /* sidebar */
+  --sidebar: var(--background-200);
+  --sidebar-foreground: var(--text-800);
+  --sidebar-primary: var(--brand-500);
+  --sidebar-primary-foreground: var(--background-50);
+  --sidebar-accent: var(--background-300);
+  --sidebar-accent-foreground: var(--text-800);
+  --sidebar-border: var(--background-300);
+  --sidebar-ring: var(--brand-500);
+
+  /* TYPOGRAPHY */
+  --font-sans: DM Sans, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: DM Sans, ui-sans-serif, sans-serif, system-ui;
+  --font-mono: JetBrains Mono, monospace;
+  --tracking-normal: 0em;
+
+  /* RADIUS */
+  --radius: 1.2rem;
+
+  /* SHADOWS */
+  --shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.04); /* Hairline */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04); /* Subtle */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px -1px rgba(0, 0, 0, 0.05); /* Card */
+  --shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.05); /* Raised */
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.05); /* Card Hover */
+  --shadow-lg: 0 8px 24px -8px rgba(0, 0, 0, 0.08), 0 4px 8px -4px rgba(0, 0, 0, 0.05); /* Float */
+  --shadow-xl: 0 16px 40px -10px rgba(0, 0, 0, 0.10), 0 8px 16px -8px rgba(0, 0, 0, 0.06); /* Overlay */
+  --shadow-2xl: 0 24px 64px -12px rgba(0, 0, 0, 0.12); /* Modal */
+
+  /* SPACING */
+  --spacing: 0.24rem;
+}
+
+/* ===== SEMANTIC ROLES - dark (primitive palette inherited) ===== */
+.dark {
+  --background: var(--background-900);
+  --foreground: var(--text-50);
+  --card: var(--background-800);
+  --card-foreground: var(--text-50);
+  --popover: var(--background-700);
+  --popover-foreground: var(--text-50);
+
+  --primary: var(--brand-400);
+  --primary-foreground: var(--background-900);
+  --secondary: var(--background-800);
+  --secondary-foreground: var(--text-50);
+  --muted: var(--background-800);
+  --muted-foreground: var(--text-400);
+  --accent: var(--background-700);
+  --accent-foreground: var(--text-50);
+  --destructive: var(--state-error-dark);
+  --destructive-foreground: var(--state-error-foreground);
+  --success: var(--state-success-dark);
+  --success-foreground: var(--state-success-foreground);
+  --border: var(--background-700);
+  --input: var(--background-700);
+  --ring: var(--brand-400);
+
+  --icon: var(--icon-50);
+  --icon-muted: var(--icon-500);
+
+  --chart-1: var(--state-success-dark);
+  --chart-2: var(--brand-400);
+  --chart-3: #ff9f0a;
+  --chart-4: #5e5ce6;
+  --chart-5: #bf5af2;
+
+  --sidebar: var(--background-800);
+  --sidebar-foreground: var(--text-50);
+  --sidebar-primary: var(--brand-400);
+  --sidebar-primary-foreground: var(--background-900);
+  --sidebar-accent: var(--background-700);
+  --sidebar-accent-foreground: var(--text-50);
+  --sidebar-border: var(--background-700);
+  --sidebar-ring: var(--brand-400);
+
+  --shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.30);
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.36), 0 1px 3px -1px rgba(0, 0, 0, 0.36);
+  --shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.40), 0 1px 2px -1px rgba(0, 0, 0, 0.36);
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.44), 0 2px 4px -2px rgba(0, 0, 0, 0.36);
+  --shadow-lg: 0 8px 24px -8px rgba(0, 0, 0, 0.50), 0 4px 8px -4px rgba(0, 0, 0, 0.40);
+  --shadow-xl: 0 16px 40px -10px rgba(0, 0, 0, 0.55), 0 8px 16px -8px rgba(0, 0, 0, 0.44);
+  --shadow-2xl: 0 24px 64px -12px rgba(0, 0, 0, 0.60);
+}
+
+    </style>
+    <style id="component-vars">
+/* ═══════════════════════════════════════════════════════════════
+   components.css — Design System Component Definitions
+   Auto-extracted from preview/component-*.html
+   DO NOT EDIT MANUALLY — regenerate via extract-components-css.mjs
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Button ────────────────────────────────────────────────── */
+/* @anatomy
+   <div class="row"><span class="label">Primary 56</span><button class="btn btn-primary btn-lg">Buy now</button><button class="btn btn-primary btn-lg" disabled>Buy now</button></div>
+   <hr class="divider">
+   <div class="row"><span class="label">Secondary 48</span><button class="btn btn-secondary">Shop the latest</button><button class="btn btn-secondary" disabled>Shop the latest</button></div>
+   <div class="row"><span class="label">Text 48</span><button class="btn btn-text">Learn more ›</button><button class="btn btn-text" disabled>Learn more ›</button></div>
+*/
+body{margin:0;padding:12px;background:var(--background);color:var(--foreground);font-family:var(--font-sans);letter-spacing:var(--tracking-normal)}.row{display:flex;align-items:center;gap:calc(var(--spacing)*3);flex-wrap:wrap;margin:0 0 calc(var(--spacing)*3)}.label{min-width:72px;color:var(--muted-foreground);font:600 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}.btn{display:inline-flex;align-items:center;justify-content:center;gap:calc(var(--spacing)*1.5);height:40px;padding:0 20px;border:none;border-radius:calc(var(--radius)*2);background:transparent;color:var(--foreground);font:600 14px/1 var(--font-sans);letter-spacing:var(--tracking-normal);white-space:nowrap;box-shadow:var(--shadow-sm);cursor:pointer;transition:background-color .18s ease,color .18s ease,opacity .18s ease,filter .18s ease}.btn:focus-visible{outline:2px solid var(--ring);outline-offset:2px}.btn:disabled{opacity:.42;cursor:not-allowed}.btn-primary{background:var(--primary);color:var(--primary-foreground)}.btn-primary:hover{filter:brightness(.96)}.btn-secondary{height:48px;padding:0 24px;background:var(--secondary);color:var(--secondary-foreground)}.btn-secondary:hover{background:var(--muted)}.btn-text{height:48px;padding:0 4px;box-shadow:none}.btn-text:hover{color:var(--primary)}.btn-lg{height:56px;padding:0 28px;font-size:16px}.divider{border:0;border-top:1px solid var(--border);margin:calc(var(--spacing)*4) 0}
+
+/* ── Card ──────────────────────────────────────────────────── */
+/* @anatomy
+   <div class="row">
+   <span class="label">Info</span>
+   <article class="card">
+   <div><div class="eyebrow">Pinguo Apple</div><h1 class="title">Built for creators</h1><p class="body-copy">A calm surface for comparing cameras, storage tiers, and bundle benefits across the ecosystem.</p></div>
+   <a class="cta" href="#">Compare models</a>
+   </article>
+   <article class="card disabled" aria-disabled="true">
+   <div><div class="eyebrow">Campus Store</div><h1 class="title">Education pricing</h1><p class="body-copy">Student bundles stay visible while unavailable purchase actions remain clearly disabled.</p></div>
+   <span class="cta">Compare models</span>
+   </article>
+   </div>
+   <hr class="divider">
+   <div class="row">
+   <span class="label">Media</span>
+   <article class="card media-card">
+   <div class="media"></div>
+   <div><div class="meta">Creator bundle</div><h1 class="title">Studio kit with Lens Sync</h1><div class="price">From $799 with Education pricing</div></div>
+   </article>
+   <article class="card media-card dark">
+   <div class="media"></div>
+   <div><div class="meta">Consumer imaging ecosystem</div><h1 class="title">Built for creators</h1><div class="price">Compare models across camera, app, and cloud plans</div></div>
+   </article>
+   </div>
+*/
+body{margin:0;padding:12px;background:var(--background);color:var(--foreground);font:500 14px/1.45 var(--font-sans);letter-spacing:var(--tracking-normal)}.row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}.label{width:72px;padding-top:10px;color:var(--muted-foreground);font:700 10px/1 var(--font-sans);letter-spacing:.12em;text-transform:uppercase}.divider{margin:12px 0;border:0;border-top:1px solid var(--border)}.card{width:188px;min-height:148px;padding:calc(var(--spacing)*5);display:flex;flex-direction:column;justify-content:space-between;background:var(--card);color:var(--card-foreground);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-md);transition:transform .18s ease,box-shadow .18s ease}.card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}.card.disabled,.card.disabled:hover{opacity:.5;transform:none;box-shadow:var(--shadow-md)}.eyebrow,.meta{color:var(--muted-foreground);font-size:11px;letter-spacing:.08em;text-transform:uppercase}.title{margin:6px 0 8px;font-size:18px;line-height:1.15}.body-copy{margin:0;color:var(--muted-foreground);font-size:13px}.cta{display:inline-flex;align-items:center;justify-content:center;width:max-content;margin-top:12px;padding:calc(var(--spacing)*2) calc(var(--spacing)*3.5);border-radius:999px;background:var(--primary);color:var(--primary-foreground);font-size:12px;font-weight:700;text-decoration:none}.media{aspect-ratio:4/3;border-radius:calc(var(--radius) - 4px);background:linear-gradient(135deg,var(--secondary),var(--accent));border:1px solid var(--border)}.media-card{min-height:212px;padding:calc(var(--spacing)*4)}.media-card .title{font-size:16px;margin:10px 0 6px}.price{font-size:12px;color:var(--muted-foreground)}.dark{background:var(--card);color:var(--card-foreground)}
+
+/* ── Comparison Table ──────────────────────────────────────── */
+/* @anatomy
+   <div class="row"><span class="label">Default</span><div class="t"><div class="c m">Compare models</div><div class="c h"><span class="k">Mini</span><span class="s">Pinguo Apple</span></div><div class="c h"><span class="k">Air</span><span class="s">Popular</span></div><div class="c h b"><span class="k">Pro</span><span class="s">Creator</span></div><div class="c m">Battery life</div><div class="c v">12h</div><div class="c v">16h</div><div class="c v">20h</div><div class="c m">Storage</div><div class="c v">256GB</div><div class="c v">512GB</div><div class="c v">1TB</div><div class="c m">Camera system</div><div class="c n">Dual</div><div class="c n">48MP</div><div class="c n">48MP+T</div></div><div class="t x" aria-disabled="true"><div class="c m">Compare models</div><div class="c h"><span class="k">Mini</span><span class="s">Pinguo Apple</span></div><div class="c h"><span class="k">Air</span><span class="s">Popular</span></div><div class="c h b"><span class="k">Pro</span><span class="s">Creator</span></div><div class="c m">Battery life</div><div class="c v">12h</div><div class="c v">16h</div><div class="c v">20h</div><div class="c m">Storage</div><div class="c v">256GB</div><div class="c v">512GB</div><div class="c v">1TB</div><div class="c m">Camera system</div><div class="c n">Dual</div><div class="c n">48MP</div><div class="c n">48MP+T</div></div></div>
+   <hr class="divider">
+   <div class="row"><span class="label">Compact</span><div class="t q dark"><div class="c m">Compare models</div><div class="c h"><span class="k">Mini</span></div><div class="c h"><span class="k">Air</span></div><div class="c h b"><span class="k">Pro</span></div><div class="c h"><span class="k">Ultra</span></div><div class="c m">Battery life</div><div class="c v">12h</div><div class="c v">16h</div><div class="c v">20h</div><div class="c v">24h</div><div class="c m">Storage</div><div class="c v">256GB</div><div class="c v">512GB</div><div class="c v">1TB</div><div class="c v">2TB</div><div class="c m">Camera system</div><div class="c n">Dual</div><div class="c n">48MP</div><div class="c n">48MP+T</div><div class="c n">Triple</div></div></div>
+*/
+body{margin:0;padding:12px;background:var(--background);color:var(--foreground);font:500 13px/1.4 var(--font-sans);letter-spacing:var(--tracking-normal)}.row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:8px}.label{width:72px;padding-top:10px;color:var(--muted-foreground);font:700 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}.divider{margin:12px 0;border:0;border-top:1px solid var(--border)}.t{display:grid;grid-template-columns:96px repeat(3,1fr);overflow:hidden;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--card-foreground);box-shadow:var(--shadow-sm)}.q{grid-template-columns:82px repeat(4,1fr)}.c{padding:10px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}.t>.c:nth-child(4n),.q>.c:nth-child(5n){border-right:0}.t>.c:nth-last-child(-n+4),.q>.c:nth-last-child(-n+5){border-bottom:0}.m{background:var(--background);color:var(--muted-foreground);font:700 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}.h{background:var(--background);font-weight:700}.k{display:block;font-size:14px;line-height:1.1}.s{display:block;margin-top:4px;color:var(--chart-2);font-size:11px;font-weight:700}.b .k{color:var(--chart-2)}.v{font-weight:600}.n{color:var(--muted-foreground);font-size:12px}.x{opacity:.45}
+
+/* ── Input ─────────────────────────────────────────────────── */
+/* @anatomy
+   <div class="row">
+   <span class="label">Search 44</span>
+   <div class="field">
+   <span class="icon">⌕</span>
+   <input class="control" aria-label="Search products" placeholder="Search products">
+   <button class="clear" type="button" aria-label="Clear search">×</button>
+   </div>
+   <div class="field disabled">
+   <span class="icon">⌕</span>
+   <input class="control" aria-label="Search products disabled" placeholder="Search products" disabled>
+   <button class="clear" type="button" aria-label="Clear search disabled" disabled>×</button>
+   </div>
+   </div>
+   <hr class="divider">
+   <div class="row">
+   <span class="label">Dark 40</span>
+   <div class="surface dark">
+   <div class="field small">
+   <input class="control" aria-label="Email address" placeholder="Email address">
+   </div>
+   </div>
+   <div class="surface dark">
+   <div class="field small disabled">
+   <input class="control" aria-label="Track your order disabled" placeholder="Track your order" disabled>
+   </div>
+   </div>
+   </div>
+*/
+body{margin:0;padding:12px;background:var(--background);color:var(--foreground);font:500 13px/1.4 var(--font-sans)}.row{display:flex;align-items:center;gap:calc(var(--spacing)*3);flex-wrap:wrap;margin-bottom:8px}.label{min-width:58px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-foreground)}.divider{border:0;border-top:1px solid var(--border);margin:10px 0}.surface{display:flex;gap:calc(var(--spacing)*2);padding:calc(var(--spacing)*3);border:1px solid var(--border);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow-sm)}.dark{background:var(--background);color:var(--foreground)}.field{display:flex;align-items:center;gap:calc(var(--spacing)*2);min-width:240px;height:44px;padding:0 calc(var(--spacing)*3);border:1px solid var(--input);border-radius:var(--radius);background:var(--background);color:var(--foreground);box-shadow:var(--shadow-xs)}.field.small{height:40px}.field:focus-within{border-color:var(--ring);box-shadow:0 0 0 1px var(--ring)}.field.disabled{opacity:.55}.icon,.clear{padding:0;border:0;background:transparent;color:var(--icon-muted);font:inherit}.icon{font-size:13px}.control{flex:1;border:0;outline:0;background:transparent;color:inherit;font:inherit}.control::placeholder{color:var(--muted-foreground)}
+
+/* ── Navigation ────────────────────────────────────────────── */
+/* @anatomy
+   <div class="row"><span class="label">Global 44</span><nav class="webbar dark" aria-label="Pinguo Apple global navigation"><span class="brand">Pinguo Apple</span><div class="rail"><a class="link" href="#">Store</a><a class="link" href="#">Explore</a><a class="link" href="#">Community</a><a class="link" href="#">Support</a></div><div style="flex:1;"></div>
+  </nav><nav class="webbar dark disabled" aria-label="Pinguo Apple global navigation disabled"><span class="brand">Pinguo Apple</span><div class="rail"><span class="link">Store</span><span class="link">Explore</span><span class="link">Community</span><span class="link">Support</span></div><div style="flex:1;"></div>
+  </nav></div>
+   <hr class="divider">
+   <div class="row"><span class="label">Tab Bar</span><div class="mobile"><div class="screen"><nav class="tabbar" aria-label="Pinguo Apple tab bar"><a class="tab" href="#"><span class="dot"></span><span>Store</span></a><a class="tab" href="#"><span class="dot"></span><span>Explore</span></a><a class="tab" href="#"><span class="dot"></span><span>Community</span></a><a class="tab" href="#"><span class="dot"></span><span>Support</span></a><div style="flex:1;"></div>
+  </nav></div></div><div class="mobile disabled"><div class="screen"><nav class="tabbar" aria-label="Pinguo Apple tab bar disabled"><span class="tab"><span class="dot"></span><span>Store</span></span><span class="tab"><span class="dot"></span><span>Explore</span></span><span class="tab"><span class="dot"></span><span>Community</span></span><span class="tab"><span class="dot"></span><span>Support</span></span><div style="flex:1;"></div>
+  </nav></div></div></div>
+*/
+body{margin:0;padding:12px;background:var(--background);color:var(--foreground);font:500 13px/1.4 var(--font-sans);letter-spacing:var(--tracking-normal)}.row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:8px}.label{width:72px;padding-top:10px;color:var(--muted-foreground);font:700 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}.divider{margin:12px 0;border:0;border-top:1px solid var(--border)}.webbar,.mobile{border:1px solid var(--border);box-shadow:var(--shadow-sm)}.webbar{display:flex;align-items:center;gap:calc(var(--spacing)*2);min-width:320px;height:44px;padding:0 calc(var(--spacing)*3);border-radius:var(--radius);background:var(--sidebar)}.brand{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}.rail{display:flex;gap:calc(var(--spacing)*1.5);margin-left:auto}.link,.tab{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;color:inherit;text-decoration:none;white-space:nowrap;transition:background-color .18s ease,color .18s ease,opacity .18s ease}.link{height:32px;padding:0 calc(var(--spacing)*2.5)}.link:hover,.tab:hover{background:var(--secondary)}.link:focus-visible,.tab:focus-visible{outline:2px solid var(--ring);outline-offset:2px}.dark{background:var(--sidebar);color:var(--foreground)}.disabled{opacity:.48}.disabled .link,.disabled .tab{pointer-events:none}.mobile{padding:calc(var(--spacing)*2);border-radius:calc(var(--radius)*1.1);background:var(--card)}.screen{display:flex;align-items:flex-end;justify-content:center;width:188px;height:164px;padding:calc(var(--spacing)*3);border-radius:calc(var(--radius)*.9);background:linear-gradient(180deg,var(--background),var(--secondary))}.tabbar{display:flex;gap:calc(var(--spacing)*1.5);padding:calc(var(--spacing)*1.5);border:1px solid var(--border);border-radius:999px;background:var(--card);box-shadow:var(--shadow-md)}.tab{flex-direction:column;gap:2px;min-width:56px;height:56px;padding:0 calc(var(--spacing)*1.5);font-size:11px;text-align:center}.dot{width:18px;height:18px;border-radius:999px;background:var(--secondary);box-shadow:inset 0 0 0 1px var(--border)}.tab:hover .dot{background:var(--primary)}
+
+/* ── Product Grid ──────────────────────────────────────────── */
+/* @anatomy
+   <div class="row">
+   <span class="label">4-up</span>
+   <div class="grid grid-4">
+   <article class="card"><div class="media"></div><span class="eyebrow">New this season</span><strong class="title">Pinguo Lens Pro</strong><span class="price">From $999</span><a class="cta" href="/">Compare all models</a></article>
+   <article class="card"><div class="media"></div><span class="eyebrow">Creator kit</span><strong class="title">Pinguo Air Cam</strong><span class="price">From $749</span><a class="cta" href="/">Build your setup</a></article>
+   <article class="card"><div class="media"></div><span class="eyebrow">Studio ready</span><strong class="title">Pinguo Dock One</strong><span class="price">From $299</span><a class="cta" href="/">See accessories</a></article>
+   <article class="card is-disabled"><div class="media"></div><span class="eyebrow">Coming soon</span><strong class="title">Pinguo Vision Mini</strong><span class="price muted">Notify me</span><span class="cta">Unavailable</span></article>
+   </div>
+   </div>
+   <hr class="divider">
+   <div class="row">
+   <span class="label">Story</span>
+   <div class="grid grid-2">
+   <article class="card story"><div class="media"></div><span class="eyebrow">Consumer imaging product ecosystem</span><strong class="title">Travel light with one camera, one dock, and one cloud-ready edit flow.</strong><span class="price muted">Pinguo Apple picks for weekend shoots</span><a class="cta" href="/">Shop the story</a></article>
+   <article class="card story"><div class="media"></div><span class="eyebrow">Compare lineup</span><strong class="title">Choose between compact capture, pro optics, and desktop-grade finishing tools.</strong><span class="price muted">Made for photo-first households</span><a class="cta" href="/">Compare all models</a></article>
+   </div>
+   </div>
+*/
+body{margin:0;padding:12px;background:var(--background);color:var(--foreground);font:500 14px/1.4 var(--font-sans)}.row{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}.label{width:72px;padding-top:6px;color:var(--muted-foreground);font-size:10px;letter-spacing:.12em;text-transform:uppercase;flex:0 0 auto}.grid{display:grid;gap:8px;flex:1}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.card{display:flex;flex-direction:column;gap:8px;padding:10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--card-foreground);box-shadow:var(--shadow-xs);transition:border-color .2s ease,transform .2s ease}.card:hover{border-color:var(--primary);transform:translateY(-1px)}.media{aspect-ratio:1;border-radius:calc(var(--radius) - 4px);background:linear-gradient(135deg,var(--secondary),var(--background));border:1px solid var(--border)}.story .media{aspect-ratio:1.25;background:linear-gradient(135deg,var(--foreground),var(--secondary))}.eyebrow{color:var(--muted-foreground);font-size:10px;letter-spacing:.08em;text-transform:uppercase}.title{font-size:15px;line-height:1.25}.price{font-variant-numeric:tabular-nums}.cta{display:inline-flex;align-self:flex-start;padding:7px 10px;border-radius:999px;background:var(--primary);color:var(--primary-foreground);font-size:12px;text-decoration:none}.muted{color:var(--muted-foreground)}.is-disabled{opacity:.55}.divider{margin:10px 0;border:0;border-top:1px solid var(--border)}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--apple-background);
+    --color-foreground: var(--apple-foreground);
+    --color-card: var(--apple-card);
+    --color-card-foreground: var(--apple-card-foreground);
+    --color-popover: var(--apple-popover);
+    --color-popover-foreground: var(--apple-popover-foreground);
+    --color-primary: var(--apple-primary);
+    --color-primary-foreground: var(--apple-primary-foreground);
+    --color-secondary: var(--apple-secondary);
+    --color-secondary-foreground: var(--apple-secondary-foreground);
+    --color-muted: var(--apple-muted);
+    --color-muted-foreground: var(--apple-muted-foreground);
+    --color-accent: var(--apple-accent);
+    --color-accent-foreground: var(--apple-accent-foreground);
+    --color-destructive: var(--apple-destructive);
+    --color-destructive-foreground: var(--apple-destructive-foreground);
+    --color-border: var(--apple-border);
+    --color-input: var(--apple-input);
+    --color-ring: var(--apple-ring);
+    --color-chart-1: var(--apple-chart-1);
+    --color-chart-2: var(--apple-chart-2);
+    --color-chart-3: var(--apple-chart-3);
+    --color-chart-4: var(--apple-chart-4);
+    --color-chart-5: var(--apple-chart-5);
+    --color-sidebar: var(--apple-sidebar);
+    --color-sidebar-foreground: var(--apple-sidebar-foreground);
+    --color-sidebar-primary: var(--apple-sidebar-primary);
+    --color-sidebar-primary-foreground: var(--apple-sidebar-primary-foreground);
+    --color-sidebar-accent: var(--apple-sidebar-accent);
+    --color-sidebar-accent-foreground: var(--apple-sidebar-accent-foreground);
+  }
+  @layer base {
+    body { background: var(--apple-background); color: var(--apple-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-block;
+        background-color: currentColor;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+      }
+    </style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-screen font-sans antialiased">
+
+<!-- ===== SIDEBAR NAV ===== -->
+<aside id="sidebar-nav" class="fixed left-0 top-0 bottom-0 flex flex-col" style="width:240px; background-image:linear-gradient(180deg, var(--apple-sidebar) 0%, color-mix(in srgb, var(--apple-sidebar) 95%, var(--apple-primary)) 100%); border-right:1px solid var(--apple-border);">
+  <div class="flex items-center px-5" style="height:56px; border-bottom:1px solid var(--apple-border);">
+    <span style="display:flex; align-items:center; gap:10px;"><span style="width:8px; height:8px; border-radius:50%; background:var(--apple-primary);"></span><span style="font-family:var(--font-sans); font-size:1.0625rem; font-weight:700; letter-spacing:-0.02em; color:var(--apple-sidebar-foreground);">个人工作站</span></span>
+  </div>
+  <nav class="flex flex-col flex-1 overflow-y-auto px-3 pt-4 gap-1" aria-label="主导航">
+    <a href="#" onclick="event.preventDefault()" data-nav-key="dashboard" data-dom-id="nav-dashboard" data-active="true"
+       class="flex items-center gap-2.5 rounded-lg truncate"
+       style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 12px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-primary); background-color:var(--apple-sidebar-accent); text-decoration:none; border-left:2px solid var(--apple-primary);"
+       aria-current="page">
+      <span data-icon class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_0_tgt36j.svg"); mask-image:url("../assets/image_0_tgt36j.svg");"></span>
+      <span class="truncate">工作台</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="tasks" data-dom-id="nav-tasks"
+       class="flex items-center gap-2.5 rounded-lg truncate"
+       style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;"
+       onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'"
+       onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span data-icon class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_1_tgt36j.svg"); mask-image:url("../assets/image_1_tgt36j.svg");"></span>
+      <span class="truncate">每日计划</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="notes" data-dom-id="nav-notes"
+       class="flex items-center gap-2.5 rounded-lg truncate"
+       style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;"
+       onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'"
+       onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span data-icon class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_2_tgt36j.svg"); mask-image:url("../assets/image_2_tgt36j.svg");"></span>
+      <span class="truncate">杂事记录</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="photo" data-dom-id="nav-photo"
+       class="flex items-center gap-2.5 rounded-lg truncate"
+       style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;"
+       onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'"
+       onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span data-icon class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_3_tgt36j.svg"); mask-image:url("../assets/image_3_tgt36j.svg");"></span>
+      <span class="truncate">照片优化</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="copywriting" data-dom-id="nav-copywriting"
+       class="flex items-center gap-2.5 rounded-lg truncate"
+       style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;"
+       onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'"
+       onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span data-icon class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_4_tgt36j.svg"); mask-image:url("../assets/image_4_tgt36j.svg");"></span>
+      <span class="truncate">文案优化</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="video" data-dom-id="nav-video"
+       class="flex items-center gap-2.5 rounded-lg truncate"
+       style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;"
+       onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'"
+       onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span data-icon class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_5_tgt36j.svg"); mask-image:url("../assets/image_5_tgt36j.svg");"></span>
+      <span class="truncate">视频优化</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="files" data-dom-id="nav-files"
+       class="flex items-center gap-2.5 rounded-lg truncate"
+       style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;"
+       onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'"
+       onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span data-icon class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_6_tgt36j.svg"); mask-image:url("../assets/image_6_tgt36j.svg");"></span>
+      <span class="truncate">文件整理</span>
+    </a>
+    <a href="#" onclick="event.preventDefault()" data-nav-key="news" data-dom-id="nav-news"
+       class="flex items-center gap-2.5 rounded-lg truncate"
+       style="transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; padding:9px 14px; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none; border-left:2px solid transparent;"
+       onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'; this.style.borderLeftColor='var(--apple-primary)'; this.style.paddingLeft='12px'"
+       onmouseout="this.style.backgroundColor='transparent'; this.style.borderLeftColor='transparent'; this.style.paddingLeft='14px'">
+      <span data-icon class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_7_tgt36j.svg"); mask-image:url("../assets/image_7_tgt36j.svg");"></span>
+      <span class="truncate">行业日报</span>
+    </a>
+
+    <!-- 爆款视频 -->
+    <a href="#" onclick="event.preventDefault()" data-nav-key="trending-video" data-dom-id="nav-trending-video"
+       class="flex items-center gap-2.5 rounded-lg truncate transition-all"
+       style="padding:9px 14px; border-left:2px solid transparent; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none;"
+       onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'"
+       onmouseout="this.style.backgroundColor='transparent'">
+      <span data-icon class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_8_tgt36j.svg"); mask-image:url("../assets/image_8_tgt36j.svg");"></span>
+      <span class="truncate">爆款视频</span>
+    </a>
+
+    <!-- 爆款产品 -->
+    <a href="#" onclick="event.preventDefault()" data-nav-key="trending-product" data-dom-id="nav-trending-product"
+       class="flex items-center gap-2.5 rounded-lg truncate transition-all"
+       style="padding:9px 14px; border-left:2px solid transparent; font-family:var(--font-sans); font-size:0.8125rem; font-weight:500; color:var(--apple-sidebar-foreground); text-decoration:none;"
+       onmouseover="this.style.backgroundColor='var(--apple-sidebar-accent)'"
+       onmouseout="this.style.backgroundColor='transparent'">
+      <span data-icon class="shrink-0" style="display:inline-block; width:1.125rem; height:1.125rem; -webkit-mask-image:url("../assets/image_9_tgt36j.svg"); mask-image:url("../assets/image_9_tgt36j.svg");"></span>
+      <span class="truncate">爆款产品</span>
+    </a>
+  <div style="flex:1;"></div>
+  <script>
+// Sidebar drag-to-reorder
+(function(){
+  var nav = document.querySelector('aside nav');
+  if (!nav) return;
+  var items = Array.from(nav.querySelectorAll('a[data-nav-key]'));
+  var dragSrc = null;
+  
+  items.forEach(function(item) {
+    item.setAttribute('draggable', 'true');
+    item.style.cursor = 'grab';
+    
+    item.addEventListener('dragstart', function(e) {
+      dragSrc = item;
+      item.style.opacity = '0.4';
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', item.dataset.navKey);
+    });
+    
+    item.addEventListener('dragend', function() {
+      item.style.opacity = '1';
+      items.forEach(function(i) { i.style.borderTop = ''; i.style.borderBottom = ''; });
+    });
+    
+    item.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (item !== dragSrc) {
+        var rect = item.getBoundingClientRect();
+        var mid = rect.top + rect.height / 2;
+        if (e.clientY < mid) {
+          item.style.borderTop = '2px solid var(--apple-primary)';
+          item.style.borderBottom = '';
+        } else {
+          item.style.borderTop = '';
+          item.style.borderBottom = '2px solid var(--apple-primary)';
+        }
+      }
+    });
+    
+    item.addEventListener('dragleave', function() {
+      item.style.borderTop = '';
+      item.style.borderBottom = '';
+    });
+    
+    item.addEventListener('drop', function(e) {
+      e.preventDefault();
+      item.style.borderTop = '';
+      item.style.borderBottom = '';
+      if (dragSrc !== item) {
+        var rect = item.getBoundingClientRect();
+        var mid = rect.top + rect.height / 2;
+        if (e.clientY < mid) {
+          nav.insertBefore(dragSrc, item);
+        } else {
+          nav.insertBefore(dragSrc, item.nextSibling);
+        }
+        // Save order to localStorage
+        var order = Array.from(nav.querySelectorAll('a[data-nav-key]')).map(function(a){ return a.dataset.navKey; });
+        localStorage.setItem('sidebar-order', JSON.stringify(order));
+      }
+    });
+  });
+  
+  // Restore saved order
+  var saved = localStorage.getItem('sidebar-order');
+  if (saved) {
+    try {
+      var order = JSON.parse(saved);
+      order.forEach(function(key) {
+        var el = nav.querySelector('a[data-nav-key="' + key + '"]');
+        if (el) nav.appendChild(el);
+      });
+    } catch(e) {}
+  }
+})();
+</script></nav>
+  <div style="padding:12px 16px; border-top:1px solid var(--apple-border);">
+    <p style="margin:0; font-family:var(--font-mono); font-size:0.625rem; color:var(--apple-muted-foreground); letter-spacing:0.05em;">v1.0 — SOLO Design</p>
+  </div>
+</aside>
+
+<!-- ===== MAIN AREA (offset by sidebar width) ===== -->
+<div class="flex flex-col" style="margin-left:240px; min-height:100vh;">
+
+  <!-- ===== TOP BAR ===== -->
+  <header id="topbar" class="sticky top-0 flex items-center justify-between px-6 shrink-0 z-10" style="height:56px; background-color:color-mix(in srgb, var(--apple-background) 85%, transparent); -webkit-backdrop-filter:saturate(180%) blur(20px); backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid var(--apple-border);">
+    <h1 id="page-title" class="truncate" style="font-family:var(--font-sans); font-size:1.125rem; font-weight:600; color:var(--apple-foreground);">工作台</h1>
+    <div class="flex items-center gap-4 shrink-0">
+      <time id="topbar-date" class="whitespace-nowrap" style="font-family:var(--font-mono); font-size:0.8125rem; font-weight:500; letter-spacing:0.01em; color:var(--apple-muted-foreground);">2026年7月4日</time>
+      <button type="button" id="theme-toggle" style="display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border:1px solid var(--apple-border); border-radius:50%; background:color-mix(in srgb, var(--background-50) 80%, transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px); cursor:pointer; transition:background-color .15s ease;"
+              onmouseover="this.style.backgroundColor='var(--apple-background-200)'"
+              onmouseout="this.style.backgroundColor='transparent'"
+              aria-label="切换日间/夜间模式">
+        <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <div class="flex items-center justify-center shrink-0" style="width:34px; height:34px; border-radius:12px; background:color-mix(in srgb, var(--brand-500) 85%, transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border:1px solid color-mix(in srgb, var(--brand-500) 30%, transparent); color:var(--apple-primary-foreground);">
+        <span style="font-family:var(--font-sans); font-size:0.75rem; font-weight:600;">U</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== CONTENT AREA ===== -->
+  <main id="main-content" class="flex-1" style="padding:24px;">
+
+    <!-- Row 1: Welcome + Calendar + Map & Weather -->
+    <div class="grid gap-4" style="grid-template-columns:1fr 1fr 1fr; margin-bottom:20px;">
+
+      <!-- Left: Welcome Section -->
+      <section style="position:relative; border-radius:var(--radius); overflow:hidden; background:linear-gradient(160deg, #faf9f5 0%, #f0ede4 40%, #e8e6dc 100%); border:1px solid #e8e6dc; padding:20px 22px 16px; display:flex; flex-direction:column; justify-content:space-between;">
+        <!-- Subtle texture overlay -->
+        <div style="position:absolute; inset:0; opacity:0.03; background-image:radial-gradient(circle at 20% 80%, #d97757 0%, transparent 50%), radial-gradient(circle at 80% 20%, #6a9bcc 0%, transparent 50%); pointer-events:none;" aria-hidden="true"></div>
+        <!-- Top: Greeting -->
+        <div style="position:relative; z-index:1;">
+          <div class="flex items-center gap-2" style="margin-bottom:6px;">
+            <div style="width:6px; height:6px; border-radius:50%; background:#d97757; box-shadow:0 0 0 2px rgba(217,119,87,0.2);"></div>
+            <span style="font-family:'Poppins','SF Pro Display',var(--font-sans); font-size:0.625rem; font-weight:600; color:#b0aea5; text-transform:uppercase; letter-spacing:0.12em;">Daily Briefing</span>
+          </div>
+          <h2 style="margin:0 0 3px; font-family:'Poppins','SF Pro Display',var(--font-sans); font-size:1.375rem; font-weight:700; color:#141413; line-height:1.25; letter-spacing:-0.04em;">早上好</h2>
+          <p style="margin:0; font-family:'Lora','Georgia',var(--font-sans); font-size:0.75rem; color:#b0aea5; line-height:1.5;">2026年7月4日 星期六</p>
+          <!-- Mini progress bar -->
+          <div style="margin-top:10px; display:flex; align-items:center; gap:8px;">
+            <div style="flex:1; height:3px; border-radius:2px; background:#e8e6dc; overflow:hidden;">
+              <div style="width:37.5%; height:100%; border-radius:2px; background:linear-gradient(90deg, #d97757, #e8956e);"></div>
+            </div>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.5625rem; font-weight:600; color:#788c5d;">3/8 完成</span>
+          </div>
+        </div>
+        <!-- Stat cards at bottom (refined) -->
+        <div class="grid gap-2" style="grid-template-columns:repeat(6,1fr); margin-top:auto;">
+            <!-- Stat: 今日任务 -->
+            <div class="stat-card" style="position:relative; padding:8px 8px 6px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-align:center; transition:transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(217,119,87,0.12)'"
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+              <div style="width:16px; height:3px; border-radius:2px; background:#d97757; margin:0 auto 6px;"></div>
+              <p style="margin:0; font-family:'Poppins',var(--font-sans); font-size:1.25rem; font-weight:700; color:#141413; line-height:1; letter-spacing:-0.03em;">8</p>
+              <p style="margin:2px 0 0; font-family:'Lora',var(--font-sans); font-size:0.5625rem; color:#b0aea5; line-height:1.3;">今日任务</p>
+            </div>
+            <!-- Stat: 已完成 -->
+            <div class="stat-card" style="position:relative; padding:8px 8px 6px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-align:center; transition:transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(120,140,93,0.15)'"
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+              <div style="width:16px; height:3px; border-radius:2px; background:#788c5d; margin:0 auto 6px;"></div>
+              <p style="margin:0; font-family:'Poppins',var(--font-sans); font-size:1.25rem; font-weight:700; color:#141413; line-height:1; letter-spacing:-0.03em;">3</p>
+              <p style="margin:2px 0 0; font-family:'Lora',var(--font-sans); font-size:0.5625rem; color:#b0aea5; line-height:1.3;">已完成</p>
+            </div>
+            <!-- Stat: 待处理 -->
+            <div class="stat-card" style="position:relative; padding:8px 8px 6px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-align:center; transition:transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(106,155,204,0.15)'"
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+              <div style="width:16px; height:3px; border-radius:2px; background:#6a9bcc; margin:0 auto 6px;"></div>
+              <p style="margin:0; font-family:'Poppins',var(--font-sans); font-size:1.25rem; font-weight:700; color:#141413; line-height:1; letter-spacing:-0.03em;">5</p>
+              <p style="margin:2px 0 0; font-family:'Lora',var(--font-sans); font-size:0.5625rem; color:#b0aea5; line-height:1.3;">待处理</p>
+            </div>
+            <!-- Stat: 本周完成 -->
+            <div class="stat-card" style="position:relative; padding:8px 8px 6px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-align:center; transition:transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(217,119,87,0.12)'"
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+              <div style="width:16px; height:3px; border-radius:2px; background:#d97757; margin:0 auto 6px;"></div>
+              <p style="margin:0; font-family:'Poppins',var(--font-sans); font-size:1.25rem; font-weight:700; color:#141413; line-height:1; letter-spacing:-0.03em;">23</p>
+              <p style="margin:2px 0 0; font-family:'Lora',var(--font-sans); font-size:0.5625rem; color:#b0aea5; line-height:1.3;">本周完成</p>
+            </div>
+            <!-- Stat: 行业日报 -->
+            <div class="stat-card" style="position:relative; padding:8px 8px 6px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-align:center; transition:transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(106,155,204,0.15)'"
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+              <div style="width:16px; height:3px; border-radius:2px; background:#6a9bcc; margin:0 auto 6px;"></div>
+              <p style="margin:0; font-family:'Poppins',var(--font-sans); font-size:1.25rem; font-weight:700; color:#141413; line-height:1; letter-spacing:-0.03em;">12</p>
+              <p style="margin:2px 0 0; font-family:'Lora',var(--font-sans); font-size:0.5625rem; color:#b0aea5; line-height:1.3;">行业日报</p>
+            </div>
+            <!-- Stat: 文件使用 -->
+            <div class="stat-card" style="position:relative; padding:8px 8px 6px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-align:center; transition:transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(120,140,93,0.15)'"
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+              <div style="width:16px; height:3px; border-radius:2px; background:#788c5d; margin:0 auto 6px;"></div>
+              <p style="margin:0; font-family:'Poppins',var(--font-sans); font-size:1rem; font-weight:700; color:#141413; line-height:1; letter-spacing:-0.03em;">60.2</p>
+              <p style="margin:2px 0 0; font-family:'Lora',var(--font-sans); font-size:0.5625rem; color:#b0aea5; line-height:1.3;">GB / 100</p>
+            </div>
+        </div>
+      </section>
+
+      <!-- Right: Calendar Widget -->
+      <section style="background:#faf9f5; border:1px solid #e8e6dc; border-radius:10px; padding:16px;">
+        <h3 style="margin:0 0 8px; font-family:'Poppins',var(--font-sans); font-size:0.6875rem; font-weight:600; color:#b0aea5; text-transform:uppercase; letter-spacing:0.08em;">7月 2026</h3>
+        <!-- Day headers -->
+        <div class="grid" style="grid-template-columns:repeat(7,1fr); text-align:center; gap:2px;">
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5; padding:4px 0;">日</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5; padding:4px 0;">一</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5; padding:4px 0;">二</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5; padding:4px 0;">三</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5; padding:4px 0;">四</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5; padding:4px 0;">五</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5; padding:4px 0;">六</span>
+        </div>
+        <!-- Calendar grid: July 2026 starts on Wednesday -->
+        <div class="grid" style="grid-template-columns:repeat(7,1fr); text-align:center; gap:2px;">
+          <!-- Row 1: blank, blank, blank, 1, 2, 3, 4 -->
+          <span></span>
+          <span></span>
+          <span></span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">1</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">2</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">3</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:600; color:#faf9f5; background:#d97757; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">4</span>
+          <!-- Row 2: 5-11 -->
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">5</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">6</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">7</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">8</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">9</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">10</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">11</span>
+          <!-- Row 3: 12-18 -->
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">12</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">13</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">14</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">15</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">16</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">17</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">18</span>
+          <!-- Row 4: 19-25 -->
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">19</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">20</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">21</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">22</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">23</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">24</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">25</span>
+          <!-- Row 5: 26-31 -->
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">26</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">27</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">28</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">29</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">30</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#141413; padding:6px 0; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">31</span>
+          <span></span>
+        </div>
+      </section>
+
+      <!-- Right: Location & Weather -->
+      <section style="background:#faf9f5; border:1px solid #e8e6dc; border-radius:10px; padding:12px; display:flex; flex-direction:column;">
+        <div class="flex items-center justify-between" style="margin-bottom:6px;">
+          <h3 style="font-family:'Poppins',var(--font-sans); font-size:0.6875rem; font-weight:600; color:#b0aea5; text-transform:uppercase; letter-spacing:0.08em; margin:0;">我的位置与天气</h3>
+          <span style="font-family:'Lora',var(--font-sans); font-size:0.6875rem; color:#b0aea5;">北京市 · 朝阳区</span>
+        </div>
+        <div style="width:16px; height:2px; background:#6a9bcc; border-radius:1px; margin-bottom:8px;"></div>
+        <!-- 地图占位 -->
+        <div style="width:100%; aspect-ratio:16/7; border-radius:8px; background:linear-gradient(135deg, #e8e6dc, #f0ede4); position:relative; overflow:hidden; margin-bottom:8px; flex-shrink:0;">
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="width:8px; height:8px; border-radius:50%; background:#d97757; box-shadow:0 0 0 3px rgba(217,119,87,0.3);"></div>
+            <span style="font-family:'Lora',var(--font-sans); font-size:0.5rem; color:#b0aea5; background:#faf9f5; padding:0 4px; border-radius:3px;">当前位置</span>
+          </div>
+          <div style="position:absolute; inset:0; opacity:0.12;">
+            <div style="position:absolute; top:30%; left:0; right:0; height:1px; background:#b0aea5;"></div>
+            <div style="position:absolute; top:60%; left:0; right:0; height:1px; background:#b0aea5;"></div>
+            <div style="position:absolute; top:0; bottom:0; left:25%; width:1px; background:#b0aea5;"></div>
+            <div style="position:absolute; top:0; bottom:0; left:55%; width:1px; background:#b0aea5;"></div>
+            <div style="position:absolute; top:0; bottom:0; left:80%; width:1px; background:#b0aea5;"></div>
+          </div>
+        </div>
+        <!-- 7天天气预报 -->
+        <div class="grid gap-1" style="grid-template-columns:repeat(7, 1fr); flex:1;">
+          <div style="text-align:center; padding:4px 0;">
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">今天</div>
+            <div style="font-size:0.625rem; margin:2px 0;">☀️</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5625rem; font-weight:600; color:#141413;">35°</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">25°</div>
+          </div>
+          <div style="text-align:center; padding:4px 0;">
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">周一</div>
+            <div style="font-size:0.625rem; margin:2px 0;">⛅</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5625rem; font-weight:600; color:#141413;">33°</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">24°</div>
+          </div>
+          <div style="text-align:center; padding:4px 0;">
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">周二</div>
+            <div style="font-size:0.625rem; margin:2px 0;">🌤️</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5625rem; font-weight:600; color:#141413;">34°</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">25°</div>
+          </div>
+          <div style="text-align:center; padding:4px 0;">
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">周三</div>
+            <div style="font-size:0.625rem; margin:2px 0;">🌧️</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5625rem; font-weight:600; color:#141413;">29°</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">23°</div>
+          </div>
+          <div style="text-align:center; padding:4px 0;">
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">周四</div>
+            <div style="font-size:0.625rem; margin:2px 0;">⛈️</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5625rem; font-weight:600; color:#141413;">27°</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">22°</div>
+          </div>
+          <div style="text-align:center; padding:4px 0;">
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">周五</div>
+            <div style="font-size:0.625rem; margin:2px 0;">☀️</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5625rem; font-weight:600; color:#141413;">32°</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">24°</div>
+          </div>
+          <div style="text-align:center; padding:4px 0;">
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">周六</div>
+            <div style="font-size:0.625rem; margin:2px 0;">🌤️</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5625rem; font-weight:600; color:#141413;">33°</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5;">24°</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Row 2: Quick Action Cards -->
+    <section style="margin-bottom:20px;">
+      <h3 style="margin:0 0 16px;"><span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#d97757; margin-right:6px;"></span><span style="font-family:'Poppins',var(--font-sans); font-size:0.6875rem; font-weight:600; color:#b0aea5; text-transform:uppercase; letter-spacing:0.08em;">快速操作</span></h3>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr); gap:8px;">
+
+        <!-- Card: 每日计划 -->
+        <a href="#" onclick="event.preventDefault()" data-dom-id="cta-tasks" style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-decoration:none; color:#141413; transition:transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, border-color 0.25s ease; cursor:pointer;"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(217,119,87,0.1)'"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <span data-icon class="shrink-0" style="display:inline-flex; width:1.75rem; height:1.75rem; background-color:#d97757; border-radius:8px; -webkit-mask-image:url("../assets/image_1_tgt36j.svg"); mask-image:url("../assets/image_1_tgt36j.svg");"></span>
+          <div style="flex:1; min-width:0;">
+            <p style="margin:0 0 1px; font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:600; color:#141413;">每日计划</p>
+            <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; color:#b0aea5;" class="truncate">管理你的每日任务和目标</p>
+          </div>
+          <span data-icon class="shrink-0" style="display:inline-flex; width:0.875rem; height:0.875rem; background-color:#b0aea5; -webkit-mask-image:url("../assets/image_10_tgt36j.svg"); mask-image:url("../assets/image_10_tgt36j.svg");"></span>
+        </a>
+
+        <!-- Card: 杂事记录 -->
+        <a href="#" onclick="event.preventDefault()" data-dom-id="cta-notes" style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-decoration:none; color:#141413; transition:transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, border-color 0.25s ease; cursor:pointer;"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(217,119,87,0.1)'"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <span data-icon class="shrink-0" style="display:inline-flex; width:1.75rem; height:1.75rem; background-color:#6a9bcc; border-radius:8px; -webkit-mask-image:url("../assets/image_2_tgt36j.svg"); mask-image:url("../assets/image_2_tgt36j.svg");"></span>
+          <div style="flex:1; min-width:0;">
+            <p style="margin:0 0 1px; font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:600; color:#141413;">杂事记录</p>
+            <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; color:#b0aea5;" class="truncate">随手记录灵感和待办</p>
+          </div>
+          <span data-icon class="shrink-0" style="display:inline-flex; width:0.875rem; height:0.875rem; background-color:#b0aea5; -webkit-mask-image:url("../assets/image_10_tgt36j.svg"); mask-image:url("../assets/image_10_tgt36j.svg");"></span>
+        </a>
+
+        <!-- Card: 照片优化 -->
+        <a href="#" onclick="event.preventDefault()" data-dom-id="cta-photo" style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-decoration:none; color:#141413; transition:transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, border-color 0.25s ease; cursor:pointer;"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(217,119,87,0.1)'"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <span data-icon class="shrink-0" style="display:inline-flex; width:1.75rem; height:1.75rem; background-color:#788c5d; border-radius:8px; -webkit-mask-image:url("../assets/image_3_tgt36j.svg"); mask-image:url("../assets/image_3_tgt36j.svg");"></span>
+          <div style="flex:1; min-width:0;">
+            <p style="margin:0 0 1px; font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:600; color:#141413;">照片优化</p>
+            <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; color:#b0aea5;" class="truncate">智能增强和美化照片</p>
+          </div>
+          <span data-icon class="shrink-0" style="display:inline-flex; width:0.875rem; height:0.875rem; background-color:#b0aea5; -webkit-mask-image:url("../assets/image_10_tgt36j.svg"); mask-image:url("../assets/image_10_tgt36j.svg");"></span>
+        </a>
+
+        <!-- Card: 文案优化 -->
+        <a href="#" onclick="event.preventDefault()" data-dom-id="cta-copywriting" style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-decoration:none; color:#141413; transition:transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, border-color 0.25s ease; cursor:pointer;"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(217,119,87,0.1)'"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <span data-icon class="shrink-0" style="display:inline-flex; width:1.75rem; height:1.75rem; background-color:#d97757; border-radius:8px; -webkit-mask-image:url("../assets/image_4_tgt36j.svg"); mask-image:url("../assets/image_4_tgt36j.svg");"></span>
+          <div style="flex:1; min-width:0;">
+            <p style="margin:0 0 1px; font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:600; color:#141413;">文案优化</p>
+            <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; color:#b0aea5;" class="truncate">精炼你的文字表达</p>
+          </div>
+          <span data-icon class="shrink-0" style="display:inline-flex; width:0.875rem; height:0.875rem; background-color:#b0aea5; -webkit-mask-image:url("../assets/image_10_tgt36j.svg"); mask-image:url("../assets/image_10_tgt36j.svg");"></span>
+        </a>
+
+        <!-- Card: 视频优化 -->
+        <a href="#" onclick="event.preventDefault()" data-dom-id="cta-video" style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-decoration:none; color:#141413; transition:transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, border-color 0.25s ease; cursor:pointer;"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(217,119,87,0.1)'"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <span data-icon class="shrink-0" style="display:inline-flex; width:1.75rem; height:1.75rem; background-color:#6a9bcc; border-radius:8px; -webkit-mask-image:url("../assets/image_5_tgt36j.svg"); mask-image:url("../assets/image_5_tgt36j.svg");"></span>
+          <div style="flex:1; min-width:0;">
+            <p style="margin:0 0 1px; font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:600; color:#141413;">视频优化</p>
+            <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; color:#b0aea5;" class="truncate">提升视频质量和效果</p>
+          </div>
+          <span data-icon class="shrink-0" style="display:inline-flex; width:0.875rem; height:0.875rem; background-color:#b0aea5; -webkit-mask-image:url("../assets/image_10_tgt36j.svg"); mask-image:url("../assets/image_10_tgt36j.svg");"></span>
+        </a>
+
+        <!-- Card: 文件整理 -->
+        <a href="#" onclick="event.preventDefault()" data-dom-id="cta-files" style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-decoration:none; color:#141413; transition:transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, border-color 0.25s ease; cursor:pointer;"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(217,119,87,0.1)'"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <span data-icon class="shrink-0" style="display:inline-flex; width:1.75rem; height:1.75rem; background-color:#788c5d; border-radius:8px; -webkit-mask-image:url("../assets/image_6_tgt36j.svg"); mask-image:url("../assets/image_6_tgt36j.svg");"></span>
+          <div style="flex:1; min-width:0;">
+            <p style="margin:0 0 1px; font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:600; color:#141413;">文件整理</p>
+            <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; color:#b0aea5;" class="truncate">分类整理你的文件</p>
+          </div>
+          <span data-icon class="shrink-0" style="display:inline-flex; width:0.875rem; height:0.875rem; background-color:#b0aea5; -webkit-mask-image:url("../assets/image_10_tgt36j.svg"); mask-image:url("../assets/image_10_tgt36j.svg");"></span>
+        </a>
+
+        <!-- Card: 行业日报 -->
+        <a href="#" onclick="event.preventDefault()" data-dom-id="cta-news" style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-decoration:none; color:#141413; transition:transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, border-color 0.25s ease; cursor:pointer;"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(217,119,87,0.1)'"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <span data-icon class="shrink-0" style="display:inline-flex; width:1.75rem; height:1.75rem; background-color:#d97757; border-radius:8px; -webkit-mask-image:url("../assets/image_7_tgt36j.svg"); mask-image:url("../assets/image_7_tgt36j.svg");"></span>
+          <div style="flex:1; min-width:0;">
+            <p style="margin:0 0 1px; font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:600; color:#141413;">行业日报</p>
+            <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; color:#b0aea5;" class="truncate">每日广告行业热点资讯</p>
+          </div>
+          <span data-icon class="shrink-0" style="display:inline-flex; width:0.875rem; height:0.875rem; background-color:#b0aea5; -webkit-mask-image:url("../assets/image_10_tgt36j.svg"); mask-image:url("../assets/image_10_tgt36j.svg");"></span>
+        </a>
+
+        <!-- Card: 爆款视频 -->
+        <a href="#" onclick="event.preventDefault()" data-dom-id="cta-trending-video" style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-decoration:none; color:#141413; transition:transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, border-color 0.25s ease; cursor:pointer;"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(217,119,87,0.1)'"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <span data-icon class="shrink-0" style="display:inline-flex; width:1.75rem; height:1.75rem; background-color:#6a9bcc; border-radius:8px; -webkit-mask-image:url("../assets/image_8_tgt36j.svg"); mask-image:url("../assets/image_8_tgt36j.svg");"></span>
+          <div style="flex:1; min-width:0;">
+            <p style="margin:0 0 1px; font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:600; color:#141413;">爆款视频</p>
+            <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; color:#b0aea5;" class="truncate">追踪平台热门视频趋势</p>
+          </div>
+          <span data-icon class="shrink-0" style="display:inline-flex; width:0.875rem; height:0.875rem; background-color:#b0aea5; -webkit-mask-image:url("../assets/image_10_tgt36j.svg"); mask-image:url("../assets/image_10_tgt36j.svg");"></span>
+        </a>
+        <!-- Card: 爆款产品 -->
+        <a href="#" onclick="event.preventDefault()" data-dom-id="cta-trending-product" style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:10px; background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:1px solid rgba(232,230,220,0.8); text-decoration:none; color:#141413; transition:transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, border-color 0.25s ease; cursor:pointer;"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(217,119,87,0.1)'"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <span data-icon class="shrink-0" style="display:inline-flex; width:1.75rem; height:1.75rem; background-color:#788c5d; border-radius:8px; -webkit-mask-image:url("../assets/image_9_tgt36j.svg"); mask-image:url("../assets/image_9_tgt36j.svg");"></span>
+          <div style="flex:1; min-width:0;">
+            <p style="margin:0 0 1px; font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:600; color:#141413;">爆款产品</p>
+            <p style="margin:0; font-family:'Lora',var(--font-sans); font-size:0.6875rem; color:#b0aea5;" class="truncate">发现热门产品与消费洞察</p>
+          </div>
+          <span data-icon class="shrink-0" style="display:inline-flex; width:0.875rem; height:0.875rem; background-color:#b0aea5; -webkit-mask-image:url("../assets/image_10_tgt36j.svg"); mask-image:url("../assets/image_10_tgt36j.svg");"></span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Row 2.5: Productivity Summary (compact) -->
+    <section style="margin-bottom:20px;">
+      <div style="display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:10px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8);">
+        <span style="font-family:'Poppins',var(--font-sans); font-size:0.6875rem; font-weight:600; color:#b0aea5; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">本周效率</span>
+        <div style="flex:1; height:6px; border-radius:999px; background:#e8e6dc; overflow:hidden;">
+          <div style="width:75%; height:100%; border-radius:999px; background:linear-gradient(90deg, #d97757, #e8956e);"></div>
+        </div>
+        <span style="font-family:'Poppins',var(--font-sans); font-size:0.8125rem; font-weight:600; color:#d97757; white-space:nowrap;">目标完成率 75%</span>
+      </div>
+    </section>
+
+    <!-- Today's Reminders -->
+    <section style="margin-bottom:20px;">
+      <div class="flex items-center justify-between" style="margin-bottom:10px;">
+        <h3 style="margin:0;"><span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#d97757; margin-right:6px;"></span><span style="font-family:'Poppins',var(--font-sans); font-size:0.6875rem; font-weight:600; color:#b0aea5; text-transform:uppercase; letter-spacing:0.08em;">今日提醒</span></h3>
+        <a href="#" onclick="event.preventDefault()" data-dom-id="cta-tasks" style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#d97757; text-decoration:none; font-weight:500;">管理提醒</a>
+      </div>
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center gap-3" style="padding:10px 12px; border-radius:8px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8); border-left:3px solid #d97757;">
+          <span style="display:inline-block; width:0.5rem; height:0.5rem; border-radius:50%; background-color:#d97757; flex-shrink:0;"></span>
+          <span style="flex:1; font-family:'Lora',var(--font-sans); font-size:0.8125rem; font-weight:500; color:#141413; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">14:00 准备下午会议材料</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.6875rem; color:#d97757; font-weight:500; white-space:nowrap;">高优先</span>
+        </div>
+        <div class="flex items-center gap-3" style="padding:10px 12px; border-radius:8px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8); border-left:3px solid #6a9bcc;">
+          <span style="display:inline-block; width:0.5rem; height:0.5rem; border-radius:50%; background-color:#6a9bcc; flex-shrink:0;"></span>
+          <span style="flex:1; font-family:'Lora',var(--font-sans); font-size:0.8125rem; font-weight:500; color:#141413; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">15:30 审核设计方案 — 截止今天</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.6875rem; color:#6a9bcc; font-weight:500; white-space:nowrap;">中优先</span>
+        </div>
+        <div class="flex items-center gap-3" style="padding:10px 12px; border-radius:8px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8); border-left:3px solid #b0aea5;">
+          <span style="display:inline-block; width:0.5rem; height:0.5rem; border-radius:50%; background-color:#b0aea5; flex-shrink:0;"></span>
+          <span style="flex:1; font-family:'Lora',var(--font-sans); font-size:0.8125rem; font-weight:500; color:#141413; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">17:00 整理本周数据报告</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.6875rem; color:#b0aea5; white-space:nowrap;">低优先</span>
+        </div>
+        <div class="flex items-center gap-3" style="padding:10px 12px; border-radius:8px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8); border-left:3px solid #788c5d;">
+          <span style="display:inline-block; width:0.5rem; height:0.5rem; border-radius:50%; background-color:#788c5d; flex-shrink:0;"></span>
+          <span style="flex:1; font-family:'Lora',var(--font-sans); font-size:0.8125rem; font-weight:500; color:#b0aea5; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-decoration:line-through;">09:00 完成周报整理</span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.6875rem; color:#788c5d; font-weight:500; white-space:nowrap;">已完成</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Row 3: Recent Activity + Industry News (two-column) -->
+    <div class="grid gap-4" style="grid-template-columns:1fr 1fr; margin-bottom:20px;">
+
+      <!-- Left: 最近动态 -->
+      <section>
+        <h3 style="margin:0 0 6px;"><span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#d97757; margin-right:6px;"></span><span style="font-family:'Poppins',var(--font-sans); font-size:0.6875rem; font-weight:600; color:#b0aea5; text-transform:uppercase; letter-spacing:0.08em;">最近动态</span></h3>
+        <div style="width:16px; height:2px; background:#d97757; border-radius:1px; margin:6px 0 12px;"></div>
+        <div style="border-radius:10px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8); overflow:hidden; max-height:280px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:rgba(176,174,165,0.3) transparent;">
+
+          <!-- Activity item 1 -->
+          <div class="flex items-center gap-4" style="padding:10px 14px; border-bottom:1px solid rgba(232,230,220,0.5);">
+            <span data-icon class="shrink-0" style="display:inline-flex; width:1rem; height:1rem; background-color:#788c5d; -webkit-mask-image:url("../assets/image_11_tgt36j.svg"); mask-image:url("../assets/image_11_tgt36j.svg");"></span>
+            <p style="margin:0; flex:1; min-width:0; font-family:'Lora',var(--font-sans); font-size:0.75rem; color:#141413;" class="truncate">完成了「周报整理」任务</p>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap; flex-shrink:0;">2小时前</span>
+          </div>
+
+          <!-- Activity item 2 -->
+          <div class="flex items-center gap-4" style="padding:10px 14px; border-bottom:1px solid rgba(232,230,220,0.5);">
+            <span data-icon class="shrink-0" style="display:inline-flex; width:1rem; height:1rem; background-color:#b0aea5; -webkit-mask-image:url("../assets/image_6_tgt36j.svg"); mask-image:url("../assets/image_6_tgt36j.svg");"></span>
+            <p style="margin:0; flex:1; min-width:0; font-family:'Lora',var(--font-sans); font-size:0.75rem; color:#141413;" class="truncate">上传了3张照片到「旅行相册」</p>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap; flex-shrink:0;">5小时前</span>
+          </div>
+
+          <!-- Activity item 3 -->
+          <div class="flex items-center gap-4" style="padding:10px 14px; border-bottom:1px solid rgba(232,230,220,0.5);">
+            <span data-icon class="shrink-0" style="display:inline-flex; width:1rem; height:1rem; background-color:#b0aea5; -webkit-mask-image:url("../assets/image_4_tgt36j.svg"); mask-image:url("../assets/image_4_tgt36j.svg");"></span>
+            <p style="margin:0; flex:1; min-width:0; font-family:'Lora',var(--font-sans); font-size:0.75rem; color:#141413;" class="truncate">优化了「产品介绍」文案</p>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap; flex-shrink:0;">昨天</span>
+          </div>
+
+          <div class="flex items-center gap-4" style="padding:10px 14px; border-top:1px solid rgba(232,230,220,0.5);">
+            <span style="width:0.5rem; height:0.5rem; border-radius:50%; background:#d97757; flex-shrink:0;"></span>
+            <span style="flex:1; font-family:'Lora',var(--font-sans); font-size:0.75rem; color:#141413;">上传了5张产品图片到素材库</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap;">昨天</span>
+          </div>
+          <div class="flex items-center gap-4" style="padding:10px 14px; border-top:1px solid rgba(232,230,220,0.5);">
+            <span style="width:0.5rem; height:0.5rem; border-radius:50%; background-color:#788c5d; flex-shrink:0;"></span>
+            <span style="flex:1; font-family:'Lora',var(--font-sans); font-size:0.75rem; color:#141413;">完成了「会议记录-0704」整理</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap;">2天前</span>
+          </div>
+          <div class="flex items-center gap-4" style="padding:10px 14px; border-top:1px solid rgba(232,230,220,0.5);">
+            <span style="width:0.5rem; height:0.5rem; border-radius:50%; background-color:#d97757; flex-shrink:0;"></span>
+            <span style="flex:1; font-family:'Lora',var(--font-sans); font-size:0.75rem; color:#141413;">导出了「旅行Vlog」1080p版本</span>
+            <span style="font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap;">3天前</span>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Right: 行业日报 -->
+      <section>
+        <div class="flex items-center justify-between" style="margin-bottom:6px;">
+          <h3 style="margin:0;"><span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#d97757; margin-right:6px;"></span><span style="font-family:'Poppins',var(--font-sans); font-size:0.6875rem; font-weight:600; color:#b0aea5; text-transform:uppercase; letter-spacing:0.08em;">行业日报</span></h3>
+          <a href="#" onclick="event.preventDefault()" data-dom-id="cta-news" style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#d97757; text-decoration:none; font-weight:500;"
+             onmouseover="this.style.textDecoration='underline'"
+             onmouseout="this.style.textDecoration='none'">查看全部</a>
+        </div>
+        <div style="width:16px; height:2px; background:#d97757; border-radius:1px; margin:6px 0 12px;"></div>
+        <!-- Compact news list -->
+        <div class="flex flex-col gap-2" style="max-height:280px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:rgba(176,174,165,0.3) transparent; padding-right:2px;">
+          <div class="flex items-center gap-3" style="padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8);">
+            <span style="display:inline-block; padding:2px 6px; border-radius:999px; background:rgba(217,119,87,0.1); font-family:'Poppins',var(--font-sans); font-size:0.625rem; font-weight:600; color:#d97757; white-space:nowrap;">4A动态</span>
+            <span style="font-family:'Lora',var(--font-sans); font-size:0.75rem; font-weight:500; color:#141413; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">阳狮反超WPP成全球第二</span>
+            <span style="margin-left:auto; font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap;">2小时前</span>
+          </div>
+          <div class="flex items-center gap-3" style="padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8);">
+            <span style="display:inline-block; padding:2px 6px; border-radius:999px; background:rgba(217,119,87,0.1); font-family:'Poppins',var(--font-sans); font-size:0.625rem; font-weight:600; color:#d97757; white-space:nowrap;">并购</span>
+            <span style="font-family:'Lora',var(--font-sans); font-size:0.75rem; font-weight:500; color:#141413; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">宏盟135亿美元收购IPG</span>
+            <span style="margin-left:auto; font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap;">5小时前</span>
+          </div>
+          <div class="flex items-center gap-3" style="padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8);">
+            <span style="display:inline-block; padding:2px 6px; border-radius:999px; background:rgba(217,119,87,0.1); font-family:'Poppins',var(--font-sans); font-size:0.625rem; font-weight:600; color:#d97757; white-space:nowrap;">平台</span>
+            <span style="font-family:'Lora',var(--font-sans); font-size:0.75rem; font-weight:500; color:#141413; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">小红书“红猫计划”深化</span>
+            <span style="margin-left:auto; font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap;">今天</span>
+          </div>
+          <div class="flex items-center gap-3" style="padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8);">
+            <span style="display:inline-block; padding:2px 6px; border-radius:999px; background:rgba(217,119,87,0.1); font-family:'Poppins',var(--font-sans); font-size:0.625rem; font-weight:600; color:#d97757; white-space:nowrap;">科技</span>
+            <span style="font-family:'Lora',var(--font-sans); font-size:0.75rem; font-weight:500; color:#141413; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">华为Pura 80数字版开售</span>
+            <span style="margin-left:auto; font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap;">今天</span>
+          </div>
+          <div class="flex items-center gap-3" style="padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8);">
+            <span style="display:inline-block; padding:2px 6px; border-radius:999px; background:rgba(217,119,87,0.1); font-family:'Poppins',var(--font-sans); font-size:0.625rem; font-weight:600; color:#d97757; white-space:nowrap;">营销</span>
+            <span style="font-family:'Lora',var(--font-sans); font-size:0.75rem; font-weight:500; color:#141413; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">淘宝闪购扩充代言人矩阵</span>
+            <span style="margin-left:auto; font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap;">昨天</span>
+          </div>
+          <div class="flex items-center gap-3" style="padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8);">
+            <span style="display:inline-block; padding:2px 6px; border-radius:999px; background:rgba(217,119,87,0.1); font-family:'Poppins',var(--font-sans); font-size:0.625rem; font-weight:600; color:#d97757; white-space:nowrap;">白皮书</span>
+            <span style="font-family:'Lora',var(--font-sans); font-size:0.75rem; font-weight:500; color:#141413; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">数字媒介生态地图AI版发布</span>
+            <span style="margin-left:auto; font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap;">昨天</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Row 3.5: 今日爆款趋势 (full width) -->
+    <section style="margin-bottom:20px;">
+      <div style="padding:12px 14px; border-radius:10px; border:1px solid rgba(232,230,220,0.8); background:rgba(255,255,255,0.7);">
+        <div class="flex items-center gap-2" style="margin-bottom:10px;">
+          <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#d97757;"></span>
+          <span style="font-family:'Poppins',var(--font-sans); font-size:0.6875rem; font-weight:600; color:#b0aea5; text-transform:uppercase; letter-spacing:0.08em;">今日爆款趋势</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
+          <div style="padding:10px 12px; border-radius:8px; background:rgba(232,230,220,0.5);">
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5; text-transform:uppercase; margin-bottom:2px;">热门视频</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:700; color:#141413;">156.2W 播放</div>
+            <div style="font-family:'Lora',var(--font-sans); font-size:0.5625rem; color:#b0aea5;">@健身打卡日记 · 抖音</div>
+          </div>
+          <div style="padding:10px 12px; border-radius:8px; background:rgba(232,230,220,0.5);">
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5; text-transform:uppercase; margin-bottom:2px;">潜力爆款</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:700; color:#141413;">赞粉比 91.1x</div>
+            <div style="font-family:'Lora',var(--font-sans); font-size:0.5625rem; color:#b0aea5;">@珍珠奶茶小厨 · 小红书</div>
+          </div>
+          <div style="padding:10px 12px; border-radius:8px; background:rgba(232,230,220,0.5);">
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5; text-transform:uppercase; margin-bottom:2px;">热门产品</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:700; color:#141413;">热度 98.5</div>
+            <div style="font-family:'Lora',var(--font-sans); font-size:0.5625rem; color:#b0aea5;">多肽抗皱面霜 · 提及12.3W</div>
+          </div>
+          <div style="padding:10px 12px; border-radius:8px; background:rgba(232,230,220,0.5);">
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.5rem; color:#b0aea5; text-transform:uppercase; margin-bottom:2px;">互动最高</div>
+            <div style="font-family:'Poppins',var(--font-sans); font-size:0.75rem; font-weight:700; color:#788c5d;">+312%</div>
+            <div style="font-family:'Lora',var(--font-sans); font-size:0.5625rem; color:#b0aea5;">夏天平价好物 · 小红书</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<script>
+(function(){
+  var t=document.getElementById('theme-toggle');
+  var s=document.getElementById('theme-icon-sun');
+  var m=document.getElementById('theme-icon-moon');
+  function apply(dark){
+    document.documentElement.classList.toggle('dark',dark);
+    s.style.display=dark?'none':'block';
+    m.style.display=dark?'block':'none';
+    try{localStorage.setItem('ws-theme',dark?'dark':'light')}catch(e){}
+  }
+  var saved=localStorage.getItem('ws-theme');
+  var start=saved==='dark';
+  apply(start);
+  if(t)t.addEventListener('click',function(){apply(!document.documentElement.classList.contains('dark'))});
+})();
+</script>
+<script>if(typeof lucide!=='undefined')lucide.createIcons();</script>
+<style>
+/* === Page-level Enhancements === */
+/* Staggered entrance animation */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+#main-content > * {
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+}
+#main-content > *:nth-child(1) { animation-delay: 0.05s; }
+#main-content > *:nth-child(2) { animation-delay: 0.1s; }
+#main-content > *:nth-child(3) { animation-delay: 0.15s; }
+#main-content > *:nth-child(4) { animation-delay: 0.2s; }
+#main-content > *:nth-child(5) { animation-delay: 0.25s; }
+#main-content > *:nth-child(6) { animation-delay: 0.3s; }
+
+/* Card hover lift — only for top-level row sections, not inner cards */
+#main-content > section > div[style*="border-radius"]:only-child:hover,
+#main-content > div > section:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* Stat card micro-interaction — disabled, cards have inline onmouseover */
+
+/* Refined scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--apple-muted); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--apple-muted-foreground); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Drag reorder styles */
+a[data-nav-key][draggable="true"] { cursor: grab; }
+a[data-nav-key][draggable="true"]:active { cursor: grabbing; }
+
+/* === Lightweight dashboard utility classes === */
+.dash-meta { font-family:'Poppins',var(--font-sans); font-size:0.625rem; color:#b0aea5; white-space:nowrap; flex-shrink:0; }
+.dash-body { font-family:'Lora',var(--font-sans); font-size:0.75rem; color:#141413; }
+.dash-link { font-family:'Poppins',var(--font-sans); font-size:0.75rem; color:#d97757; text-decoration:none; font-weight:500; }
+.dash-link:hover { text-decoration:underline; }
+.dash-news-item { padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.7); border:1px solid rgba(232,230,220,0.8); }
+.dash-news-tag { display:inline-block; padding:2px 6px; border-radius:999px; background:rgba(217,119,87,0.1); font-family:'Poppins',var(--font-sans); font-size:0.625rem; font-weight:600; color:#d97757; white-space:nowrap; }
+.dash-news-title { font-family:'Lora',var(--font-sans); font-size:0.75rem; font-weight:500; color:#141413; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* === Dark Mode Overrides for Brand Colors === */
+.dark #main-content {
+  --brand-bg: #1a1a19;
+  --brand-bg-card: rgba(30,30,28,0.8);
+  --brand-bg-card-hover: rgba(40,40,38,0.9);
+  --brand-bg-subtle: rgba(255,255,255,0.05);
+  --brand-bg-subtle-hover: rgba(255,255,255,0.08);
+  --brand-border: rgba(255,255,255,0.08);
+  --brand-border-subtle: rgba(255,255,255,0.05);
+  --brand-text-primary: #faf9f5;
+  --brand-text-secondary: #b0aea5;
+  --brand-text-muted: #8a8880;
+  --brand-scroll-thumb: rgba(255,255,255,0.1);
+  --brand-scroll-thumb-hover: rgba(255,255,255,0.2);
+  --brand-shadow: rgba(0,0,0,0.3);
+  --brand-map-bg: linear-gradient(135deg, #2a2a28, #222220);
+  --brand-progress-bg: rgba(255,255,255,0.08);
+  --brand-frosted: rgba(30,30,28,0.6);
+}
+
+.dark #main-content section,
+.dark #main-content .grid > section {
+  background: var(--brand-bg-card, #1a1a19) !important;
+  border-color: var(--brand-border, rgba(255,255,255,0.08)) !important;
+}
+
+.dark #main-content section *,
+.dark #main-content section *:before {
+  color: inherit;
+}
+
+/* Dark: override hardcoded light text colors */
+.dark #main-content [style*="color:#141413"],
+.dark #main-content [style*="color: #141413"] {
+  color: #faf9f5 !important;
+}
+
+.dark #main-content [style*="color:#b0aea5"],
+.dark #main-content [style*="color: #b0aea5"] {
+  color: #8a8880 !important;
+}
+
+/* Dark: map placeholder */
+.dark #main-content [style*="linear-gradient(135deg, #e8e6dc"] {
+  background: var(--brand-map-bg, linear-gradient(135deg, #2a2a28, #222220)) !important;
+}
+
+/* Dark: weather bg */
+.dark #main-content [style*="background:#faf9f5"],
+.dark #main-content [style*="background: #faf9f5"] {
+  background: #1a1a19 !important;
+}
+
+/* Dark: frosted cards */
+.dark #main-content [style*="rgba(255,255,255,0.7)"] {
+  background: var(--brand-frosted, rgba(30,30,28,0.6)) !important;
+}
+
+/* Dark: subtle bg items (trending cards) */
+.dark #main-content [style*="rgba(232,230,220,0.5)"] {
+  background: var(--brand-bg-subtle, rgba(255,255,255,0.05)) !important;
+}
+
+/* Dark: borders */
+.dark #main-content [style*="rgba(232,230,220,0.8)"] {
+  border-color: var(--brand-border, rgba(255,255,255,0.08)) !important;
+}
+
+.dark #main-content [style*="rgba(232,230,220,0.5)"] {
+  border-color: var(--brand-border-subtle, rgba(255,255,255,0.05)) !important;
+}
+
+/* Dark: section borders */
+.dark #main-content section[style*="border:1px solid #e8e6dc"] {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Dark: progress bar bg */
+.dark #main-content [style*="background:#e8e6dc"],
+.dark #main-content [style*="height:3px"][style*="border-radius"] {
+  background: var(--brand-progress-bg, rgba(255,255,255,0.08)) !important;
+}
+
+/* Dark: scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--brand-scroll-thumb, rgba(255,255,255,0.1));
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-scroll-thumb-hover, rgba(255,255,255,0.2));
+}
+
+/* Dark: welcome section gradient */
+.dark #main-content section[style*="linear-gradient(160deg"] {
+  background: linear-gradient(160deg, #1a1a19 0%, #1f1f1d 40%, #252523 100%) !important;
+}
+
+/* Dark: stat card "today" calendar cell */
+.dark #main-content span[style*="background:#d97757"] {
+  color: #faf9f5 !important;
+}
+
+/* Dark: news tag bg */
+.dark #main-content [style*="rgba(217,119,87,0.1)"] {
+  background: rgba(217,119,87,0.15) !important;
+}
+
+/* Dark: location label */
+.dark #main-content span[style*="background:#faf9f5"] {
+  background: #2a2a28 !important;
+}
+
+/* Dark: inner section dividers */
+.dark #main-content [style*="border-bottom:1px solid rgba(232,230,220"] {
+  border-bottom-color: rgba(255,255,255,0.06) !important;
+}
+.dark #main-content [style*="border-top:1px solid rgba(232,230,220"] {
+  border-top-color: rgba(255,255,255,0.06) !important;
+}</style>
+</body>
+</html>
