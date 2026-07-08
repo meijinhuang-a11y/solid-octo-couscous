@@ -20,9 +20,10 @@ const pageTitleMap: Record<string, string> = {
 interface TopBarProps {
   onMenuClick: () => void;
   showMenuButton?: boolean;
+  onLockClick?: () => void;
 }
 
-export default function TopBar({ onMenuClick, showMenuButton = false }: TopBarProps) {
+export default function TopBar({ onMenuClick, showMenuButton = false, onLockClick }: TopBarProps) {
   const { toggleTheme, isDark } = useThemeStore();
   const location = useLocation();
   const [currentDate, setCurrentDate] = useState('');
@@ -98,6 +99,32 @@ export default function TopBar({ onMenuClick, showMenuButton = false }: TopBarPr
         >
           {currentDate}
         </time>
+        {onLockClick && (
+          <button
+            type="button"
+            onClick={onLockClick}
+            className="inline-flex items-center justify-center w-8 h-8 border border-border rounded-full transition-colors hover:bg-secondary"
+            style={{
+              backgroundColor: 'color-mix(in srgb, var(--background) 80%, transparent)',
+            }}
+            aria-label="一键锁屏"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </button>
+        )}
         <button
           type="button"
           onClick={toggleTheme}

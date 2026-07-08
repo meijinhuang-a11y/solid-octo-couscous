@@ -1,11 +1,12 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { wgs84ToGcj02 } from '@/utils/coordTransform';
 
 const DEFAULT_LNG = 116.4551;
 const DEFAULT_LAT = 39.9269;
-const DEFAULT_ZOOM = 13;
+const DEFAULT_ZOOM = 14;
 
 export default function WeatherWidget() {
   const [location, setLocation] = useState('北京市 · 朝阳区');
@@ -43,17 +44,21 @@ export default function WeatherWidget() {
     return result;
   }, []);
 
+  const [gcjLng, gcjLat] = useMemo(() => {
+    return wgs84ToGcj02(lng, lat);
+  }, [lng, lat]);
+
   const customIcon = useMemo(() => {
     return L.divIcon({
       className: 'custom-marker',
       html: `<div style="
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
         background: #FF6B35;
         border: 3px solid white;
         border-radius: 50% 50% 50% 0;
         transform: rotate(-45deg);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.3);
         position: relative;
       ">
         <div style="
@@ -61,55 +66,69 @@ export default function WeatherWidget() {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%) rotate(45deg);
-          width: 8px;
-          height: 8px;
+          width: 9px;
+          height: 9px;
           background: white;
           border-radius: 50%;
         "></div>
       </div>`,
-      iconSize: [28, 28],
-      iconAnchor: [14, 28],
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
     });
   }, []);
 
-  useEffect(() => {
+  const initMap = useCallback(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
     const map = L.map(mapRef.current, {
-      center: [lat, lng],
+      center: [gcjLat, gcjLng],
       zoom: zoom,
       zoomControl: false,
       attributionControl: false,
+      scrollWheelZoom: false,
+      dragging: false,
+      doubleClickZoom: false,
+      boxZoom: false,
+      keyboard: false,
+      tap: false,
+      touchZoom: false,
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 19,
+    L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
+      subdomains: ['1', '2', '3', '4'],
+      maxZoom: 18,
     }).addTo(map);
 
-    const marker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
+    const marker = L.marker([gcjLat, gcjLng], { icon: customIcon, interactive: false }).addTo(map);
 
     mapInstanceRef.current = map;
     markerRef.current = marker;
 
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+  }, [gcjLat, gcjLng, zoom, customIcon]);
+
+  useEffect(() => {
+    initMap();
     return () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [initMap]);
 
   useEffect(() => {
     if (mapInstanceRef.current && markerRef.current) {
-      mapInstanceRef.current.setView([lat, lng], zoom);
-      markerRef.current.setLatLng([lat, lng]);
+      mapInstanceRef.current.setView([gcjLat, gcjLng], zoom);
+      markerRef.current.setLatLng([gcjLat, gcjLng]);
     }
-  }, [lat, lng, zoom]);
+  }, [gcjLat, gcjLng, zoom]);
 
   const handleLocationClick = () => {
-    const mapUrl = `https://uri.amap.com/marker?position=${lng},${lat}&name=${encodeURIComponent(location)}`;
+    const [gcjLng, gcjLat] = wgs84ToGcj02(lng, lat);
+    const mapUrl = `https://uri.amap.com/marker?position=${gcjLng},${gcjLat}&name=${encodeURIComponent(location)}`;
     window.open(mapUrl, '_blank');
   };
 
@@ -142,7 +161,7 @@ export default function WeatherWidget() {
             setLat(DEFAULT_LAT);
             setTimeout(() => setIsLoading(false), 1000);
           },
-          { timeout: 10000 }
+          { timeout: 10000, enableHighAccuracy: true }
         );
       } else {
         setTimeout(() => setIsLoading(false), 1000);
