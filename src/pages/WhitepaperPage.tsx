@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 const MotionButton = motion.button;
 import { useWhitepaperStore } from '@/store/whitepaper';
@@ -5,6 +6,7 @@ import type { WhitepaperItem } from '@/types';
 
 export default function WhitepaperPage() {
   const { getFilteredWhitepapers, categories, selectedCategory, setSelectedCategory, searchQuery, setSearchQuery, refresh, lastRefresh, isRefreshing } = useWhitepaperStore();
+  const [selectedItem, setSelectedItem] = useState<WhitepaperItem | null>(null);
 
   const filteredWhitepapers = getFilteredWhitepapers();
 
@@ -26,6 +28,10 @@ export default function WhitepaperPage() {
 
   const handleOriginal = (url: string) => {
     window.open(url, '_blank');
+  };
+
+  const handleViewDetail = (item: WhitepaperItem) => {
+    setSelectedItem(item);
   };
 
   return (
@@ -276,6 +282,29 @@ export default function WhitepaperPage() {
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                   <MotionButton
                     type="button"
+                    onClick={() => handleViewDetail(item)}
+                    className="px-3 py-2 rounded-lg flex items-center justify-center gap-1 transition-all min-h-11 w-full sm:w-auto"
+                    style={{
+                      background: 'var(--cream-bg)',
+                      color: 'var(--cream-dark)',
+                      border: '1px solid var(--cream-border)',
+                      fontFamily: "'Poppins',var(--font-sans)",
+                      fontSize: '0.75rem',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M15 3h6v6" />
+                      <path d="M9 21H3v-6" />
+                      <path d="M21 3l-7 7" />
+                      <path d="M3 21l7-7" />
+                    </svg>
+                    查看详情
+                  </MotionButton>
+                  <MotionButton
+                    type="button"
                     onClick={() => handleOriginal(item.originalUrl)}
                     className="px-3 py-2 rounded-lg flex items-center justify-center gap-1 transition-all min-h-11 w-full sm:w-auto"
                     style={{
@@ -295,7 +324,7 @@ export default function WhitepaperPage() {
                       <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                       <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                     </svg>
-                    原文
+                    原文链接
                   </MotionButton>
                   <MotionButton
                     type="button"
@@ -354,6 +383,231 @@ export default function WhitepaperPage() {
           </p>
         </motion.div>
       )}
+
+      <AnimatePresence>
+        {selectedItem && (
+          <>
+            <motion.div
+              className="fixed inset-0 z-40"
+              style={{ background: 'rgba(0,0,0,0.4)' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedItem(null)}
+            />
+            <motion.div
+              className="fixed z-50 w-[95vw] sm:w-[600px] max-h-[85vh] rounded-2xl p-4 sm:p-6 flex flex-col"
+              style={{
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                background: 'var(--cream-bg)',
+                border: '1px solid var(--cream-border)',
+                boxShadow: 'var(--shadow-2xl)',
+              }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <span
+                  className="px-2.5 py-0.5 rounded-full"
+                  style={{
+                    fontFamily: "'Poppins',var(--font-sans)",
+                    fontSize: '0.75rem',
+                    fontWeight: 500,
+                    color: getCategoryColor(selectedItem.category),
+                    background: `color-mix(in srgb, ${getCategoryColor(selectedItem.category)} 15%, transparent)`,
+                  }}
+                >
+                  {categories.find((c) => c.value === selectedItem.category)?.label || selectedItem.category}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedItem(null)}
+                  className="w-8 h-8 rounded-md flex items-center justify-center"
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--cream-text-muted)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+
+              <h2
+                className="m-0 mb-2"
+                style={{
+                  fontFamily: "'Poppins',var(--font-sans)",
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  color: 'var(--cream-dark)',
+                  lineHeight: 1.4,
+                }}
+              >
+                {selectedItem.title}
+              </h2>
+
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <span
+                  style={{
+                    fontFamily: "'Poppins',var(--font-sans)",
+                    fontSize: '0.75rem',
+                    color: 'var(--cream-text-muted)',
+                  }}
+                >
+                  来源：{selectedItem.source}
+                </span>
+                <span
+                  style={{
+                    fontFamily: "'Lora',var(--font-sans)",
+                    fontSize: '0.75rem',
+                    color: 'var(--cream-text-muted)',
+                  }}
+                >
+                  {selectedItem.publishDate}
+                </span>
+              </div>
+
+              <div className="flex-1 overflow-y-auto">
+                <div className="mb-6">
+                  <h3
+                    className="m-0 mb-2"
+                    style={{
+                      fontFamily: "'Poppins',var(--font-sans)",
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: 'var(--soft-blue)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    概述
+                  </h3>
+                  <p
+                    className="m-0"
+                    style={{
+                      fontFamily: "'Lora',var(--font-sans)",
+                      fontSize: '0.8125rem',
+                      color: 'var(--cream-dark)',
+                      lineHeight: 1.8,
+                      background: 'color-mix(in srgb, var(--soft-blue) 5%, transparent)',
+                      padding: '1rem',
+                      borderRadius: '0.75rem',
+                    }}
+                  >
+                    {selectedItem.description}
+                  </p>
+                </div>
+
+                <div className="mb-6">
+                  <h3
+                    className="m-0 mb-2"
+                    style={{
+                      fontFamily: "'Poppins',var(--font-sans)",
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: 'var(--moss-green)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    内容要点
+                  </h3>
+                  <div className="space-y-3">
+                    {selectedItem.tags.map((tag, i) => (
+                      <div
+                        key={i}
+                        className="flex items-start gap-2 p-3 rounded-lg"
+                        style={{
+                          background: 'var(--cream-bg)',
+                          border: '1px solid var(--cream-border)',
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: "'Poppins',var(--font-sans)",
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            color: 'var(--soft-blue)',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {i + 1}.
+                        </span>
+                        <span
+                          style={{
+                            fontFamily: "'Lora',var(--font-sans)",
+                            fontSize: '0.8125rem',
+                            color: 'var(--cream-dark)',
+                            lineHeight: 1.6,
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-4 mt-4" style={{ borderTop: '1px solid var(--cream-border)' }}>
+                <button
+                  type="button"
+                  onClick={() => handleOriginal(selectedItem.originalUrl)}
+                  className="px-4 py-2 rounded-lg flex items-center justify-center gap-1 transition-all min-h-11 w-full sm:w-auto"
+                  style={{
+                    background: 'color-mix(in srgb, var(--soft-blue) 10%, transparent)',
+                    color: 'var(--soft-blue)',
+                    border: '1px solid var(--soft-blue)',
+                    fontFamily: "'Poppins',var(--font-sans)",
+                    fontSize: '0.75rem',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                  查看原文链接
+                </button>
+                {selectedItem.canDownload && selectedItem.downloadUrl && (
+                  <button
+                    type="button"
+                    onClick={() => handleDownload(selectedItem)}
+                    className="px-4 py-2 rounded-lg flex items-center justify-center gap-1 transition-all min-h-11 w-full sm:w-auto"
+                    style={{
+                      background: 'var(--moss-green)',
+                      color: '#fff',
+                      border: '1px solid var(--moss-green)',
+                      fontFamily: "'Poppins',var(--font-sans)",
+                      fontSize: '0.75rem',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    下载PDF
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

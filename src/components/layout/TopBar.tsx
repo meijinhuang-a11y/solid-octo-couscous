@@ -46,17 +46,17 @@ export default function TopBar({ onMenuClick, showMenuButton = false }: TopBarPr
     <header
       className="sticky top-0 flex items-center justify-between shrink-0 z-30 backdrop-blur-glass"
       style={{
-        height: '56px',
-        padding: showMenuButton ? '0 12px 0 8px' : '0 24px',
+        height: '44px',
+        padding: showMenuButton ? '0 8px' : '0 16px',
         borderBottom: '1px solid var(--border)',
       }}
     >
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-2 min-w-0">
         {showMenuButton && (
           <button
             type="button"
             onClick={onMenuClick}
-            className="inline-flex items-center justify-center w-9 h-9 rounded-lg transition-colors shrink-0"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors shrink-0"
             style={{
               background: 'transparent',
               border: 'none',
@@ -65,7 +65,7 @@ export default function TopBar({ onMenuClick, showMenuButton = false }: TopBarPr
             }}
             aria-label="打开菜单"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="6" x2="21" y2="6" />
               <line x1="3" y1="12" x2="21" y2="12" />
               <line x1="3" y1="18" x2="21" y2="18" />
@@ -77,7 +77,7 @@ export default function TopBar({ onMenuClick, showMenuButton = false }: TopBarPr
           className="truncate font-semibold"
           style={{
             fontFamily: 'var(--font-sans)',
-            fontSize: showMenuButton ? '1rem' : '1.125rem',
+            fontSize: showMenuButton ? '0.875rem' : '0.9375rem',
             color: 'var(--foreground)',
           }}
         >
@@ -85,12 +85,12 @@ export default function TopBar({ onMenuClick, showMenuButton = false }: TopBarPr
         </h1>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+      <div className="flex items-center gap-2 shrink-0">
         <time
           className="whitespace-nowrap hidden sm:block"
           style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: '0.8125rem',
+            fontSize: '0.75rem',
             fontWeight: 500,
             letterSpacing: '0.01em',
             color: 'var(--muted-foreground)',
@@ -101,7 +101,7 @@ export default function TopBar({ onMenuClick, showMenuButton = false }: TopBarPr
         <button
           type="button"
           onClick={toggleTheme}
-          className="inline-flex items-center justify-center w-9 h-9 border border-border rounded-full transition-colors hover:bg-secondary"
+          className="inline-flex items-center justify-center w-8 h-8 border border-border rounded-full transition-colors hover:bg-secondary"
           style={{
             backgroundColor: 'color-mix(in srgb, var(--background) 80%, transparent)',
           }}
@@ -110,8 +110,8 @@ export default function TopBar({ onMenuClick, showMenuButton = false }: TopBarPr
           {!isDark ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -132,8 +132,8 @@ export default function TopBar({ onMenuClick, showMenuButton = false }: TopBarPr
           ) : (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -148,9 +148,9 @@ export default function TopBar({ onMenuClick, showMenuButton = false }: TopBarPr
         <div
           className="flex items-center justify-center shrink-0"
           style={{
-            width: '34px',
-            height: '34px',
-            borderRadius: '12px',
+            width: '28px',
+            height: '28px',
+            borderRadius: '10px',
             backgroundColor: 'color-mix(in srgb, var(--primary) 85%, transparent)',
             border: '1px solid color-mix(in srgb, var(--primary) 30%, transparent)',
             color: 'var(--primary-foreground)',
@@ -159,7 +159,7 @@ export default function TopBar({ onMenuClick, showMenuButton = false }: TopBarPr
           <span
             style={{
               fontFamily: 'var(--font-sans)',
-              fontSize: '0.75rem',
+              fontSize: '0.6875rem',
               fontWeight: 600,
             }}
           >

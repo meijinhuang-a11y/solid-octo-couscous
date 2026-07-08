@@ -2,18 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 4K适配：大屏幕缩小基础字号 */
+/* 基础字号：参考飞书风格，整体缩小 */
 html {
-  font-size: 16px;
+  font-size: 14px;
+}
+@media (min-width: 1440px) {
+  html { font-size: 14.5px; }
 }
 @media (min-width: 1920px) {
-  html { font-size: 15px; }
-}
-@media (min-width: 2560px) {
   html { font-size: 13px; }
 }
-@media (min-width: 3840px) {
+@media (min-width: 2560px) {
   html { font-size: 11px; }
+}
+@media (min-width: 3840px) {
+  html { font-size: 9px; }
 }
 
 :root {
@@ -123,21 +126,21 @@ html {
   --font-mono: 'JetBrains Mono', monospace;
   --tracking-normal: 0em;
 
-  /* Radius */
-  --radius: 1.2rem;
+  /* Radius - 飞书风格：更紧凑的圆角 */
+  --radius: 0.75rem;
 
-  /* Shadows */
-  --shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.04);
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px -1px rgba(0, 0, 0, 0.05);
-  --shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 8px 24px -8px rgba(0, 0, 0, 0.08), 0 4px 8px -4px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 16px 40px -10px rgba(0, 0, 0, 0.10), 0 8px 16px -8px rgba(0, 0, 0, 0.06);
-  --shadow-2xl: 0 24px 64px -12px rgba(0, 0, 0, 0.12);
+  /* Shadows - 飞书风格：更柔和的阴影 */
+  --shadow-2xs: 0 1px 1px rgba(0, 0, 0, 0.04);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 8px 20px rgba(0, 0, 0, 0.10);
+  --shadow-2xl: 0 12px 32px rgba(0, 0, 0, 0.12);
 
-  /* Spacing */
-  --spacing: 0.24rem;
+  /* Spacing - 更紧凑的间距 */
+  --spacing: 0.2rem;
 
   /* Custom colors */
   --warm-orange: #d97757;

@@ -64,7 +64,7 @@ export default function Layout() {
       )}
 
       {/* 主内容区域 */}
-      <div className={isMobile ? 'ml-0' : 'ml-60'}>
+      <div className={isMobile ? 'ml-0' : 'ml-52'}>
         <TopBar onMenuClick={() => setSidebarOpen(true)} showMenuButton={isMobile} />
         <main className="min-h-screen">
           <Outlet />
