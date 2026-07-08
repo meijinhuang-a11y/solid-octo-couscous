@@ -1,4 +1,4 @@
-import{c as P,r as v,j as e,m as u,A as F}from"./index-CY5k0Z2M.js";import{M as j,a as S,A as T,P as w,E as L}from"./platform-pyuNdXwG.js";const W=[{id:"1",original:"我们的蓝牙耳机音质很好，续航也不错，价格还很实惠。",optimized:`🎧 戴上它，世界与我无关
+import{c as P,r as v,j as e,m as u,A as F}from"./index-DDeqev6s.js";import{M as j,a as S,A as T,P as w,E as L}from"./platform-pyuNdXwG.js";const W=[{id:"1",original:"我们的蓝牙耳机音质很好，续航也不错，价格还很实惠。",optimized:`🎧 戴上它，世界与我无关
 
 不是所有耳机都敢叫「性价比之王」
 40dB 深度降噪，地铁里也能沉浸式听感

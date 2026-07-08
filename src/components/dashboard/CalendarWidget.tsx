@@ -33,6 +33,25 @@ export default function CalendarWidget() {
 
   const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
+  const remindersByDay = useMemo(() => {
+    const reminders: Record<number, number> = {};
+    const d = new Date();
+    const currentMonth = d.getMonth();
+    const currentYear = d.getFullYear();
+    if (month === currentMonth && year === currentYear) {
+      const sampleDays = [5, 12, 18, 25];
+      sampleDays.forEach((day, i) => {
+        if (day <= days.length) {
+          reminders[day] = i + 1;
+        }
+      });
+    } else {
+      reminders[10] = 2;
+      reminders[20] = 1;
+    }
+    return reminders;
+  }, [month, year, days]);
+
   const prevMonth = () => {
     setDirection(-1);
     setCurrentDate(new Date(year, month - 1, 1));
@@ -118,7 +137,7 @@ export default function CalendarWidget() {
         </motion.button>
       </div>
 
-      <div className="grid grid-cols-7 text-center gap-1 mb-2">
+      <div className="grid grid-cols-7 text-center gap-1 mb-2 place-items-center">
         {weekDays.map((day, index) => (
           <motion.span
             key={day}
@@ -127,6 +146,7 @@ export default function CalendarWidget() {
               fontSize: '0.75rem',
               color: 'var(--cream-text-muted)',
               padding: '6px 0',
+              width: '38px',
             }}
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
@@ -140,7 +160,7 @@ export default function CalendarWidget() {
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={`${year}-${month}`}
-          className="grid grid-cols-7 text-center gap-1"
+          className="grid grid-cols-7 text-center gap-1 place-items-center"
           custom={direction}
           variants={slideVariants}
           initial="enter"
@@ -149,14 +169,15 @@ export default function CalendarWidget() {
           transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
         >
           {prevMonthDays.map((_, index) => (
-            <span key={`empty-${index}`} />
+            <span key={`empty-${index}`} style={{ width: '38px', height: '38px' }} />
           ))}
           {days.map((day, index) => {
             const today = isToday(day);
+            const reminderCount = remindersByDay[day];
             return (
               <motion.span
                 key={day}
-                className="inline-flex items-center justify-center mx-auto relative"
+                className="inline-flex items-center justify-center relative"
                 style={{
                   width: '38px',
                   height: '38px',
@@ -182,6 +203,31 @@ export default function CalendarWidget() {
                   />
                 )}
                 {day}
+                {reminderCount && reminderCount > 0 && (
+                  <span
+                    className="absolute"
+                    style={{
+                      top: '2px',
+                      right: '2px',
+                      minWidth: '14px',
+                      height: '14px',
+                      padding: '0 3px',
+                      borderRadius: '7px',
+                      background: 'var(--soft-blue)',
+                      color: 'white',
+                      fontSize: '0.625rem',
+                      fontWeight: 600,
+                      fontFamily: "'Poppins',var(--font-sans)",
+                      lineHeight: '14px',
+                      textAlign: 'center',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {reminderCount > 9 ? '9+' : reminderCount}
+                  </span>
+                )}
               </motion.span>
             );
           })}

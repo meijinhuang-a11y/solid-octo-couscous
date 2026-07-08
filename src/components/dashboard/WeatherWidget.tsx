@@ -6,7 +6,7 @@ import { wgs84ToGcj02 } from '@/utils/coordTransform';
 
 const DEFAULT_LNG = 116.4551;
 const DEFAULT_LAT = 39.9269;
-const DEFAULT_ZOOM = 14;
+const DEFAULT_ZOOM = 12;
 
 export default function WeatherWidget() {
   const [location, setLocation] = useState('北京市 · 朝阳区');
@@ -357,15 +357,15 @@ export default function WeatherWidget() {
       </motion.div>
 
       <div
-        className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 hide-scrollbar"
+        className="grid gap-2 -mx-4 px-4"
+        style={{ gridTemplateColumns: 'repeat(7, minmax(0, 1fr))' }}
       >
         {weatherData.map((weather, index) => (
           <motion.div
             key={index}
-            className="text-center rounded-xl flex-shrink-0"
+            className="text-center rounded-xl"
             style={{
-              padding: '10px 12px',
-              minWidth: '56px',
+              padding: '10px 4px',
               background: 'var(--surface)',
               border: '1px solid rgba(232,230,220,0.8)',
             }}
