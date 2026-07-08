@@ -5,6 +5,19 @@ import { useNewsStore } from '@/store/news';
 import { useFileStore } from '@/store/file';
 import { useCountUp } from '@/hooks/useCountUp';
 
+const quotes = [
+  { text: '成功不是将来才有的，而是从决定去做的那一刻起，持续累积而成。', author: '俞敏洪' },
+  { text: '生活不是等待风暴过去，而是学会在雨中翩翩起舞。', author: '维维安·格林' },
+  { text: '只有那些敢于相信自己内心深处比现实更强大的人，才能改变世界。', author: '乔布斯' },
+  { text: '路漫漫其修远兮，吾将上下而求索。', author: '屈原' },
+  { text: '伟大的成就并非来自一时的冲动，而是来自日复一日的坚持。', author: '稻盛和夫' },
+  { text: 'The future belongs to those who believe in the beauty of their dreams.', author: 'Eleanor Roosevelt' },
+  { text: '天才是百分之一的灵感加百分之九十九的汗水。', author: '爱迪生' },
+  { text: 'Don\'t watch the clock; do what it does. Keep going.', author: 'Sam Levenson' },
+  { text: '人生最大的挑战是发现自己是谁，而第二大的挑战是对所发现的感到满意。', author: '罗杰·塞尔夫' },
+  { text: '有志者，事竟成，破釜沉舟，百二秦关终属楚。', author: '蒲松龄' },
+];
+
 export default function WelcomeCard() {
   const tasks = useTaskStore((state) => state.tasks);
   const news = useNewsStore((state) => state.news);
@@ -58,6 +71,11 @@ export default function WelcomeCard() {
   const weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
   const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${weekDays[now.getDay()]}`;
 
+  const dailyQuote = useMemo(() => {
+    const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
+    return quotes[dayOfYear % quotes.length];
+  }, [now]);
+
   const stats = [
     { label: '今日任务', value: totalCountAnim, color: 'var(--warm-orange)', rawValue: totalCount },
     { label: '已完成', value: completedCountAnim, color: 'var(--moss-green)', rawValue: completedCount },
@@ -80,7 +98,7 @@ export default function WelcomeCard() {
     >
       <div className="relative z-10">
         <motion.div
-          className="flex items-center gap-2 mb-1.5"
+          className="flex items-center gap-2 mb-2"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1, duration: 0.3 }}
@@ -88,7 +106,7 @@ export default function WelcomeCard() {
           <span
             style={{
               fontFamily: "'Poppins','SF Pro Display',var(--font-sans)",
-              fontSize: '0.75rem',
+              fontSize: '0.8125rem',
               fontWeight: 600,
               color: 'var(--cream-text-muted)',
               textTransform: 'uppercase',
@@ -100,13 +118,13 @@ export default function WelcomeCard() {
         </motion.div>
 
         <motion.h2
-          className="m-0 mb-1"
+          className="m-0 mb-2"
           style={{
             fontFamily: "'Poppins','SF Pro Display',var(--font-sans)",
-            fontSize: '1.125rem',
+            fontSize: '1.5rem',
             fontWeight: 700,
             color: 'var(--cream-dark)',
-            lineHeight: 1.25,
+            lineHeight: 1.2,
             letterSpacing: '-0.04em',
           }}
           initial={{ opacity: 0, y: 10 }}
@@ -117,10 +135,10 @@ export default function WelcomeCard() {
         </motion.h2>
 
         <motion.p
-          className="m-0"
+          className="m-0 mb-3"
           style={{
             fontFamily: "'Lora','Georgia',var(--font-sans)",
-            fontSize: '0.8125rem',
+            fontSize: '0.9375rem',
             color: 'var(--cream-text-muted)',
             lineHeight: 1.5,
             whiteSpace: 'nowrap',
@@ -135,10 +153,51 @@ export default function WelcomeCard() {
         </motion.p>
 
         <motion.div
-          className="flex items-center gap-2 mt-3"
+          className="p-3 rounded-xl mb-4"
+          style={{
+            background: 'var(--surface)',
+            border: '1px solid rgba(232,230,220,0.6)',
+          }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.3 }}
+        >
+          <motion.p
+            className="m-0 mb-1.5"
+            style={{
+              fontFamily: "'Lora','Georgia',var(--font-sans)",
+              fontSize: '0.875rem',
+              color: 'var(--cream-dark)',
+              fontStyle: 'italic',
+              lineHeight: 1.5,
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+          >
+            "{dailyQuote.text}"
+          </motion.p>
+          <motion.p
+            className="m-0 text-right"
+            style={{
+              fontFamily: "'Poppins',var(--font-sans)",
+              fontSize: '0.75rem',
+              fontWeight: 500,
+              color: 'var(--cream-text-muted)',
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.35, duration: 0.4 }}
+          >
+            — {dailyQuote.author}
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          className="flex items-center gap-2"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.3 }}
         >
           <div
             className="flex-1 rounded-full relative"
@@ -151,7 +210,7 @@ export default function WelcomeCard() {
               }}
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
-              transition={{ delay: 0.35, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{ delay: 0.4, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
             />
           </div>
           <span
@@ -182,7 +241,7 @@ export default function WelcomeCard() {
             }}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 + index * 0.05, duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ delay: 0.35 + index * 0.05, duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
             whileTap={{ scale: 0.97 }}
           >
             <motion.div
@@ -195,13 +254,13 @@ export default function WelcomeCard() {
               }}
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
-              transition={{ delay: 0.35 + index * 0.05, duration: 0.3 }}
+              transition={{ delay: 0.4 + index * 0.05, duration: 0.3 }}
             />
             <p
               className="m-0"
               style={{
                 fontFamily: "'Poppins',var(--font-sans)",
-                fontSize: '1rem',
+                fontSize: '1.125rem',
                 fontWeight: 700,
                 color: 'var(--cream-dark)',
                 lineHeight: 1,

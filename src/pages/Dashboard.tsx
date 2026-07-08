@@ -11,28 +11,32 @@ import TrendingProductSummary from '@/components/dashboard/TrendingProductSummar
 export default function Dashboard() {
   return (
     <div className="p-4 sm:p-6">
-      {/* Row 1: Welcome + Calendar + Weather — 移动端单列，桌面端三列 */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+      {/* Row 1: Welcome + Calendar + Weather */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         <WelcomeCard />
         <CalendarWidget />
         <WeatherWidget />
       </div>
 
       {/* Row 2: Quick Actions */}
-      <div className="mb-5">
+      <div className="mb-4">
         <QuickActions />
       </div>
 
-      {/* Row 3-7: 今日任务、最新动态、行业日报、爆款视频、爆款产品 — 网格布局 */}
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-    <div className="lg:col-span-2">
-      <TodayTasks />
-    </div>
-    <RecentActivity />
-    <IndustryReport />
-    <TrendingVideoSummary />
-    <TrendingProductSummary />
-  </div>
+      {/* Row 3-7: 今日任务、最新动态、行业日报、爆款视频、爆款产品 — 更紧凑的网格布局 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+          <TodayTasks />
+        </div>
+        <RecentActivity />
+        <IndustryReport />
+        <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <TrendingVideoSummary />
+            <TrendingProductSummary />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

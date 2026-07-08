@@ -1,22 +1,39 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-
-const weatherData = [
-  { day: '今天', icon: '☀️', high: 35, low: 25 },
-  { day: '周一', icon: '⛅', high: 33, low: 24 },
-  { day: '周二', icon: '🌤️', high: 34, low: 25 },
-  { day: '周三', icon: '🌧️', high: 29, low: 23 },
-  { day: '周四', icon: '⛈️', high: 27, low: 22 },
-  { day: '周五', icon: '☀️', high: 32, low: 24 },
-  { day: '周六', icon: '🌤️', high: 33, low: 24 },
-];
 
 export default function WeatherWidget() {
   const [location, setLocation] = useState('北京市 · 朝阳区');
   const [isLoading, setIsLoading] = useState(false);
 
+  const weatherData = useMemo(() => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    
+    const baseWeather = [
+      { icon: '☀️', high: 35, low: 25 },
+      { icon: '⛅', high: 33, low: 24 },
+      { icon: '🌤️', high: 34, low: 25 },
+      { icon: '🌧️', high: 29, low: 23 },
+      { icon: '⛈️', high: 27, low: 22 },
+      { icon: '☀️', high: 32, low: 24 },
+      { icon: '🌤️', high: 33, low: 24 },
+    ];
+
+    const result = [];
+    for (let i = 0; i < 7; i++) {
+      const idx = (dayOfWeek + i) % 7;
+      result.push({
+        day: i === 0 ? '今天' : weekDays[idx],
+        ...baseWeather[i],
+      });
+    }
+    return result;
+  }, []);
+
   const handleLocationClick = () => {
-    window.open(`https://maps.google.com/?q=${encodeURIComponent(location)}`, '_blank');
+    const mapUrl = `https://uri.amap.com/marker?position=${encodeURIComponent(location)}&name=${encodeURIComponent(location)}`;
+    window.open(mapUrl, '_blank');
   };
 
   const handleRefreshLocation = async () => {
@@ -26,12 +43,15 @@ export default function WeatherWidget() {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const { latitude, longitude } = position.coords;
+            const mapUrl = `https://uri.amap.com/marker?position=${longitude.toFixed(6)},${latitude.toFixed(6)}&name=当前位置`;
+            window.open(mapUrl, '_blank');
             setLocation(`纬度: ${latitude.toFixed(4)} · 经度: ${longitude.toFixed(4)}`);
           },
           (error) => {
             console.error('获取位置失败:', error);
             setLocation('定位失败，请手动选择');
-          }
+          },
+          { timeout: 10000 }
         );
       } else {
         setLocation('您的浏览器不支持定位');
@@ -39,7 +59,7 @@ export default function WeatherWidget() {
     } catch (error) {
       setLocation('定位失败');
     } finally {
-      setIsLoading(false);
+      setTimeout(() => setIsLoading(false), 2000);
     }
   };
 
