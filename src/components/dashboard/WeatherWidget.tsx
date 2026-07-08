@@ -1,17 +1,65 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
-const AMAP_KEY = '7d2a942d6e8c4a8e9d8c7e6f5a4b3c2d';
 const DEFAULT_LNG = 116.4551;
 const DEFAULT_LAT = 39.9269;
+const DEFAULT_ZOOM = 13;
+
+function createCustomIcon() {
+  return L.divIcon({
+    className: 'custom-marker',
+    html: `<div style="
+      width: 28px;
+      height: 28px;
+      background: #FF6B35;
+      border: 3px solid white;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      position: relative;
+    ">
+      <div style="
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(45deg);
+        width: 8px;
+        height: 8px;
+        background: white;
+        border-radius: 50%;
+      "></div>
+    </div>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+  });
+}
+
+function MapController({ zoom }: { zoom: number }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setZoom(zoom);
+  }, [zoom, map]);
+  return null;
+}
+
+function ChangeView({ center, zoom }: { center: [number, number]; zoom: number }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, zoom);
+  }, [center, zoom, map]);
+  return null;
+}
 
 export default function WeatherWidget() {
   const [location, setLocation] = useState('北京市 · 朝阳区');
   const [lng, setLng] = useState(DEFAULT_LNG);
   const [lat, setLat] = useState(DEFAULT_LAT);
-  const [zoom, setZoom] = useState(13);
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [isLoading, setIsLoading] = useState(false);
-  const [mapLoadError, setMapLoadError] = useState(false);
+  const [mapKey, setMapKey] = useState(0);
 
   const weatherData = useMemo(() => {
     const now = new Date();
@@ -39,10 +87,6 @@ export default function WeatherWidget() {
     return result;
   }, []);
 
-  const mapImageUrl = useMemo(() => {
-    return `https://restapi.amap.com/v3/staticmap?location=${lng},${lat}&zoom=${zoom}&size=800*350&markers=large,0xFF6B35,A:${lng},${lat}&key=${AMAP_KEY}`;
-  }, [lng, lat, zoom]);
-
   const handleLocationClick = () => {
     const mapUrl = `https://uri.amap.com/marker?position=${lng},${lat}&name=${encodeURIComponent(location)}`;
     window.open(mapUrl, '_blank');
@@ -58,9 +102,9 @@ export default function WeatherWidget() {
     setZoom((z) => Math.max(z - 1, 10));
   };
 
-  const handleRefreshLocation = async () => {
+  const handleRefreshLocation = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     setIsLoading(true);
-    setMapLoadError(false);
     try {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -69,18 +113,19 @@ export default function WeatherWidget() {
             setLng(longitude);
             setLat(latitude);
             setLocation(`当前位置`);
+            setMapKey((k) => k + 1);
             setTimeout(() => setIsLoading(false), 1000);
           },
           () => {
             setLocation('北京市 · 朝阳区');
             setLng(DEFAULT_LNG);
             setLat(DEFAULT_LAT);
+            setMapKey((k) => k + 1);
             setTimeout(() => setIsLoading(false), 1000);
           },
           { timeout: 10000 }
         );
       } else {
-        setLocation('北京市 · 朝阳区');
         setTimeout(() => setIsLoading(false), 1000);
       }
     } catch {
@@ -88,9 +133,8 @@ export default function WeatherWidget() {
     }
   };
 
-  const handleMapImageError = () => {
-    setMapLoadError(true);
-  };
+  const customIcon = useMemo(() => createCustomIcon(), []);
+  const center: [number, number] = [lat, lng];
 
   return (
     <motion.section
@@ -181,78 +225,38 @@ export default function WeatherWidget() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.35, duration: 0.3 }}
         onClick={handleLocationClick}
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.99 }}
       >
-        {!mapLoadError ? (
-          <img
-            src={mapImageUrl}
-            alt="地图"
-            className="w-full h-full object-cover"
-            onError={handleMapImageError}
-          />
-        ) : (
-          <div
-            className="absolute inset-0 flex flex-col items-center justify-center"
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 0,
+          }}
+        >
+          <MapContainer
+            key={mapKey}
+            center={center}
+            zoom={zoom}
+            zoomControl={false}
+            attributionControl={false}
             style={{
-              background: `
-                linear-gradient(135deg, 
-                  color-mix(in srgb, var(--soft-blue) 12%, var(--cream-bg)) 0%, 
-                  color-mix(in srgb, var(--moss-green) 8%, var(--cream-bg)) 50%,
-                  color-mix(in srgb, var(--warm-orange) 10%, var(--cream-bg)) 100%
-                )
-              `,
+              width: '100%',
+              height: '100%',
             }}
           >
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: `
-                  linear-gradient(color-mix(in srgb, var(--cream-border) 60%, transparent) 1px, transparent 1px),
-                  linear-gradient(90deg, color-mix(in srgb, var(--cream-border) 60%, transparent) 1px, transparent 1px)
-                `,
-                backgroundSize: '32px 32px',
-                opacity: 0.5,
-              }}
+            <ChangeView center={center} zoom={zoom} />
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             />
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))', position: 'relative', zIndex: 1 }}
-            >
-              <path
-                d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
-                fill="var(--warm-orange)"
-                stroke="white"
-                strokeWidth="1.5"
-              />
-              <circle cx="12" cy="9" r="2.5" fill="white"/>
-            </svg>
-            <span
-              className="relative z-10 mt-2"
-              style={{
-                fontFamily: "'Poppins',var(--font-sans)",
-                fontSize: '0.6875rem',
-                fontWeight: 500,
-                color: 'var(--cream-dark)',
-                background: 'var(--cream-bg)',
-                padding: '3px 8px',
-                borderRadius: '6px',
-                border: '1px solid var(--cream-border)',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
-              }}
-            >
-              点击查看地图
-            </span>
-          </div>
-        )}
+            <Marker position={center} icon={customIcon} />
+          </MapContainer>
+        </div>
 
         <AnimatePresence>
           {isLoading && (
             <motion.div
-              className="absolute inset-0 flex items-center justify-center"
+              className="absolute inset-0 flex items-center justify-center z-20"
               style={{
                 background: 'color-mix(in srgb, var(--cream-bg) 70%, transparent)',
                 backdropFilter: 'blur(2px)',
@@ -315,7 +319,7 @@ export default function WeatherWidget() {
           </motion.button>
           <motion.button
             type="button"
-            onClick={(e) => { e.stopPropagation(); handleRefreshLocation(); }}
+            onClick={handleRefreshLocation}
             className="w-8 h-8 flex items-center justify-center rounded-lg"
             style={{
               background: 'var(--cream-bg)',

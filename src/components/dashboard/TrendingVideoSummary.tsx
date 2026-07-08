@@ -38,6 +38,7 @@ const videos = [
 export default function TrendingVideoSummary() {
   return (
     <motion.section
+      className="flex flex-col h-full"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
@@ -79,16 +80,17 @@ export default function TrendingVideoSummary() {
       </motion.h3>
 
       <motion.div
-        className="rounded-2xl p-4"
+        className="rounded-2xl p-4 flex-1 flex flex-col overflow-hidden"
         style={{
           background: 'var(--cream-bg)',
           border: '1px solid var(--cream-border)',
+          minHeight: 0,
         }}
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.3, duration: 0.3 }}
       >
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 overflow-y-auto pr-1 custom-scrollbar flex-1">
           {videos.map((video, index) => (
             <motion.div
               key={video.id}
