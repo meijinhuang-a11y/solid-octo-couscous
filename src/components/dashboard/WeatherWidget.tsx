@@ -1,9 +1,17 @@
 import { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const AMAP_KEY = '7d2a942d6e8c4a8e9d8c7e6f5a4b3c2d';
+const DEFAULT_LNG = 116.4551;
+const DEFAULT_LAT = 39.9269;
 
 export default function WeatherWidget() {
   const [location, setLocation] = useState('北京市 · 朝阳区');
+  const [lng, setLng] = useState(DEFAULT_LNG);
+  const [lat, setLat] = useState(DEFAULT_LAT);
+  const [zoom, setZoom] = useState(13);
   const [isLoading, setIsLoading] = useState(false);
+  const [mapLoadError, setMapLoadError] = useState(false);
 
   const weatherData = useMemo(() => {
     const now = new Date();
@@ -31,36 +39,57 @@ export default function WeatherWidget() {
     return result;
   }, []);
 
+  const mapImageUrl = useMemo(() => {
+    return `https://restapi.amap.com/v3/staticmap?location=${lng},${lat}&zoom=${zoom}&size=800*350&markers=large,0xFF6B35,A:${lng},${lat}&key=${AMAP_KEY}`;
+  }, [lng, lat, zoom]);
+
   const handleLocationClick = () => {
-    const mapUrl = `https://uri.amap.com/marker?position=${encodeURIComponent(location)}&name=${encodeURIComponent(location)}`;
+    const mapUrl = `https://uri.amap.com/marker?position=${lng},${lat}&name=${encodeURIComponent(location)}`;
     window.open(mapUrl, '_blank');
+  };
+
+  const handleZoomIn = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setZoom((z) => Math.min(z + 1, 18));
+  };
+
+  const handleZoomOut = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setZoom((z) => Math.max(z - 1, 10));
   };
 
   const handleRefreshLocation = async () => {
     setIsLoading(true);
+    setMapLoadError(false);
     try {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const { latitude, longitude } = position.coords;
-            const mapUrl = `https://uri.amap.com/marker?position=${longitude.toFixed(6)},${latitude.toFixed(6)}&name=当前位置`;
-            window.open(mapUrl, '_blank');
-            setLocation(`纬度: ${latitude.toFixed(4)} · 经度: ${longitude.toFixed(4)}`);
+            setLng(longitude);
+            setLat(latitude);
+            setLocation(`当前位置`);
+            setTimeout(() => setIsLoading(false), 1000);
           },
-          (error) => {
-            console.error('获取位置失败:', error);
-            setLocation('定位失败，请手动选择');
+          () => {
+            setLocation('北京市 · 朝阳区');
+            setLng(DEFAULT_LNG);
+            setLat(DEFAULT_LAT);
+            setTimeout(() => setIsLoading(false), 1000);
           },
           { timeout: 10000 }
         );
       } else {
-        setLocation('您的浏览器不支持定位');
+        setLocation('北京市 · 朝阳区');
+        setTimeout(() => setIsLoading(false), 1000);
       }
-    } catch (error) {
-      setLocation('定位失败');
-    } finally {
-      setTimeout(() => setIsLoading(false), 2000);
+    } catch {
+      setTimeout(() => setIsLoading(false), 1000);
     }
+  };
+
+  const handleMapImageError = () => {
+    setMapLoadError(true);
   };
 
   return (
@@ -140,90 +169,58 @@ export default function WeatherWidget() {
         transition={{ delay: 0.3, duration: 0.3 }}
       />
 
-      <motion.button
-        type="button"
-        onClick={handleLocationClick}
+      <motion.div
         className="w-full rounded-xl relative overflow-hidden mb-3 flex-shrink-0"
         style={{
           aspectRatio: '16/7',
           cursor: 'pointer',
           border: '1px solid var(--cream-border)',
-          background: `
-            linear-gradient(135deg, 
-              color-mix(in srgb, var(--soft-blue) 12%, var(--cream-bg)) 0%, 
-              color-mix(in srgb, var(--moss-green) 8%, var(--cream-bg)) 50%,
-              color-mix(in srgb, var(--warm-orange) 10%, var(--cream-bg)) 100%
-            )
-          `,
+          background: 'var(--surface)',
         }}
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.35, duration: 0.3 }}
+        onClick={handleLocationClick}
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}
       >
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-              linear-gradient(color-mix(in srgb, var(--cream-border) 60%, transparent) 1px, transparent 1px),
-              linear-gradient(90deg, color-mix(in srgb, var(--cream-border) 60%, transparent) 1px, transparent 1px)
-            `,
-            backgroundSize: '32px 32px',
-            opacity: 0.5,
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-              linear-gradient(color-mix(in srgb, var(--cream-border) 40%, transparent) 1px, transparent 1px),
-              linear-gradient(90deg, color-mix(in srgb, var(--cream-border) 40%, transparent) 1px, transparent 1px)
-            `,
-            backgroundSize: '16px 16px',
-            opacity: 0.3,
-          }}
-        />
-        <svg
-          className="absolute inset-0 w-full h-full"
-          viewBox="0 0 400 175"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M50 120 Q100 80 180 100 T320 90 T400 110"
-            fill="none"
-            stroke="color-mix(in srgb, var(--soft-blue) 40%, transparent)"
-            strokeWidth="8"
-            strokeLinecap="round"
+        {!mapLoadError ? (
+          <img
+            src={mapImageUrl}
+            alt="地图"
+            className="w-full h-full object-cover"
+            onError={handleMapImageError}
           />
-          <path
-            d="M30 60 Q80 90 150 70 T280 80 T380 60"
-            fill="none"
-            stroke="color-mix(in srgb, var(--moss-green) 30%, transparent)"
-            strokeWidth="6"
-            strokeLinecap="round"
-          />
-          <rect x="120" y="50" width="40" height="30" rx="4" fill="color-mix(in srgb, var(--warm-orange) 15%, transparent)" stroke="color-mix(in srgb, var(--warm-orange) 30%, transparent)" strokeWidth="1"/>
-          <rect x="220" y="90" width="50" height="35" rx="4" fill="color-mix(in srgb, var(--soft-blue) 12%, transparent)" stroke="color-mix(in srgb, var(--soft-blue) 25%, transparent)" strokeWidth="1"/>
-          <rect x="300" y="40" width="35" height="25" rx="4" fill="color-mix(in srgb, var(--moss-green) 12%, transparent)" stroke="color-mix(in srgb, var(--moss-green) 25%, transparent)" strokeWidth="1"/>
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
-          <motion.div
+        ) : (
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center"
             style={{
-              position: 'relative',
-              zIndex: 2,
+              background: `
+                linear-gradient(135deg, 
+                  color-mix(in srgb, var(--soft-blue) 12%, var(--cream-bg)) 0%, 
+                  color-mix(in srgb, var(--moss-green) 8%, var(--cream-bg)) 50%,
+                  color-mix(in srgb, var(--warm-orange) 10%, var(--cream-bg)) 100%
+                )
+              `,
             }}
-            animate={{ 
-              y: isLoading ? [0, -4, 0] : 0,
-            }}
-            transition={{ duration: 1, repeat: isLoading ? Infinity : 0, ease: 'easeInOut' }}
           >
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `
+                  linear-gradient(color-mix(in srgb, var(--cream-border) 60%, transparent) 1px, transparent 1px),
+                  linear-gradient(90deg, color-mix(in srgb, var(--cream-border) 60%, transparent) 1px, transparent 1px)
+                `,
+                backgroundSize: '32px 32px',
+                opacity: 0.5,
+              }}
+            />
             <svg
               width="28"
               height="28"
               viewBox="0 0 24 24"
               fill="none"
-              style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}
+              style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))', position: 'relative', zIndex: 1 }}
             >
               <path
                 d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
@@ -233,25 +230,110 @@ export default function WeatherWidget() {
               />
               <circle cx="12" cy="9" r="2.5" fill="white"/>
             </svg>
-          </motion.div>
-          <span
-            className="relative z-10"
+            <span
+              className="relative z-10 mt-2"
+              style={{
+                fontFamily: "'Poppins',var(--font-sans)",
+                fontSize: '0.6875rem',
+                fontWeight: 500,
+                color: 'var(--cream-dark)',
+                background: 'var(--cream-bg)',
+                padding: '3px 8px',
+                borderRadius: '6px',
+                border: '1px solid var(--cream-border)',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+              }}
+            >
+              点击查看地图
+            </span>
+          </div>
+        )}
+
+        <AnimatePresence>
+          {isLoading && (
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center"
+              style={{
+                background: 'color-mix(in srgb, var(--cream-bg) 70%, transparent)',
+                backdropFilter: 'blur(2px)',
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  border: '2px solid var(--cream-border)',
+                  borderTopColor: 'var(--soft-blue)',
+                  borderRadius: '50%',
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="absolute bottom-2 right-2 flex flex-col gap-1 z-10">
+          <motion.button
+            type="button"
+            onClick={handleZoomIn}
+            className="w-8 h-8 flex items-center justify-center rounded-lg"
             style={{
-              fontFamily: "'Poppins',var(--font-sans)",
-              fontSize: '0.6875rem',
-              fontWeight: 500,
-              color: 'var(--cream-dark)',
               background: 'var(--cream-bg)',
-              padding: '3px 8px',
-              borderRadius: '6px',
               border: '1px solid var(--cream-border)',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+              color: 'var(--cream-dark)',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+              fontSize: '1rem',
+              fontWeight: 600,
             }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            {isLoading ? '定位中...' : '点击查看地图'}
-          </span>
+            +
+          </motion.button>
+          <motion.button
+            type="button"
+            onClick={handleZoomOut}
+            className="w-8 h-8 flex items-center justify-center rounded-lg"
+            style={{
+              background: 'var(--cream-bg)',
+              border: '1px solid var(--cream-border)',
+              color: 'var(--cream-dark)',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+              fontSize: '1rem',
+              fontWeight: 600,
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            −
+          </motion.button>
+          <motion.button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); handleRefreshLocation(); }}
+            className="w-8 h-8 flex items-center justify-center rounded-lg"
+            style={{
+              background: 'var(--cream-bg)',
+              border: '1px solid var(--cream-border)',
+              color: 'var(--soft-blue)',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 12a9 9 0 1 1-3-6.7L21 8"/>
+              <path d="M21 3v5h-5"/>
+            </svg>
+          </motion.button>
         </div>
-      </motion.button>
+      </motion.div>
 
       <div
         className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 hide-scrollbar"
