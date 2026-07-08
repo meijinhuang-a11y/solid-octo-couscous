@@ -74,35 +74,44 @@ export default function WeatherWidget() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
     >
-      <div className="flex items-center justify-between mb-1.5">
-        <motion.h3
-          className="m-0"
-          style={{
-            fontFamily: "'Poppins',var(--font-sans)",
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            color: 'var(--cream-text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-          }}
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.25, duration: 0.3 }}
-        >
-          我的位置与天气
-        </motion.h3>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <div
+            style={{
+              width: '4px',
+              height: '16px',
+              borderRadius: '2px',
+              background: 'linear-gradient(180deg, var(--soft-blue), var(--moss-green))',
+            }}
+          />
+          <motion.h3
+            className="m-0"
+            style={{
+              fontFamily: "'Poppins',var(--font-sans)",
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              color: 'var(--cream-text-muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+            }}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.25, duration: 0.3 }}
+          >
+            我的位置与天气
+          </motion.h3>
+        </div>
         <motion.button
           type="button"
           onClick={handleLocationClick}
+          className="flex items-center gap-1 px-2 py-1 rounded-lg"
           style={{
             fontFamily: "'Lora',var(--font-sans)",
             fontSize: '0.75rem',
             color: 'var(--soft-blue)',
-            background: 'transparent',
+            background: 'color-mix(in srgb, var(--soft-blue) 8%, transparent)',
             border: 'none',
             cursor: 'pointer',
-            textDecoration: 'underline',
-            textDecorationColor: 'color-mix(in srgb, var(--soft-blue) 30%, transparent)',
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -110,6 +119,10 @@ export default function WeatherWidget() {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
           {location}
         </motion.button>
       </div>
@@ -129,13 +142,19 @@ export default function WeatherWidget() {
 
       <motion.button
         type="button"
-        onClick={handleRefreshLocation}
-        className="w-full rounded-2xl relative overflow-hidden mb-3 flex-shrink-0 flex items-center justify-center gap-2"
+        onClick={handleLocationClick}
+        className="w-full rounded-xl relative overflow-hidden mb-3 flex-shrink-0"
         style={{
           aspectRatio: '16/7',
-          background: 'linear-gradient(135deg, var(--cream-border), color-mix(in srgb, var(--cream-bg) 50%, var(--cream-border)))',
-          border: '1px solid var(--cream-border)',
           cursor: 'pointer',
+          border: '1px solid var(--cream-border)',
+          background: `
+            linear-gradient(135deg, 
+              color-mix(in srgb, var(--soft-blue) 12%, var(--cream-bg)) 0%, 
+              color-mix(in srgb, var(--moss-green) 8%, var(--cream-bg)) 50%,
+              color-mix(in srgb, var(--warm-orange) 10%, var(--cream-bg)) 100%
+            )
+          `,
         }}
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -143,26 +162,90 @@ export default function WeatherWidget() {
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}
       >
-        <div className="flex flex-col items-center gap-1">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(color-mix(in srgb, var(--cream-border) 60%, transparent) 1px, transparent 1px),
+              linear-gradient(90deg, color-mix(in srgb, var(--cream-border) 60%, transparent) 1px, transparent 1px)
+            `,
+            backgroundSize: '32px 32px',
+            opacity: 0.5,
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(color-mix(in srgb, var(--cream-border) 40%, transparent) 1px, transparent 1px),
+              linear-gradient(90deg, color-mix(in srgb, var(--cream-border) 40%, transparent) 1px, transparent 1px)
+            `,
+            backgroundSize: '16px 16px',
+            opacity: 0.3,
+          }}
+        />
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 400 175"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M50 120 Q100 80 180 100 T320 90 T400 110"
+            fill="none"
+            stroke="color-mix(in srgb, var(--soft-blue) 40%, transparent)"
+            strokeWidth="8"
+            strokeLinecap="round"
+          />
+          <path
+            d="M30 60 Q80 90 150 70 T280 80 T380 60"
+            fill="none"
+            stroke="color-mix(in srgb, var(--moss-green) 30%, transparent)"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
+          <rect x="120" y="50" width="40" height="30" rx="4" fill="color-mix(in srgb, var(--warm-orange) 15%, transparent)" stroke="color-mix(in srgb, var(--warm-orange) 30%, transparent)" strokeWidth="1"/>
+          <rect x="220" y="90" width="50" height="35" rx="4" fill="color-mix(in srgb, var(--soft-blue) 12%, transparent)" stroke="color-mix(in srgb, var(--soft-blue) 25%, transparent)" strokeWidth="1"/>
+          <rect x="300" y="40" width="35" height="25" rx="4" fill="color-mix(in srgb, var(--moss-green) 12%, transparent)" stroke="color-mix(in srgb, var(--moss-green) 25%, transparent)" strokeWidth="1"/>
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
           <motion.div
             style={{
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              background: 'var(--warm-orange)',
-              boxShadow: '0 0 0 3px color-mix(in srgb, var(--warm-orange) 30%, transparent)',
+              position: 'relative',
+              zIndex: 2,
             }}
-            animate={{ scale: isLoading ? [1, 1.2, 1] : 1 }}
-            transition={{ duration: 0.8, repeat: isLoading ? Infinity : 0 }}
-          />
+            animate={{ 
+              y: isLoading ? [0, -4, 0] : 0,
+            }}
+            transition={{ duration: 1, repeat: isLoading ? Infinity : 0, ease: 'easeInOut' }}
+          >
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}
+            >
+              <path
+                d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                fill="var(--warm-orange)"
+                stroke="white"
+                strokeWidth="1.5"
+              />
+              <circle cx="12" cy="9" r="2.5" fill="white"/>
+            </svg>
+          </motion.div>
           <span
+            className="relative z-10"
             style={{
-              fontFamily: "'Lora',var(--font-sans)",
-              fontSize: '0.75rem',
-              color: 'var(--cream-text-muted)',
+              fontFamily: "'Poppins',var(--font-sans)",
+              fontSize: '0.6875rem',
+              fontWeight: 500,
+              color: 'var(--cream-dark)',
               background: 'var(--cream-bg)',
-              padding: '2px 6px',
-              borderRadius: '4px',
+              padding: '3px 8px',
+              borderRadius: '6px',
+              border: '1px solid var(--cream-border)',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
             }}
           >
             {isLoading ? '定位中...' : '点击查看地图'}

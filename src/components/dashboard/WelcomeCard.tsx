@@ -98,15 +98,23 @@ export default function WelcomeCard() {
     >
       <div className="relative z-10">
         <motion.div
-          className="flex items-center gap-2 mb-2"
+          className="flex items-center gap-2 mb-3"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1, duration: 0.3 }}
         >
+          <div
+            style={{
+              width: '4px',
+              height: '16px',
+              borderRadius: '2px',
+              background: 'linear-gradient(180deg, var(--warm-orange), var(--moss-green))',
+            }}
+          />
           <span
             style={{
               fontFamily: "'Poppins','SF Pro Display',var(--font-sans)",
-              fontSize: '0.8125rem',
+              fontSize: '0.75rem',
               fontWeight: 600,
               color: 'var(--cream-text-muted)',
               textTransform: 'uppercase',
@@ -118,7 +126,7 @@ export default function WelcomeCard() {
         </motion.div>
 
         <motion.h2
-          className="m-0 mb-2"
+          className="m-0 mb-1.5"
           style={{
             fontFamily: "'Poppins','SF Pro Display',var(--font-sans)",
             fontSize: '1.5rem',
@@ -138,12 +146,9 @@ export default function WelcomeCard() {
           className="m-0 mb-3"
           style={{
             fontFamily: "'Lora','Georgia',var(--font-sans)",
-            fontSize: '0.9375rem',
+            fontSize: '0.875rem',
             color: 'var(--cream-text-muted)',
             lineHeight: 1.5,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
           }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -153,23 +158,22 @@ export default function WelcomeCard() {
         </motion.p>
 
         <motion.div
-          className="p-3 rounded-xl mb-4"
+          className="mb-4 pl-3"
           style={{
-            background: 'var(--surface)',
-            border: '1px solid rgba(232,230,220,0.6)',
+            borderLeft: '3px solid var(--warm-orange)',
           }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.3 }}
         >
           <motion.p
-            className="m-0 mb-1.5"
+            className="m-0 mb-1"
             style={{
               fontFamily: "'Lora','Georgia',var(--font-sans)",
-              fontSize: '0.875rem',
+              fontSize: '0.8125rem',
               color: 'var(--cream-dark)',
               fontStyle: 'italic',
-              lineHeight: 1.5,
+              lineHeight: 1.6,
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -178,10 +182,10 @@ export default function WelcomeCard() {
             "{dailyQuote.text}"
           </motion.p>
           <motion.p
-            className="m-0 text-right"
+            className="m-0"
             style={{
               fontFamily: "'Poppins',var(--font-sans)",
-              fontSize: '0.75rem',
+              fontSize: '0.6875rem',
               fontWeight: 500,
               color: 'var(--cream-text-muted)',
             }}

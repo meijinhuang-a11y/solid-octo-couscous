@@ -27,7 +27,7 @@ export default function Layout() {
   const isMobile = !device.isDesktop;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
+    <div className="h-screen overflow-hidden" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
       {/* 桌面端：常驻固定侧边栏 */}
       {!isMobile && (
         <Sidebar
@@ -64,9 +64,9 @@ export default function Layout() {
       )}
 
       {/* 主内容区域 */}
-      <div className={isMobile ? 'ml-0' : 'ml-52'}>
+      <div className={`flex flex-col h-full ${isMobile ? 'ml-0' : 'ml-52'}`}>
         <TopBar onMenuClick={() => setSidebarOpen(true)} showMenuButton={isMobile} />
-        <main className="min-h-screen">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden">
           <Outlet />
         </main>
       </div>
