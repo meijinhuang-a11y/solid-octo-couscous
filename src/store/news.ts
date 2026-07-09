@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { NewsItem } from '@/types';
 
 const initialNews: NewsItem[] = [
@@ -190,74 +191,152 @@ interface NewsState {
   searchQuery: string;
   lastRefresh: string;
   isRefreshing: boolean;
+  apiKey: string;
+  useApiData: boolean;
+  error: string | null;
   setSelectedCategory: (category: string) => void;
   setSearchQuery: (query: string) => void;
+  setApiKey: (key: string) => void;
   toggleRead: (id: string) => void;
   toggleFavorite: (id: string) => void;
   getFilteredNews: () => NewsItem[];
   markAllRead: () => void;
   refresh: () => Promise<void>;
+  fetchFromApi: () => Promise<void>;
   categories: string[];
   unreadCount: number;
   favoriteCount: number;
 }
 
-export const useNewsStore = create<NewsState>((set, get) => ({
-  news: initialNews,
-  selectedCategory: '全部',
-  searchQuery: '',
-  lastRefresh: new Date().toISOString(),
-  isRefreshing: false,
-  categories: ['全部', '科技', 'AI', '媒体', '广告', '营销', '汽车', '社会'],
+export const useNewsStore = create<NewsState>()(
+  persist(
+    (set, get) => ({
+      news: initialNews,
+      selectedCategory: '全部',
+      searchQuery: '',
+      lastRefresh: new Date().toISOString(),
+      isRefreshing: false,
+      apiKey: '',
+      useApiData: false,
+      error: null,
+      categories: ['全部', '科技', 'AI', '媒体', '广告', '营销', '汽车', '社会', '国内', '国际', '财经'],
 
-  setSelectedCategory: (category) => set({ selectedCategory: category }),
-  setSearchQuery: (query) => set({ searchQuery: query }),
+      setSelectedCategory: (category) => set({ selectedCategory: category }),
+      setSearchQuery: (query) => set({ searchQuery: query }),
+      setApiKey: (key) => set({ apiKey: key, useApiData: key.trim() !== '' }),
 
-  toggleRead: (id) => {
-    set((state) => ({
-      news: state.news.map((item) =>
-        item.id === id ? { ...item, isRead: !item.isRead } : item
-      ),
-    }));
-  },
+      toggleRead: (id) => {
+        set((state) => ({
+          news: state.news.map((item) =>
+            item.id === id ? { ...item, isRead: !item.isRead } : item
+          ),
+        }));
+      },
 
-  toggleFavorite: (id) => {
-    set((state) => ({
-      news: state.news.map((item) =>
-        item.id === id ? { ...item, isFavorite: !item.isFavorite } : item
-      ),
-    }));
-  },
+      toggleFavorite: (id) => {
+        set((state) => ({
+          news: state.news.map((item) =>
+            item.id === id ? { ...item, isFavorite: !item.isFavorite } : item
+          ),
+        }));
+      },
 
-  getFilteredNews: () => {
-    const { news, selectedCategory, searchQuery } = get();
-    const lower = searchQuery.toLowerCase();
-    return news.filter((item) => {
-      if (selectedCategory !== '全部' && item.category !== selectedCategory) return false;
-      if (searchQuery && !item.title.toLowerCase().includes(lower) && !item.summary.toLowerCase().includes(lower)) {
-        return false;
-      }
-      return true;
-    });
-  },
+      getFilteredNews: () => {
+        const { news, selectedCategory, searchQuery } = get();
+        const lower = searchQuery.toLowerCase();
+        return news.filter((item) => {
+          if (selectedCategory !== '全部' && item.category !== selectedCategory) return false;
+          if (searchQuery && !item.title.toLowerCase().includes(lower) && !item.summary.toLowerCase().includes(lower)) {
+            return false;
+          }
+          return true;
+        });
+      },
 
-  markAllRead: () => {
-    set((state) => ({
-      news: state.news.map((item) => ({ ...item, isRead: true })),
-    }));
-  },
+      markAllRead: () => {
+        set((state) => ({
+          news: state.news.map((item) => ({ ...item, isRead: true })),
+        }));
+      },
 
-  refresh: async () => {
-    set({ isRefreshing: true });
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    set({ isRefreshing: false, lastRefresh: new Date().toISOString() });
-  },
+      fetchFromApi: async () => {
+        const { apiKey } = get();
 
-  get unreadCount() {
-    return get().news.filter((item) => !item.isRead).length;
-  },
+        if (!apiKey || apiKey.trim() === '') {
+          set({ error: null });
+          return;
+        }
 
-  get favoriteCount() {
-    return get().news.filter((item) => item.isFavorite).length;
-  },
-}));
+        set({ isRefreshing: true, error: null });
+
+        try {
+          const response = await fetch(
+            `https://apis.tianapi.com/dailylisten/index?key=${apiKey}&num=20`
+          );
+          const data = await response.json();
+
+          if (data.code === 200 && data.result && data.result.newslist) {
+            const apiNews: NewsItem[] = data.result.newslist.map(
+              (item: any, index: number) => ({
+                id: `news-${index}-${Date.now()}`,
+                title: item.title || '每日新闻',
+                summary: item.description || item.digest || item.short_title || item.title || '点击查看详情',
+                content: item.content || item.description || item.title || '暂无详细内容',
+                category: item.category || item.channelName || '社会',
+                source: item.source || '每日新闻',
+                publishDate: item.ctime || item.pubDate || new Date().toISOString(),
+                isRead: false,
+                isFavorite: false,
+                tags: item.keywords ? item.keywords.split(/[,，\s]+/).filter(Boolean) : ['每日新闻', '热点'],
+              })
+            );
+            set({
+              news: apiNews,
+              useApiData: true,
+              lastRefresh: new Date().toISOString(),
+              isRefreshing: false,
+            });
+          } else {
+            set({
+              error: data.msg || '获取每日新闻失败',
+              isRefreshing: false,
+            });
+          }
+        } catch (err) {
+          set({
+            error: err instanceof Error ? err.message : '网络请求失败',
+            isRefreshing: false,
+          });
+        }
+      },
+
+      refresh: async () => {
+        const { apiKey, useApiData, fetchFromApi } = get();
+
+        if (apiKey && apiKey.trim() !== '') {
+          await fetchFromApi();
+        } else {
+          set({ isRefreshing: true });
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          set({ isRefreshing: false, lastRefresh: new Date().toISOString() });
+        }
+      },
+
+      get unreadCount() {
+        return get().news.filter((item) => !item.isRead).length;
+      },
+
+      get favoriteCount() {
+        return get().news.filter((item) => item.isFavorite).length;
+      },
+    }),
+    {
+      name: 'news-storage',
+      partialize: (state) => ({
+        news: state.news,
+        apiKey: state.apiKey,
+        useApiData: state.useApiData,
+      }),
+    }
+  )
+);

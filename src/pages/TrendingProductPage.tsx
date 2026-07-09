@@ -1,13 +1,79 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTrendingProductStore } from '@/store/trendingProduct';
 import type { TrendingProduct } from '@/types';
+import ProductFormModal from '@/components/ProductFormModal';
 
 export default function TrendingProductPage() {
-  const { selectedPlatform, selectedCategory, sortBy, setSelectedPlatform, setSelectedCategory, setSortBy, getFilteredProducts, platforms, categories, refresh, lastRefresh, isRefreshing } = useTrendingProductStore();
+  const { selectedPlatform, selectedCategory, sortBy, setSelectedPlatform, setSelectedCategory, setSortBy, getFilteredProducts, platforms, categories, refresh, lastRefresh, isRefreshing, deleteProduct, exportProducts, importProducts, resetProducts, products } = useTrendingProductStore();
   const [selectedProduct, setSelectedProduct] = useState<TrendingProduct | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editProduct, setEditProduct] = useState<TrendingProduct | null>(null);
+  const [showMenu, setShowMenu] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = getFilteredProducts();
+
+  const handleAdd = () => {
+    setEditProduct(null);
+    setIsFormOpen(true);
+  };
+
+  const handleEdit = (product: TrendingProduct) => {
+    setEditProduct(product);
+    setSelectedProduct(null);
+    setIsFormOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    if (confirm('确定要删除这个产品吗？')) {
+      deleteProduct(id);
+      setSelectedProduct(null);
+    }
+  };
+
+  const handleExport = () => {
+    const data = exportProducts();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `爆款产品_${new Date().toLocaleDateString('zh-CN').replace(/\//g, '-')}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setShowMenu(false);
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target?.result as string);
+        if (Array.isArray(data)) {
+          const mode = confirm('点击确定替换现有数据，点击取消合并到现有数据');
+          importProducts(data, mode ? 'replace' : 'merge');
+          alert(`成功导入 ${data.length} 条数据`);
+        } else {
+          alert('数据格式不正确');
+        }
+      } catch {
+        alert('文件解析失败');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+    setShowMenu(false);
+  };
+
+  const handleReset = () => {
+    if (confirm('确定要恢复为初始示例数据吗？当前数据将被覆盖。')) {
+      resetProducts();
+    }
+    setShowMenu(false);
+  };
 
   const getTrendColor = (trend: string) => {
     if (trend === 'up') return 'var(--warm-orange)';
@@ -72,6 +138,27 @@ export default function TrendingProductPage() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+          <motion.button
+            type="button"
+            onClick={handleAdd}
+            className="px-4 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all min-h-11 w-full sm:w-auto"
+            style={{
+              background: 'var(--warm-orange)',
+              color: '#fff',
+              border: 'none',
+              fontFamily: "'Poppins',var(--font-sans)",
+              fontSize: '0.8125rem',
+              fontWeight: 500,
+              cursor: 'pointer',
+            }}
+            whileTap={{ scale: 0.97 }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            新增产品
+          </motion.button>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'sales' | 'growth' | 'price')}
@@ -88,34 +175,120 @@ export default function TrendingProductPage() {
             <option value="sales">销量排序</option>
             <option value="price">价格排序</option>
           </select>
-          <button
-            type="button"
-            onClick={refresh}
-            disabled={isRefreshing}
-            className="px-3 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all min-h-11 w-full sm:w-auto"
-            style={{
-              background: 'transparent',
-              color: 'var(--moss-green)',
-              border: '1px solid var(--cream-border)',
-              fontFamily: "'Poppins',var(--font-sans)",
-              fontSize: '0.75rem',
-              fontWeight: 500,
-              cursor: isRefreshing ? 'not-allowed' : 'pointer',
-            }}
-          >
-            {isRefreshing ? (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin">
-                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+          <div className="relative">
+            <motion.button
+              type="button"
+              onClick={() => setShowMenu(!showMenu)}
+              className="px-3 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all min-h-11 w-full sm:w-auto"
+              style={{
+                background: 'var(--cream-bg)',
+                color: 'var(--cream-dark)',
+                border: '1px solid var(--cream-border)',
+                fontFamily: "'Poppins',var(--font-sans)",
+                fontSize: '0.8125rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+              }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="12" cy="5" r="1" />
+                <circle cx="12" cy="19" r="1" />
               </svg>
-            ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="23 4 23 10 17 10" />
-                <polyline points="1 20 1 14 7 14" />
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-              </svg>
-            )}
-            刷新
-          </button>
+              更多
+            </motion.button>
+            <AnimatePresence>
+              {showMenu && (
+                <>
+                  <motion.div
+                    className="fixed inset-0 z-30"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setShowMenu(false)}
+                  />
+                  <motion.div
+                    className="absolute right-0 top-full mt-2 z-40 w-44 rounded-xl overflow-hidden"
+                    style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', boxShadow: 'var(--shadow-lg)' }}
+                    initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <button
+                      type="button"
+                      onClick={handleExport}
+                      className="w-full px-4 py-3 text-left flex items-center gap-2"
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        fontFamily: "'Poppins',var(--font-sans)",
+                        fontSize: '0.8125rem',
+                        color: 'var(--cream-dark)',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                      </svg>
+                      导出数据
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { fileInputRef.current?.click(); }}
+                      className="w-full px-4 py-3 text-left flex items-center gap-2"
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        fontFamily: "'Poppins',var(--font-sans)",
+                        fontSize: '0.8125rem',
+                        color: 'var(--cream-dark)',
+                        cursor: 'pointer',
+                        borderTop: '1px solid var(--cream-border)',
+                      }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                      </svg>
+                      导入数据
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleReset}
+                      className="w-full px-4 py-3 text-left flex items-center gap-2"
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        fontFamily: "'Poppins',var(--font-sans)",
+                        fontSize: '0.8125rem',
+                        color: 'var(--warm-orange)',
+                        cursor: 'pointer',
+                        borderTop: '1px solid var(--cream-border)',
+                      }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="1 4 1 10 7 10" />
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                      </svg>
+                      恢复示例数据
+                    </button>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              style={{ display: 'none' }}
+            />
+          </div>
           <span
             className="hidden sm:block"
             style={{
@@ -124,7 +297,7 @@ export default function TrendingProductPage() {
               color: 'var(--cream-text-muted)',
             }}
           >
-            {new Date(lastRefresh).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })} 更新
+            共 {products.length} 条 · {new Date(lastRefresh).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })} 更新
           </span>
         </div>
       </motion.div>
@@ -667,6 +840,7 @@ export default function TrendingProductPage() {
                   <div className="flex flex-col sm:flex-row gap-2 mt-4 pt-4" style={{ borderTop: '1px solid var(--cream-border)' }}>
                     <motion.button
                       type="button"
+                      onClick={() => selectedProduct && handleEdit(selectedProduct)}
                       className="flex-1 py-2.5 rounded-xl min-h-11"
                       style={{
                         background: 'var(--surface)',
@@ -679,15 +853,16 @@ export default function TrendingProductPage() {
                       }}
                       whileTap={{ scale: 0.97 }}
                     >
-                      查看详情
+                      编辑
                     </motion.button>
                     <motion.button
                       type="button"
+                      onClick={() => selectedProduct && handleDelete(selectedProduct.id)}
                       className="flex-1 py-2.5 rounded-xl min-h-11"
                       style={{
-                        background: 'var(--warm-orange)',
-                        color: 'var(--text-on-primary)',
-                        border: 'none',
+                        background: 'transparent',
+                        color: 'var(--warm-orange)',
+                        border: '1px solid var(--warm-orange)',
                         fontFamily: "'Poppins',var(--font-sans)",
                         fontSize: '0.8125rem',
                         fontWeight: 500,
@@ -695,7 +870,7 @@ export default function TrendingProductPage() {
                       }}
                       whileTap={{ scale: 0.97 }}
                     >
-                      竞品分析
+                      删除
                     </motion.button>
                   </div>
                 </div>
@@ -704,6 +879,12 @@ export default function TrendingProductPage() {
           </>
         )}
       </AnimatePresence>
+
+      <ProductFormModal
+        isOpen={isFormOpen}
+        onClose={() => { setIsFormOpen(false); setEditProduct(null); }}
+        editProduct={editProduct}
+      />
     </div>
   );
 }

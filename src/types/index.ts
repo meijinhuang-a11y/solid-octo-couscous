@@ -356,3 +356,21 @@ export interface TrendingProduct {
   tags: string[];
   description: string;
 }
+
+export interface HotSearchItem {
+  id: string;
+  title: string;
+  hotnum: number;
+  rank: number;
+  source?: string;
+  url?: string;
+  isNew?: boolean;
+  isHot?: boolean;
+}
+
+export interface HotSearchConfig {
+  apiKey: string;
+  autoRefresh: boolean;
+  refreshInterval: number;
+  displayCount: number;
+}

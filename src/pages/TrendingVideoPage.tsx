@@ -4,8 +4,10 @@ import { useTrendingVideoStore } from '@/store/trendingVideo';
 import type { TrendingVideo } from '@/types';
 
 export default function TrendingVideoPage() {
-  const { selectedPlatform, selectedCategory, sortBy, setSelectedPlatform, setSelectedCategory, setSortBy, getFilteredVideos, platforms, categories, refresh, lastRefresh, isRefreshing } = useTrendingVideoStore();
+  const { selectedPlatform, selectedCategory, sortBy, setSelectedPlatform, setSelectedCategory, setSortBy, setApiKey, getFilteredVideos, platforms, categories, refresh, lastRefresh, isRefreshing, apiKey, useApiData, error } = useTrendingVideoStore();
   const [selectedVideo, setSelectedVideo] = useState<TrendingVideo | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState(apiKey);
 
   const filteredVideos = getFilteredVideos();
 
@@ -53,12 +55,12 @@ export default function TrendingVideoPage() {
                 fontFamily: "'Poppins',var(--font-sans)",
                 fontSize: '0.75rem',
                 fontWeight: 500,
-                color: 'var(--cream-text-muted)',
-                background: 'var(--cream-border)',
+                color: useApiData ? 'var(--moss-green)' : 'var(--cream-text-muted)',
+                background: useApiData ? 'color-mix(in srgb, var(--moss-green) 15%, transparent)' : 'var(--cream-border)',
               }}
-              title="当前为演示数据，接入API后将显示实时趋势"
+              title={useApiData ? '当前为真实API数据' : '当前为演示数据，接入API后将显示实时趋势'}
             >
-              示例数据
+              {useApiData ? '实时数据' : '示例数据'}
             </span>
           </div>
           <p
@@ -89,6 +91,29 @@ export default function TrendingVideoPage() {
             <option value="likes">点赞量排序</option>
             <option value="comments">评论数排序</option>
           </select>
+          <button
+            type="button"
+            onClick={() => {
+              setApiKeyInput(apiKey);
+              setShowSettings(!showSettings);
+            }}
+            className="px-3 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all min-h-11 w-full sm:w-auto"
+            style={{
+              background: 'transparent',
+              color: 'var(--soft-blue)',
+              border: '1px solid var(--cream-border)',
+              fontFamily: "'Poppins',var(--font-sans)",
+              fontSize: '0.75rem',
+              fontWeight: 500,
+              cursor: 'pointer',
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+            API设置
+          </button>
           <button
             type="button"
             onClick={refresh}
@@ -129,6 +154,129 @@ export default function TrendingVideoPage() {
           </span>
         </div>
       </motion.div>
+
+      {/* API Settings Panel */}
+      <AnimatePresence>
+        {showSettings && (
+          <motion.div
+            className="rounded-2xl p-5 mb-5"
+            style={{
+              background: 'var(--cream-bg)',
+              border: '1px solid var(--cream-border)',
+            }}
+            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginBottom: '1.25rem' }}
+            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <h3
+              className="m-0 mb-3"
+              style={{
+                fontFamily: "'Poppins',var(--font-sans)",
+                fontSize: '1rem',
+                fontWeight: 600,
+                color: 'var(--cream-dark)',
+              }}
+            >
+              API 设置 - 抖音热榜
+            </h3>
+            <p
+              className="m-0 mb-3"
+              style={{
+                fontFamily: "'Lora',var(--font-sans)",
+                fontSize: '0.8125rem',
+                color: 'var(--cream-text-muted)',
+              }}
+            >
+              填入天聚数行（天行数据）的 API Key 以获取抖音热榜真实数据。没有 Key 时显示模拟数据。
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+                placeholder="请输入 API Key"
+                className="flex-1 px-4 py-2.5 rounded-xl outline-none transition-all"
+                style={{
+                  background: 'var(--surface)',
+                  border: '1px solid var(--cream-border)',
+                  color: 'var(--cream-dark)',
+                  fontFamily: "'Poppins',var(--font-sans)",
+                  fontSize: '0.875rem',
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--soft-blue)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--cream-border)';
+                }}
+              />
+              <button
+                onClick={() => {
+                  setApiKey(apiKeyInput);
+                  setShowSettings(false);
+                  refresh();
+                }}
+                className="px-5 py-2.5 rounded-xl border-0 cursor-pointer transition-all min-h-11"
+                style={{
+                  background: 'var(--soft-blue)',
+                  color: '#fff',
+                  fontFamily: "'Poppins',var(--font-sans)",
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                }}
+              >
+                保存并刷新
+              </button>
+            </div>
+            <p
+              className="m-0 mt-2"
+              style={{
+                fontFamily: "'Lora',var(--font-sans)",
+                fontSize: '0.75rem',
+                color: 'var(--cream-text-muted)',
+              }}
+            >
+              💡 去 {' '}
+              <a href="https://www.tianapi.com/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--soft-blue)' }}>
+                tianapi.com
+              </a>
+              {' '}注册申请"抖音热榜"接口
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Error */}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            className="rounded-2xl p-4 mb-5 flex items-center gap-3"
+            style={{
+              background: 'color-mix(in srgb, #FF4757 10%, transparent)',
+              border: '1px solid color-mix(in srgb, #FF4757 30%, transparent)',
+            }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF4757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span
+              style={{
+                fontFamily: "'Poppins',var(--font-sans)",
+                fontSize: '0.875rem',
+                color: '#FF4757',
+              }}
+            >
+              {error}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Filters */}
       <motion.div

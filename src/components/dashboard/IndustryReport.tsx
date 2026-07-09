@@ -1,50 +1,51 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import Icon from '@/components/Icon';
-
-const reports = [
-  {
-    id: 1,
-    title: '短视频广告投放新趋势：竖屏原生内容转化率提升 40%',
-    source: 'AdWeek',
-    time: '2小时前',
-    tag: '行业趋势',
-    hot: 9280,
-  },
-  {
-    id: 2,
-    title: 'AI 生成创意素材成为主流，品牌内容生产效率翻倍',
-    source: '数英网',
-    time: '5小时前',
-    tag: 'AI 赋能',
-    hot: 7620,
-  },
-  {
-    id: 3,
-    title: '私域流量运营白皮书：复购率提升的三个关键节点',
-    source: 'QuestMobile',
-    time: '昨天',
-    tag: '运营策略',
-    hot: 5410,
-  },
-  {
-    id: 4,
-    title: '直播电商进入精耕期，内容质量成核心竞争力',
-    source: '36氪',
-    time: '昨天',
-    tag: '直播电商',
-    hot: 4280,
-  },
-];
+import { useNewsStore } from '@/store/news';
 
 const tagColors: Record<string, string> = {
-  行业趋势: 'var(--warm-orange)',
+  '科技': 'var(--soft-blue)',
+  'AI': 'var(--warm-orange)',
+  '媒体': 'var(--moss-green)',
+  '广告': 'var(--soft-blue)',
+  '营销': 'var(--warm-orange)',
+  '汽车': 'var(--moss-green)',
+  '社会': 'var(--cream-text-muted)',
+  '国内': 'var(--soft-blue)',
+  '国际': 'var(--warm-orange)',
+  '财经': 'var(--moss-green)',
+  '行业趋势': 'var(--warm-orange)',
   'AI 赋能': 'var(--soft-blue)',
-  运营策略: 'var(--moss-green)',
-  直播电商: 'var(--warm-orange)',
+  '运营策略': 'var(--moss-green)',
+  '直播电商': 'var(--warm-orange)',
 };
 
 export default function IndustryReport() {
+  const { getFilteredNews, fetchFromApi, isRefreshing, useApiData } = useNewsStore();
+  const topReports = getFilteredNews().slice(0, 4);
+
+  useEffect(() => {
+    fetchFromApi();
+  }, [fetchFromApi]);
+
+  const formatTime = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (hours < 1) return '刚刚';
+    if (hours < 24) return `${hours}小时前`;
+    if (days < 7) return `${days}天前`;
+    return `${d.getMonth() + 1}月${d.getDate()}日`;
+  };
+
+  const getTagColor = (tag: string) => {
+    return tagColors[tag] || 'var(--warm-orange)';
+  };
+
   return (
     <motion.section
       className="flex flex-col h-full"
@@ -100,92 +101,94 @@ export default function IndustryReport() {
         transition={{ delay: 0.2, duration: 0.3 }}
       >
         <div className="flex flex-col gap-3 overflow-y-auto pr-1 custom-scrollbar flex-1">
-          {reports.map((report, index) => (
-            <motion.div
-              key={report.id}
-              className="flex items-start gap-3 p-4 rounded-xl"
-              style={{
-                background: 'var(--surface)',
-                border: '1px solid rgba(232,230,220,0.8)',
-              }}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 + index * 0.05, duration: 0.3 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <span
-                className="flex-shrink-0 inline-flex items-center justify-center rounded-lg"
+          {isRefreshing && topReports.length === 0 ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div
+                className="w-6 h-6 rounded-full border-2 border-t-transparent animate-spin"
+                style={{ borderColor: 'var(--warm-orange)', borderTopColor: 'transparent' }}
+              />
+            </div>
+          ) : (
+            topReports.map((report, index) => (
+              <motion.div
+                key={report.id}
+                className="flex items-start gap-3 p-4 rounded-xl"
                 style={{
-                  width: '1.75rem',
-                  height: '1.75rem',
-                  background: `color-mix(in srgb, ${tagColors[report.tag]} 15%, transparent)`,
-                  color: tagColors[report.tag],
-                  fontFamily: "'Poppins',var(--font-sans)",
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
+                  background: 'var(--surface)',
+                  border: '1px solid rgba(232,230,220,0.8)',
                 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 + index * 0.05, duration: 0.3 }}
+                whileTap={{ scale: 0.99 }}
               >
-                {String(index + 1).padStart(2, '0')}
-              </span>
-              <div className="flex-1 min-w-0">
-                <p
-                  className="m-0 mb-2"
+                <span
+                  className="flex-shrink-0 inline-flex items-center justify-center rounded-lg"
                   style={{
+                    width: '1.75rem',
+                    height: '1.75rem',
+                    background: `color-mix(in srgb, ${getTagColor(report.category)} 15%, transparent)`,
+                    color: getTagColor(report.category),
                     fontFamily: "'Poppins',var(--font-sans)",
-                    fontSize: '0.9375rem',
-                    fontWeight: 500,
-                    color: 'var(--cream-dark)',
-                    lineHeight: 1.4,
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
                   }}
                 >
-                  {report.title}
-                </p>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span
-                    className="inline-flex items-center px-2 py-0.5 rounded"
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p
+                    className="m-0 mb-2"
                     style={{
                       fontFamily: "'Poppins',var(--font-sans)",
-                      fontSize: '0.75rem',
+                      fontSize: '0.9375rem',
                       fontWeight: 500,
-                      color: tagColors[report.tag],
-                      background: `color-mix(in srgb, ${tagColors[report.tag]} 12%, transparent)`,
+                      color: 'var(--cream-dark)',
+                      lineHeight: 1.4,
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
                     }}
                   >
-                    {report.tag}
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "'Lora',var(--font-sans)",
-                      fontSize: '0.8125rem',
-                      color: 'var(--cream-text-muted)',
-                    }}
-                  >
-                    {report.source}
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "'Lora',var(--font-sans)",
-                      fontSize: '0.8125rem',
-                      color: 'var(--cream-text-muted)',
-                    }}
-                  >
-                    · {report.time}
-                  </span>
-                  <span
-                    className="flex items-center gap-0.5 ml-auto"
-                    style={{
-                      fontFamily: "'Poppins',var(--font-sans)",
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: 'var(--warm-orange)',
-                    }}
-                  >
-                    🔥 {(report.hot / 1000).toFixed(1)}k
-                  </span>
+                    {report.title}
+                  </p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className="inline-flex items-center px-2 py-0.5 rounded"
+                      style={{
+                        fontFamily: "'Poppins',var(--font-sans)",
+                        fontSize: '0.75rem',
+                        fontWeight: 500,
+                        color: getTagColor(report.category),
+                        background: `color-mix(in srgb, ${getTagColor(report.category)} 12%, transparent)`,
+                      }}
+                    >
+                      {report.category}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "'Lora',var(--font-sans)",
+                        fontSize: '0.8125rem',
+                        color: 'var(--cream-text-muted)',
+                      }}
+                    >
+                      {report.source}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "'Lora',var(--font-sans)",
+                        fontSize: '0.8125rem',
+                        color: 'var(--cream-text-muted)',
+                      }}
+                    >
+                      · {formatTime(report.publishDate)}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))
+          )}
         </div>
       </motion.div>
     </motion.section>

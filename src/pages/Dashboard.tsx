@@ -7,6 +7,7 @@ import RecentActivity from '@/components/dashboard/RecentActivity';
 import IndustryReport from '@/components/dashboard/IndustryReport';
 import TrendingVideoSummary from '@/components/dashboard/TrendingVideoSummary';
 import TrendingProductSummary from '@/components/dashboard/TrendingProductSummary';
+import HotSearchCard from '@/components/dashboard/HotSearchCard';
 
 export default function Dashboard() {
   return (
@@ -23,6 +24,16 @@ export default function Dashboard() {
         <QuickActions />
       </div>
 
+      {/* Row 2.5: 全网热搜 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+        <div className="lg:col-span-1 flex flex-col" style={{ height: '360px' }}>
+          <HotSearchCard />
+        </div>
+        <div className="lg:col-span-2 flex flex-col" style={{ height: '360px' }}>
+          <IndustryReport />
+        </div>
+      </div>
+
       {/* Row 3: 今日任务 + 最新动态 — 等高，固定高度，内部滚动 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
         <div className="lg:col-span-2 flex flex-col" style={{ height: '320px' }}>
@@ -33,11 +44,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Row 4: 行业日报 + 爆款视频 + 爆款产品 — 三列等高，固定高度，内部滚动 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="flex flex-col" style={{ height: '360px' }}>
-          <IndustryReport />
-        </div>
+      {/* Row 4: 爆款视频 + 爆款产品 — 两列等高，固定高度，内部滚动 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="flex flex-col" style={{ height: '360px' }}>
           <TrendingVideoSummary />
         </div>

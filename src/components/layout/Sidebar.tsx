@@ -16,6 +16,7 @@ const navItems = [
   { key: 'product-extractor', label: '商品提取', path: '/product-extractor', icon: 'product-extractor' },
   { key: 'trending-video', label: '爆款视频', path: '/trending-video', icon: 'trending-video' },
   { key: 'trending-product', label: '爆款产品', path: '/trending-product', icon: 'trending-product' },
+  { key: 'hot-search', label: '全网热搜', path: '/hot-search', icon: 'news' },
 ];
 
 interface SidebarProps {

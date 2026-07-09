@@ -1,59 +1,31 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/Icon';
+import { useTrendingProductStore } from '@/store/trendingProduct';
 
-const products = [
-  {
-    id: 1,
-    name: '无线降噪蓝牙耳机 Pro',
-    category: '数码配件',
-    price: '¥299',
-    originalPrice: '¥499',
-    sales: '3.2w',
-    growth: '+156%',
-    trend: 'rise',
-    emoji: '🎧',
-    color: 'var(--warm-orange)',
-  },
-  {
-    id: 2,
-    name: '智能美容仪 家用版',
-    category: '美妆个护',
-    price: '¥599',
-    originalPrice: '¥899',
-    sales: '1.8w',
-    growth: '+98%',
-    trend: 'rise',
-    emoji: '💆',
-    color: 'var(--soft-blue)',
-  },
-  {
-    id: 3,
-    name: '便携式胶囊咖啡机',
-    category: '生活电器',
-    price: '¥459',
-    originalPrice: '¥699',
-    sales: '1.5w',
-    growth: '+72%',
-    trend: 'rise',
-    emoji: '☕',
-    color: 'var(--moss-green)',
-  },
-  {
-    id: 4,
-    name: '儿童编程积木套装',
-    category: '母婴玩具',
-    price: '¥329',
-    originalPrice: '¥499',
-    sales: '9.8k',
-    growth: '+45%',
-    trend: 'rise',
-    emoji: '🧩',
-    color: 'var(--warm-orange)',
-  },
-];
+const platformColors: Record<string, string> = {
+  抖音: '#000',
+  淘宝: '#FF4200',
+  京东: '#E4393C',
+  小红书: '#FE2C55',
+  拼多多: '#E02E24',
+  视频号: '#07C160',
+};
+
+const categoryEmoji: Record<string, string> = {
+  数码配件: '🎧',
+  家居生活: '🏠',
+  智能穿戴: '⌚',
+  厨房电器: '🍳',
+  个护健康: '💆',
+  美妆个护: '💄',
+  母婴玩具: '🧸',
+};
 
 export default function TrendingProductSummary() {
+  const { getFilteredProducts } = useTrendingProductStore();
+  const products = getFilteredProducts().slice(0, 4);
+
   return (
     <motion.section
       className="flex flex-col h-full"
@@ -127,11 +99,20 @@ export default function TrendingProductSummary() {
                 style={{
                   width: '3rem',
                   height: '3rem',
-                  background: `color-mix(in srgb, ${product.color} 15%, transparent)`,
+                  background: `color-mix(in srgb, ${platformColors[product.platform] || 'var(--warm-orange)'} 15%, transparent)`,
                   fontSize: '1.5rem',
+                  overflow: 'hidden',
                 }}
               >
-                {product.emoji}
+                {product.image ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  categoryEmoji[product.category] || '📦'
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <p
@@ -142,6 +123,9 @@ export default function TrendingProductSummary() {
                     fontWeight: 500,
                     color: 'var(--cream-dark)',
                     lineHeight: 1.4,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                   }}
                 >
                   {product.name}
@@ -161,10 +145,10 @@ export default function TrendingProductSummary() {
                       fontFamily: "'Poppins',var(--font-sans)",
                       fontSize: '0.875rem',
                       fontWeight: 700,
-                      color: product.color,
+                      color: platformColors[product.platform] || 'var(--warm-orange)',
                     }}
                   >
-                    {product.price}
+                    ¥{product.price}
                   </span>
                   <span
                     style={{
@@ -174,7 +158,7 @@ export default function TrendingProductSummary() {
                       textDecoration: 'line-through',
                     }}
                   >
-                    {product.originalPrice}
+                    ¥{product.originalPrice}
                   </span>
                   <span
                     className="ml-auto flex items-center gap-1"
@@ -182,17 +166,28 @@ export default function TrendingProductSummary() {
                       fontFamily: "'Poppins',var(--font-sans)",
                       fontSize: '0.75rem',
                       fontWeight: 600,
-                      color: 'var(--moss-green)',
+                      color: product.trend === 'up' ? 'var(--moss-green)' : product.trend === 'down' ? 'var(--soft-blue)' : 'var(--cream-text-muted)',
                     }}
                   >
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
                       <polyline points="17 6 23 6 23 12" />
                     </svg>
-                    {product.growth}
+                    {product.growthRate}%
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
+                  <span
+                    className="px-1.5 py-0.5 rounded text-[0.625rem]"
+                    style={{
+                      background: platformColors[product.platform] || 'var(--warm-orange)',
+                      color: '#fff',
+                      fontFamily: "'Poppins',var(--font-sans)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {product.platform}
+                  </span>
                   <span
                     style={{
                       fontFamily: "'Poppins',var(--font-sans)",
@@ -206,6 +201,18 @@ export default function TrendingProductSummary() {
               </div>
             </motion.div>
           ))}
+          {products.length === 0 && (
+            <div
+              className="flex-1 flex items-center justify-center"
+              style={{
+                fontFamily: "'Lora',var(--font-sans)",
+                fontSize: '0.8125rem',
+                color: 'var(--cream-text-muted)',
+              }}
+            >
+              暂无产品数据
+            </div>
+          )}
         </div>
       </motion.div>
     </motion.section>

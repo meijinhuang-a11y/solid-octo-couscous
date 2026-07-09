@@ -14,6 +14,7 @@ const WhitepaperPage = lazy(() => import("@/pages/WhitepaperPage"));
 const ProductExtractorPage = lazy(() => import("@/pages/ProductExtractorPage"));
 const TrendingVideoPage = lazy(() => import("@/pages/TrendingVideoPage"));
 const TrendingProductPage = lazy(() => import("@/pages/TrendingProductPage"));
+const HotSearchPage = lazy(() => import("@/pages/HotSearchPage"));
 
 function Loading() {
   return (
@@ -82,6 +83,11 @@ export default function App() {
           <Route path="trending-product" element={
             <Suspense fallback={<Loading />}>
               <TrendingProductPage />
+            </Suspense>
+          } />
+          <Route path="hot-search" element={
+            <Suspense fallback={<Loading />}>
+              <HotSearchPage />
             </Suspense>
           } />
         </Route>

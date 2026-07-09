@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { TrendingProduct } from '@/types';
 
 const initialProducts: TrendingProduct[] = [
@@ -207,45 +208,102 @@ interface TrendingProductState {
   setSelectedCategory: (category: string) => void;
   setSortBy: (sort: 'sales' | 'growth' | 'price') => void;
   getFilteredProducts: () => TrendingProduct[];
+  getProductById: (id: string) => TrendingProduct | undefined;
+  addProduct: (product: Omit<TrendingProduct, 'id'>) => void;
+  updateProduct: (id: string, product: Partial<TrendingProduct>) => void;
+  deleteProduct: (id: string) => void;
+  importProducts: (products: TrendingProduct[], mode?: 'replace' | 'merge') => void;
+  exportProducts: () => TrendingProduct[];
+  resetProducts: () => void;
   refresh: () => Promise<void>;
   platforms: string[];
   categories: string[];
 }
 
-export const useTrendingProductStore = create<TrendingProductState>((set, get) => ({
-  products: initialProducts,
-  selectedPlatform: '全部',
-  selectedCategory: '全部',
-  sortBy: 'growth',
-  lastRefresh: new Date().toISOString(),
-  isRefreshing: false,
-  platforms: ['全部', '抖音', '淘宝', '京东', '小红书', '拼多多', '视频号'],
-  categories: ['全部', '数码配件', '家居生活', '智能穿戴', '厨房电器', '个护健康'],
+export const useTrendingProductStore = create<TrendingProductState>()(
+  persist(
+    (set, get) => ({
+      products: initialProducts,
+      selectedPlatform: '全部',
+      selectedCategory: '全部',
+      sortBy: 'growth',
+      lastRefresh: new Date().toISOString(),
+      isRefreshing: false,
+      platforms: ['全部', '抖音', '淘宝', '京东', '小红书', '拼多多', '视频号'],
+      categories: ['全部', '数码配件', '家居生活', '智能穿戴', '厨房电器', '个护健康', '美妆个护', '母婴玩具'],
 
-  setSelectedPlatform: (platform) => set({ selectedPlatform: platform }),
-  setSelectedCategory: (category) => set({ selectedCategory: category }),
-  setSortBy: (sort) => set({ sortBy: sort }),
+      setSelectedPlatform: (platform) => set({ selectedPlatform: platform }),
+      setSelectedCategory: (category) => set({ selectedCategory: category }),
+      setSortBy: (sort) => set({ sortBy: sort }),
 
-  getFilteredProducts: () => {
-    const { products, selectedPlatform, selectedCategory, sortBy } = get();
-    let filtered = products.filter((p) => {
-      if (selectedPlatform !== '全部' && p.platform !== selectedPlatform) return false;
-      if (selectedCategory !== '全部' && p.category !== selectedCategory) return false;
-      return true;
-    });
+      getFilteredProducts: () => {
+        const { products, selectedPlatform, selectedCategory, sortBy } = get();
+        let filtered = products.filter((p) => {
+          if (selectedPlatform !== '全部' && p.platform !== selectedPlatform) return false;
+          if (selectedCategory !== '全部' && p.category !== selectedCategory) return false;
+          return true;
+        });
 
-    filtered = [...filtered].sort((a, b) => {
-      if (sortBy === 'growth') return b.growthRate - a.growthRate;
-      if (sortBy === 'price') return a.price - b.price;
-      return parseFloat(b.sales) - parseFloat(a.sales);
-    });
+        filtered = [...filtered].sort((a, b) => {
+          if (sortBy === 'growth') return b.growthRate - a.growthRate;
+          if (sortBy === 'price') return a.price - b.price;
+          return parseFloat(b.sales) - parseFloat(a.sales);
+        });
 
-    return filtered;
-  },
+        return filtered;
+      },
 
-  refresh: async () => {
-    set({ isRefreshing: true });
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    set({ isRefreshing: false, lastRefresh: new Date().toISOString() });
-  },
-}));
+      getProductById: (id) => {
+        return get().products.find((p) => p.id === id);
+      },
+
+      addProduct: (product) => {
+        const newProduct: TrendingProduct = {
+          ...product,
+          id: Date.now().toString() + Math.random().toString(36).slice(2, 8),
+        };
+        set({ products: [newProduct, ...get().products] });
+      },
+
+      updateProduct: (id, product) => {
+        set({
+          products: get().products.map((p) =>
+            p.id === id ? { ...p, ...product } : p
+          ),
+        });
+      },
+
+      deleteProduct: (id) => {
+        set({ products: get().products.filter((p) => p.id !== id) });
+      },
+
+      importProducts: (products, mode = 'merge') => {
+        if (mode === 'replace') {
+          set({ products });
+        } else {
+          set({ products: [...products, ...get().products] });
+        }
+      },
+
+      exportProducts: () => {
+        return get().products;
+      },
+
+      resetProducts: () => {
+        set({ products: initialProducts });
+      },
+
+      refresh: async () => {
+        set({ isRefreshing: true });
+        await new Promise((resolve) => setTimeout(resolve, 800));
+        set({ isRefreshing: false, lastRefresh: new Date().toISOString() });
+      },
+    }),
+    {
+      name: 'trending-products-storage',
+      partialize: (state) => ({
+        products: state.products,
+      }),
+    }
+  )
+);
