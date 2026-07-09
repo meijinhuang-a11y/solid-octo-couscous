@@ -77,15 +77,6 @@ export default function ProductFormModal({ isOpen, onClose, editProduct }: Produ
     setFormData({ ...formData, tags: formData.tags?.filter((t) => t !== tag) });
   };
 
-  const platformColors: Record<string, string> = {
-    抖音: '#000',
-    淘宝: '#FF4200',
-    京东: '#E4393C',
-    小红书: '#FE2C55',
-    拼多多: '#E02E24',
-    视频号: '#07C160',
-  };
-
   return (
     <AnimatePresence>
       {isOpen && (

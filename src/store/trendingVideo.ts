@@ -303,9 +303,25 @@ export const useTrendingVideoStore = create<TrendingVideoState>()(
           );
           const data = await response.json();
 
+          interface TianApiDouyinHotItem {
+            title?: string;
+            word?: string;
+            name?: string;
+            author?: string;
+            cover?: string;
+            pic?: string;
+            play_count?: number;
+            hot_value?: number;
+            hotindex?: number;
+            tag?: string;
+            tags?: string[];
+            description?: string;
+            duration?: string;
+          }
+
           if (data.code === 200 && data.result && data.result.list) {
             const apiVideos: TrendingVideo[] = data.result.list.map(
-              (item: any, index: number) => ({
+              (item: TianApiDouyinHotItem, index: number) => ({
                 id: `douyin-${index}-${Date.now()}`,
                 title: item.title || item.word || item.name || '抖音热搜',
                 author: item.author || '抖音热榜',
@@ -347,7 +363,7 @@ export const useTrendingVideoStore = create<TrendingVideoState>()(
       },
 
       refresh: async () => {
-        const { apiKey, useApiData, fetchFromApi } = get();
+        const { apiKey, fetchFromApi } = get();
 
         if (apiKey && apiKey.trim() !== '') {
           await fetchFromApi();

@@ -5,7 +5,7 @@ import Icon from '@/components/Icon';
 import { useTrendingVideoStore } from '@/store/trendingVideo';
 
 export default function TrendingVideoSummary() {
-  const { videos, getFilteredVideos, fetchFromApi, isRefreshing, useApiData } = useTrendingVideoStore();
+  const { getFilteredVideos, fetchFromApi, isRefreshing } = useTrendingVideoStore();
   const topVideos = getFilteredVideos().slice(0, 3);
 
   useEffect(() => {

@@ -5,7 +5,7 @@ import type { TrendingProduct } from '@/types';
 import ProductFormModal from '@/components/ProductFormModal';
 
 export default function TrendingProductPage() {
-  const { selectedPlatform, selectedCategory, sortBy, setSelectedPlatform, setSelectedCategory, setSortBy, getFilteredProducts, platforms, categories, refresh, lastRefresh, isRefreshing, deleteProduct, exportProducts, importProducts, resetProducts, products } = useTrendingProductStore();
+  const { selectedPlatform, selectedCategory, sortBy, setSelectedPlatform, setSelectedCategory, setSortBy, getFilteredProducts, platforms, categories, lastRefresh, deleteProduct, exportProducts, importProducts, resetProducts, products } = useTrendingProductStore();
   const [selectedProduct, setSelectedProduct] = useState<TrendingProduct | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editProduct, setEditProduct] = useState<TrendingProduct | null>(null);

@@ -78,9 +78,14 @@ export const useHotSearchStore = create<HotSearchState>()(
           );
           const data = await response.json();
 
+          interface TianApiHotSearchItem {
+            title: string;
+            hotnum: number;
+          }
+
           if (data.code === 200 && data.result && data.result.list) {
             const items: HotSearchItem[] = data.result.list.map(
-              (item: any, index: number) => ({
+              (item: TianApiHotSearchItem, index: number) => ({
                 id: `${index + 1}-${Date.now()}`,
                 title: item.title,
                 hotnum: item.hotnum || 0,

@@ -1,6 +1,6 @@
-const PI = 3.1415926535897932384626;
-const A = 6378245.0;
-const EE = 0.00669342162296594323;
+const PI = Math.PI;
+const A = 6378245;
+const EE = 0.006693421622965943;
 
 function outOfChina(lng: number, lat: number): boolean {
   if (lng < 72.004 || lng > 137.8347) return true;

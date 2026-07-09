@@ -22,7 +22,7 @@ const tagColors: Record<string, string> = {
 };
 
 export default function IndustryReport() {
-  const { getFilteredNews, fetchFromApi, isRefreshing, useApiData } = useNewsStore();
+  const { getFilteredNews, fetchFromApi, isRefreshing } = useNewsStore();
   const topReports = getFilteredNews().slice(0, 4);
 
   useEffect(() => {

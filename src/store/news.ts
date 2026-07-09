@@ -275,9 +275,23 @@ export const useNewsStore = create<NewsState>()(
           );
           const data = await response.json();
 
+          interface TianApiNewsItem {
+            title: string;
+            description?: string;
+            digest?: string;
+            short_title?: string;
+            content?: string;
+            category?: string;
+            channelName?: string;
+            source?: string;
+            ctime?: string;
+            pubDate?: string;
+            keywords?: string;
+          }
+
           if (data.code === 200 && data.result && data.result.newslist) {
             const apiNews: NewsItem[] = data.result.newslist.map(
-              (item: any, index: number) => ({
+              (item: TianApiNewsItem, index: number) => ({
                 id: `news-${index}-${Date.now()}`,
                 title: item.title || '每日新闻',
                 summary: item.description || item.digest || item.short_title || item.title || '点击查看详情',
@@ -311,7 +325,7 @@ export const useNewsStore = create<NewsState>()(
       },
 
       refresh: async () => {
-        const { apiKey, useApiData, fetchFromApi } = get();
+        const { apiKey, fetchFromApi } = get();
 
         if (apiKey && apiKey.trim() !== '') {
           await fetchFromApi();
