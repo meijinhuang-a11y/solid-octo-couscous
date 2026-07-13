@@ -1,5 +1,7 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { ProductInfo, ProductStatus, ProductCategory } from '@/types';
+import { parse1688Html, validateHtmlContent, isValid1688Url } from '@/utils/parse1688Html';
 
 const categoryKeywords: Record<ProductCategory, string[]> = {
   '服饰': ['T恤', '连衣裙', '衣服', '服装', '衬衫', '裤子', '裙子', '外套', '卫衣', '汉服', '旗袍', '内衣', '袜子', '童装', '女装', '男装', '棉服', '毛衣', '牛仔'],
@@ -491,11 +493,13 @@ interface CategoryStats {
 interface ProductExtractorState {
   products: ProductInfo[];
   isExtracting: boolean;
+  extractError: string | null;
   lastExtracted: ProductInfo | null;
   lastRefresh: string;
   isRefreshing: boolean;
   activeTab: ProductStatus | 'all';
   extractFromUrl: (url: string) => Promise<void>;
+  extractFromHtml: (html: string, url: string) => Promise<{ success: boolean; error?: string }>;
   deleteProduct: (id: string) => void;
   getProductById: (id: string) => ProductInfo | undefined;
   refresh: () => Promise<void>;
@@ -517,6 +521,7 @@ interface ProductExtractorState {
     avgMargin: number;
     categories: CategoryStats[];
   };
+  hasProductWithUrl: (url: string) => boolean;
 }
 
 const parsePrice = (priceStr: string): number => {
@@ -658,25 +663,66 @@ const categoryColors: Record<ProductCategory, string> = {
   '其他': '#B8B0A0',
 };
 
-export const useProductExtractorStore = create<ProductExtractorState>((set, get) => ({
-  products: mockProducts,
-  isExtracting: false,
-  lastExtracted: null,
-  lastRefresh: new Date().toISOString(),
-  isRefreshing: false,
-  activeTab: 'all',
-
-  extractFromUrl: async (url) => {
-    set({ isExtracting: true });
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    const product = generateMockProduct(url);
-    set((state) => ({
-      products: [product, ...state.products],
+export const useProductExtractorStore = create<ProductExtractorState>()(
+  persist(
+    (set, get) => ({
+      products: mockProducts,
       isExtracting: false,
-      lastExtracted: product,
-      activeTab: 'pending',
-    }));
-  },
+      extractError: null,
+      lastExtracted: null,
+      lastRefresh: new Date().toISOString(),
+      isRefreshing: false,
+      activeTab: 'all',
+
+      extractFromUrl: async (url) => {
+        set({ isExtracting: true, extractError: null });
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          const product = generateMockProduct(url);
+          set((state) => ({
+            products: [product, ...state.products],
+            isExtracting: false,
+            lastExtracted: product,
+            activeTab: 'pending',
+          }));
+        } catch (e) {
+          set({ isExtracting: false, extractError: (e as Error).message });
+        }
+      },
+
+      extractFromHtml: async (html, url) => {
+        set({ isExtracting: true, extractError: null });
+        try {
+          const validation = validateHtmlContent(html);
+          if (!validation.valid) {
+            set({ isExtracting: false, extractError: validation.error });
+            return { success: false, error: validation.error };
+          }
+
+          if (get().hasProductWithUrl(url)) {
+            set({ isExtracting: false, extractError: '该商品已在选品库中' });
+            return { success: false, error: '该商品已在选品库中' };
+          }
+
+          await new Promise((resolve) => setTimeout(resolve, 800));
+          const product = parse1688Html(html, url);
+          set((state) => ({
+            products: [product, ...state.products],
+            isExtracting: false,
+            lastExtracted: product,
+            activeTab: 'pending',
+          }));
+          return { success: true };
+        } catch (e) {
+          const errorMsg = (e as Error).message || '提取失败，请重试';
+          set({ isExtracting: false, extractError: errorMsg });
+          return { success: false, error: errorMsg };
+        }
+      },
+
+      hasProductWithUrl: (url) => {
+        return get().products.some((p) => p.url === url);
+      },
 
   deleteProduct: (id) => {
     set((state) => ({
@@ -853,4 +899,9 @@ export const useProductExtractorStore = create<ProductExtractorState>((set, get)
       categories,
     };
   },
-}));
+}),
+    {
+      name: 'product-extractor-storage',
+    }
+  )
+);
