@@ -29,14 +29,11 @@ function parsePrice(text: string): number {
 
 function normalizeImageUrl(src: string): string {
   if (!src) return '';
-  // Convert 1688 thumbnail URLs to full-size images
-  // Patterns like: image.jpg_60x60q80.jpg, image_60x60q80.jpg, image_400x400.jpg etc.
   let url = src;
-  // Step 1: Handle .jpg_60x60q80.jpg -> .jpg
   url = url.replace(/(\.(?:jpg|jpeg|png|webp))_\d+x\d+[q\d]*\.(?:jpg|jpeg|png|webp)$/i, '$1');
-  // Step 2: Handle _60x60q80.jpg -> .jpg
   url = url.replace(/_\d+x\d+[q\d]*\.(jpg|jpeg|png|webp)$/i, '.$1');
-  // Clean query params
+  url = url.replace(/(\.(?:jpg|jpeg|png|webp))_\d+x\d+/i, '$1');
+  url = url.replace(/(\.(?:jpg|jpeg|png|webp))\?.*$/i, '$1');
   url = url.replace(/\?.*$/, '');
   return url;
 }
@@ -52,13 +49,22 @@ function extractImages(doc: Document): ProductImage[] {
     '.vertical-img img',
     '.offer-img-box img',
     '[class*="gallery"] img',
+    '[class*="product-img"] img',
+    '[class*="goods-img"] img',
+    '[class*="item-img"] img',
+    '.detail-img-list img',
+    '[class*="image-list"] img',
+    '[data-lazy-src]',
+    '[class*="lazy-img"]',
+    '.slider-img img',
+    '.carousel-img img',
   ];
 
   for (const sel of selectors) {
     const imgs = doc.querySelectorAll(sel);
     imgs.forEach((img) => {
       const el = img as HTMLImageElement;
-      let src = el.src || el.getAttribute('data-src') || '';
+      let src = el.src || el.getAttribute('data-src') || el.getAttribute('data-lazy-src') || el.getAttribute('data-original') || '';
       if (src && src.includes('alicdn') && (src.includes('.jpg') || src.includes('.png') || src.includes('.webp'))) {
         src = normalizeImageUrl(src);
         if (!images.some((i) => i.url === src)) {
@@ -70,11 +76,11 @@ function extractImages(doc: Document): ProductImage[] {
   }
 
   if (images.length === 0) {
-    const allImgs = doc.querySelectorAll('img[src*="alicdn"]');
+    const allImgs = doc.querySelectorAll('img');
     allImgs.forEach((img) => {
       const el = img as HTMLImageElement;
-      let src = el.src || el.getAttribute('data-src') || '';
-      if (src && (src.includes('.jpg') || src.includes('.png') || src.includes('.webp'))) {
+      let src = el.src || el.getAttribute('data-src') || el.getAttribute('data-lazy-src') || el.getAttribute('data-original') || '';
+      if (src && (src.includes('alicdn') || src.includes('1688.com')) && (src.includes('.jpg') || src.includes('.png') || src.includes('.webp'))) {
         src = normalizeImageUrl(src);
         if (images.length < 5 && !images.some((i) => i.url === src)) {
           images.push({ url: src, alt: `商品图${images.length + 1}` });
@@ -87,7 +93,7 @@ function extractImages(doc: Document): ProductImage[] {
 }
 
 function isCompanyName(text: string): boolean {
-  const companyPatterns = ['有限公司', '工厂', '商行', '经营部', '工作室', '贸易公司', '淘宝店', '旗舰店'];
+  const companyPatterns = ['有限公司', '工厂', '商行', '经营部', '工作室', '贸易公司', '淘宝店', '旗舰店', '企业店', '公司', '集团', '股份', '科技', '实业', '商贸', '电子', '机械', '化工'];
   return companyPatterns.some((p) => text.includes(p));
 }
 
@@ -111,6 +117,16 @@ function extractTitle(doc: Document): string {
     '.title-text',
     '[class*="subject"]',
     '[class*="item-title"]',
+    '[data-title]',
+    '.offer-subject',
+    '.offer-title-text',
+    '[class*="detail-title"]',
+    '[class*="product-title"]',
+    '.sku-title',
+    '[class*="goods-title"]',
+    '.item-name',
+    '[class*="name-text"]',
+    '.product-name',
   ];
   for (const sel of titleSelectors) {
     const el = doc.querySelector(sel);

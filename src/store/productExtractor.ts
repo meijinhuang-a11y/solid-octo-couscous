@@ -370,6 +370,11 @@ export const useProductExtractorStore = create<ProductExtractorState>()(
     }),
     {
       name: 'product-extractor-storage',
+      partialize: (state) => ({
+        products: state.products,
+        activeTab: state.activeTab,
+        lastRefresh: state.lastRefresh,
+      }),
     }
   )
 );

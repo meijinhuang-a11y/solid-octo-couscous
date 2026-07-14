@@ -22,7 +22,7 @@ export default function ProductExtractorPage() {
     activeTab,
     setActiveTab,
     extractFromHtml,
-    getFilteredProducts,
+    products,
     getStats,
     updateProductProfit,
     updateProductNotes,
@@ -51,7 +51,10 @@ export default function ProductExtractorPage() {
   const sheetRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const filteredProducts = useMemo(() => getFilteredProducts(), [getFilteredProducts]);
+  const filteredProducts = useMemo(() => {
+    if (activeTab === 'all') return products;
+    return products.filter((p) => p.status === activeTab);
+  }, [products, activeTab]);
   const stats = useMemo(() => getStats(), [getStats]);
   const selectedProduct = filteredProducts.find((p) => p.id === selectedId) || null;
 
