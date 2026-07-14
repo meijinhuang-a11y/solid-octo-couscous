@@ -369,9 +369,10 @@ export default function ProductExtractorPage() {
                 value={htmlContent}
                 onChange={(e) => setHtmlContent(e.target.value)}
                 placeholder="在此粘贴1688商品页面源码（F12 → 复制html标签内容）..."
-                className="w-full px-4 py-3 rounded-xl outline-none resize-none transition-all"
-                style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-dark)', minHeight: '120px', lineHeight: 1.5 }}
+                className="w-full px-4 py-3 rounded-xl outline-none resize-none transition-all overflow-auto"
+                style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', fontFamily: "'Monaco','JetBrains Mono',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-dark)', minHeight: '110px', maxHeight: '200px', lineHeight: 1.5 }}
                 disabled={isExtracting}
+                rows={5}
               />
             </div>
             <div className="flex gap-2 flex-wrap">
