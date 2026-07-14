@@ -46,8 +46,10 @@ export default function ProductExtractorPage() {
   const [xhsTitleInput, setXhsTitleInput] = useState('');
   const [xhsPriceInput, setXhsPriceInput] = useState('');
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const filteredProducts = useMemo(() => getFilteredProducts(), [getFilteredProducts]);
   const stats = useMemo(() => getStats(), [getStats]);
@@ -59,6 +61,12 @@ export default function ProductExtractorPage() {
     if (result.success) {
       setHtmlContent('');
       setUrl('');
+      setSuccessMsg('✅ 商品提取成功，已添加到未上架列表');
+      setTimeout(() => setSuccessMsg(null), 3000);
+      // 滚动到列表顶部查看新商品
+      setTimeout(() => {
+        listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
   };
 
@@ -242,6 +250,19 @@ export default function ProductExtractorPage() {
         </motion.div>
       )}
 
+      {/* Success Message */}
+      {successMsg && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="mb-3 p-3 rounded-xl"
+          style={{ background: 'color-mix(in srgb, var(--moss-green) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--moss-green) 30%, transparent)', color: 'var(--moss-green)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem' }}
+        >
+          {successMsg}
+        </motion.div>
+      )}
+
       {/* HTML Input Mode */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -360,7 +381,7 @@ export default function ProductExtractorPage() {
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Product List */}
-        <motion.div className="w-full lg:w-[340px] flex flex-col" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.4 }}>
+        <motion.div ref={listRef} className="w-full lg:w-[340px] flex flex-col" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.4 }}>
           <div className="flex items-center justify-between mb-3">
             <h3 className="m-0 uppercase" style={{ fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 600, color: 'var(--cream-dark)' }}>商品列表</h3>
             <span style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-text-muted)' }}>{filteredProducts.length} 个商品</span>
@@ -409,7 +430,7 @@ export default function ProductExtractorPage() {
                     <div className="flex gap-3">
                       <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center" style={{ background: 'var(--cream-border)' }}>
                         {product.images[0]?.url ? (
-                          <img src={product.images[0].url} alt={product.images[0].alt} className="w-full h-full object-cover" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                          <img src={product.images[0].url} alt={product.images[0].alt} className="w-full h-full object-cover" loading="lazy" referrerPolicy="no-referrer" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                         ) : (
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--cream-text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
                         )}
@@ -620,12 +641,13 @@ function ProductDetail(props: ProductDetailProps) {
       {/* Top Section */}
       <div className="flex flex-col gap-4">
         <div className="w-full flex flex-col">
-          <div className="rounded-2xl overflow-hidden mb-3" style={{ background: 'var(--cream-border)', maxHeight: '260px' }}>
+          <div className="rounded-2xl overflow-hidden mb-3" style={{ background: 'var(--cream-border)', maxHeight: '180px' }}>
             <img
               src={product.images[activeImageIndex]?.url}
               alt={product.images[activeImageIndex]?.alt}
-              className="w-full h-full object-contain"
-              style={{ maxHeight: '260px' }}
+              className="w-full object-contain"
+              style={{ maxHeight: '180px', margin: '0 auto', display: 'block' }}
+              referrerPolicy="no-referrer"
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
             />
           </div>
@@ -633,7 +655,7 @@ function ProductDetail(props: ProductDetailProps) {
             <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
               {product.images.map((img, idx) => (
                 <motion.button key={idx} type="button" onClick={() => setActiveImageIndex(idx)} className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 transition-all flex items-center justify-center" style={{ border: `2px solid ${activeImageIndex === idx ? 'var(--soft-blue)' : 'transparent'}`, cursor: 'pointer', background: 'var(--cream-border)' }} whileTap={{ scale: 0.97 }}>
-                  <img src={img.url} alt={img.alt} className="w-full h-full object-cover" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  <img src={img.url} alt={img.alt} className="w-full h-full object-cover" loading="lazy" referrerPolicy="no-referrer" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 </motion.button>
               ))}
             </div>

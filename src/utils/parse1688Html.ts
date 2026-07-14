@@ -156,6 +156,29 @@ function extractTitle(doc: Document): string {
     }
   }
 
+  // 6. Try meta description
+  const metaDesc = doc.querySelector('meta[name="description"]');
+  if (metaDesc) {
+    const content = metaDesc.getAttribute('content') || '';
+    const text = cleanText(content).split(/[,，。；]/)[0];
+    if (text && text.length > 5 && text.length < 80 && !isCompanyName(text)) {
+      return text;
+    }
+  }
+
+  // 7. Fallback: use <title> even if it might contain company name,
+  //    but only if it's not purely a company name pattern
+  if (titleEl) {
+    let text = titleEl.textContent || '';
+    text = text.replace(/[-|_\s].*阿里巴巴.*/gi, '');
+    text = text.replace(/[-|_\s].*1688.*/gi, '');
+    text = text.replace(/[-|_\s].*淘宝.*/gi, '');
+    text = cleanText(text);
+    if (text && text.length > 3) {
+      return text;
+    }
+  }
+
   return '';
 }
 
