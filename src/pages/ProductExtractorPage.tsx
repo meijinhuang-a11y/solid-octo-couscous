@@ -23,7 +23,6 @@ export default function ProductExtractorPage() {
     setActiveTab,
     extractFromHtml,
     products,
-    getStats,
     updateProductProfit,
     updateProductNotes,
     updateDropshippingRules,
@@ -31,7 +30,7 @@ export default function ProductExtractorPage() {
     deleteProduct,
     listProduct,
     downlistProduct,
-  } = useProductExtractorStore();
+  } = useProductExtractorStore((state) => state);
 
   const device = useDeviceDetect();
   const [url, setUrl] = useState('');
@@ -55,7 +54,25 @@ export default function ProductExtractorPage() {
     if (activeTab === 'all') return products;
     return products.filter((p) => p.status === activeTab);
   }, [products, activeTab]);
-  const stats = useMemo(() => getStats(), [getStats]);
+
+  const stats = useMemo(() => {
+    const pending = products.filter((p) => p.status === 'pending');
+    const ready = products.filter((p) => p.status === 'ready');
+    const listed = products.filter((p) => p.status === 'listed');
+    const downlisted = products.filter((p) => p.status === 'downlisted');
+    const allProfit = [...ready, ...listed];
+    const avgMargin = allProfit.length > 0
+      ? +(allProfit.reduce((sum, p) => sum + p.profit.profitMargin, 0) / allProfit.length).toFixed(1)
+      : 0;
+    return {
+      pending: pending.length,
+      ready: ready.length,
+      listed: listed.length,
+      downlisted: downlisted.length,
+      total: products.length,
+      avgMargin,
+    };
+  }, [products]);
   const selectedProduct = filteredProducts.find((p) => p.id === selectedId) || null;
 
   const handleExtractHtml = async () => {
@@ -644,12 +661,12 @@ function ProductDetail(props: ProductDetailProps) {
       {/* Top Section */}
       <div className="flex flex-col gap-4">
         <div className="w-full flex flex-col">
-          <div className="rounded-2xl overflow-hidden mb-3" style={{ background: 'var(--cream-border)', maxHeight: '180px' }}>
+          <div className="rounded-2xl overflow-hidden mb-3" style={{ background: 'var(--cream-border)', maxHeight: '140px' }}>
             <img
               src={product.images[activeImageIndex]?.url}
               alt={product.images[activeImageIndex]?.alt}
               className="w-full object-contain"
-              style={{ maxHeight: '180px', margin: '0 auto', display: 'block' }}
+              style={{ maxHeight: '140px', margin: '0 auto', display: 'block' }}
               referrerPolicy="no-referrer"
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
             />

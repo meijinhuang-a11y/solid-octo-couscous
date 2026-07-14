@@ -123,7 +123,7 @@ const generateMatchAnalysis = (product: ProductInfo): string => {
   return parts.join('；') + '。';
 };
 
-const categoryColors: Record<ProductCategory, string> = {
+export const categoryColors: Record<ProductCategory, string> = {
   '服饰': '#E87C6B',
   '家居': '#7BA3A8',
   '数码': '#5B8DB8',

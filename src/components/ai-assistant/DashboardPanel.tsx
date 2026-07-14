@@ -1,9 +1,53 @@
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useProductExtractorStore } from '@/store/productExtractor';
+import { categoryColors } from '@/store/productExtractor';
+import type { ProductCategory } from '@/types';
 
 export default function DashboardPanel() {
-  const { getDashboardStats } = useProductExtractorStore();
-  const stats = getDashboardStats();
+  const products = useProductExtractorStore((state) => state.products);
+
+  const stats = useMemo(() => {
+    const listed = products.filter((p) => p.status === 'listed');
+    const totalProfit = listed.reduce((sum, p) => sum + p.profit.profitPerUnit, 0);
+    const avgMargin = listed.length > 0
+      ? +(listed.reduce((sum, p) => sum + p.profit.profitMargin, 0) / listed.length).toFixed(1)
+      : 0;
+
+    const categories: { category: ProductCategory; total: number; listed: number; ready: number; pending: number; totalProfit: number; avgMargin: number; color: string }[] = [];
+    const categoryKeywords = Object.keys(categoryColors) as ProductCategory[];
+
+    for (const category of categoryKeywords) {
+      if (category === '其他') continue;
+      const catProducts = products.filter((p) => p.category === category);
+      if (catProducts.length === 0) continue;
+      const catListed = catProducts.filter((p) => p.status === 'listed');
+      const catTotalProfit = catListed.reduce((sum, p) => sum + p.profit.profitPerUnit, 0);
+      const catAvgMargin = catListed.length > 0
+        ? +(catListed.reduce((sum, p) => sum + p.profit.profitMargin, 0) / catListed.length).toFixed(1)
+        : 0;
+      categories.push({
+        category,
+        total: catProducts.length,
+        listed: catListed.length,
+        ready: catProducts.filter((p) => p.status === 'ready').length,
+        pending: catProducts.filter((p) => p.status === 'pending').length,
+        totalProfit: +catTotalProfit.toFixed(2),
+        avgMargin: catAvgMargin,
+        color: categoryColors[category],
+      });
+    }
+
+    categories.sort((a, b) => b.totalProfit - a.totalProfit);
+
+    return {
+      totalProducts: products.length,
+      listedProducts: listed.length,
+      totalProfit: +totalProfit.toFixed(2),
+      avgMargin,
+      categories,
+    };
+  }, [products]);
 
   const overviewCards = [
     { label: '总商品数', value: stats.totalProducts, color: 'var(--cream-dark)', icon: '📦' },

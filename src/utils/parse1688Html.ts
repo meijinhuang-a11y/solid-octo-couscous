@@ -40,51 +40,104 @@ function normalizeImageUrl(src: string): string {
 
 function extractImages(doc: Document): ProductImage[] {
   const images: ProductImage[] = [];
-  const selectors = [
-    '.sk-main-image-list img',
+  const seenUrls = new Set<string>();
+
+  const addImage = (src: string) => {
+    if (!src) return;
+    if (images.length >= 5) return;
+    const normalized = normalizeImageUrl(src);
+    if (!normalized) return;
+    if (seenUrls.has(normalized)) return;
+    if (!normalized.includes('alicdn') && !normalized.includes('1688.com')) return;
+    if (!/\.(jpg|jpeg|png|webp|gif)/i.test(normalized)) return;
+    seenUrls.add(normalized);
+    images.push({ url: normalized, alt: `商品图${images.length + 1}` });
+  };
+
+  const extractFromElement = (el: Element) => {
+    const imgEl = el as HTMLImageElement;
+    const srcs = [
+      imgEl.src,
+      imgEl.getAttribute('data-src'),
+      imgEl.getAttribute('data-lazy-src'),
+      imgEl.getAttribute('data-original'),
+      imgEl.getAttribute('data-ks-lazyload'),
+      imgEl.getAttribute('data-actualsrc'),
+      imgEl.getAttribute('data-big'),
+      imgEl.getAttribute('data-image'),
+      imgEl.getAttribute('srcset'),
+    ];
+    for (const src of srcs) {
+      if (src && src.includes('alicdn')) {
+        const urls = src.split(/[,\s]/).map(s => s.trim()).filter(s => s);
+        for (const u of urls) {
+          addImage(u);
+        }
+      }
+    }
+    const style = imgEl.getAttribute('style') || '';
+    const bgMatch = style.match(/url\(['"]?([^'")\s]+)['"]?\)/);
+    if (bgMatch) addImage(bgMatch[1]);
+  };
+
+  const prioritySelectors = [
     '[class*="main-image"] img',
-    '.tab-container img',
-    '[class*="detail-gallery"] img',
-    '#dt-tab img',
+    '[class*="main-img"] img',
+    '.sk-main-image-list img',
     '.vertical-img img',
-    '.offer-img-box img',
+    '[class*="vertical-img"] img',
+    '[class*="detail-gallery"] img',
     '[class*="gallery"] img',
+    '[class*="sku-img"] img',
+    '[class*="spec-img"] img',
     '[class*="product-img"] img',
     '[class*="goods-img"] img',
     '[class*="item-img"] img',
+    '.tab-container img',
+    '#dt-tab img',
+    '.offer-img-box img',
+    '[class*="offer-img"] img',
     '.detail-img-list img',
+    '[class*="img-list"] img',
     '[class*="image-list"] img',
+    '[class*="slide"] img',
+    '[class*="carousel"] img',
+    '[class*="slider"] img',
+    '[class*="swiper"] img',
     '[data-lazy-src]',
-    '[class*="lazy-img"]',
-    '.slider-img img',
-    '.carousel-img img',
+    '[data-src]',
+    '[data-original]',
   ];
 
-  for (const sel of selectors) {
-    const imgs = doc.querySelectorAll(sel);
-    imgs.forEach((img) => {
-      const el = img as HTMLImageElement;
-      let src = el.src || el.getAttribute('data-src') || el.getAttribute('data-lazy-src') || el.getAttribute('data-original') || '';
-      if (src && src.includes('alicdn') && (src.includes('.jpg') || src.includes('.png') || src.includes('.webp'))) {
-        src = normalizeImageUrl(src);
-        if (!images.some((i) => i.url === src)) {
-          images.push({ url: src, alt: `商品图${images.length + 1}` });
-        }
-      }
-    });
-    if (images.length >= 5) break;
+  for (const sel of prioritySelectors) {
+    try {
+      const els = doc.querySelectorAll(sel);
+      els.forEach((el) => extractFromElement(el));
+      if (images.length >= 5) break;
+    } catch (e) {
+      // skip invalid selectors
+    }
   }
 
-  if (images.length === 0) {
+  if (images.length < 5) {
     const allImgs = doc.querySelectorAll('img');
     allImgs.forEach((img) => {
-      const el = img as HTMLImageElement;
-      let src = el.src || el.getAttribute('data-src') || el.getAttribute('data-lazy-src') || el.getAttribute('data-original') || '';
-      if (src && (src.includes('alicdn') || src.includes('1688.com')) && (src.includes('.jpg') || src.includes('.png') || src.includes('.webp'))) {
-        src = normalizeImageUrl(src);
-        if (images.length < 5 && !images.some((i) => i.url === src)) {
-          images.push({ url: src, alt: `商品图${images.length + 1}` });
-        }
+      if (images.length >= 5) return;
+      extractFromElement(img);
+    });
+  }
+
+  if (images.length < 5) {
+    const allElements = doc.querySelectorAll('[style*="background"], [style*="url("]');
+    allElements.forEach((el) => {
+      if (images.length >= 5) return;
+      const style = (el as HTMLElement).style.cssText || '';
+      const matches = style.match(/url\(['"]?([^'")\s]+)['"]?\)/g);
+      if (matches) {
+        matches.forEach((m) => {
+          const urlMatch = m.match(/url\(['"]?([^'")\s]+)['"]?\)/);
+          if (urlMatch) addImage(urlMatch[1]);
+        });
       }
     });
   }
@@ -93,22 +146,36 @@ function extractImages(doc: Document): ProductImage[] {
 }
 
 function isCompanyName(text: string): boolean {
-  const companyPatterns = ['有限公司', '工厂', '商行', '经营部', '工作室', '贸易公司', '淘宝店', '旗舰店', '企业店', '公司', '集团', '股份', '科技', '实业', '商贸', '电子', '机械', '化工'];
+  const companyPatterns = ['有限公司', '有限责任公司', '股份公司', '集团', '工厂', '制造厂', '生产厂', '商行', '经营部', '工作室', '贸易公司', '淘宝店', '旗舰店', '企业店', '公司', '实业', '商贸', '电子科技', '科技公司', '工贸', '经贸'];
   return companyPatterns.some((p) => text.includes(p));
 }
 
 function extractTitle(doc: Document): string {
-  // 1. Try meta og:title first (most reliable for product pages)
+  const candidates: string[] = [];
+
+  const addCandidate = (text: string, priority: number) => {
+    const cleaned = cleanText(text);
+    if (!cleaned || cleaned.length < 5) return;
+    if (cleaned.length > 150) return;
+    if (isCompanyName(cleaned)) {
+      candidates.push({ text: cleaned, priority: priority + 100 } as any);
+    } else {
+      candidates.push({ text: cleaned, priority } as any);
+    }
+  };
+
   const ogTitle = doc.querySelector('meta[property="og:title"]');
   if (ogTitle) {
-    const content = ogTitle.getAttribute('content') || '';
-    const text = cleanText(content);
-    if (text && text.length > 5 && !isCompanyName(text)) {
-      return text;
-    }
+    addCandidate(ogTitle.getAttribute('content') || '', 1);
   }
 
-  // 2. Try specific 1688 title selectors
+  const ogDescription = doc.querySelector('meta[property="og:description"]');
+  if (ogDescription) {
+    const content = ogDescription.getAttribute('content') || '';
+    const firstSentence = content.split(/[。，；.!?]/)[0];
+    addCandidate(firstSentence, 90);
+  }
+
   const titleSelectors = [
     '.d-title',
     '[class*="offer-title"]',
@@ -127,72 +194,73 @@ function extractTitle(doc: Document): string {
     '.item-name',
     '[class*="name-text"]',
     '.product-name',
+    '[class*="goods-name"]',
+    '[class*="title-wrap"]',
+    '[class*="title-content"]',
+    '[class*="main-title"]',
+    '[class*="head-title"]',
+    '.mod-title .d-title',
+    '[class*="price"] ~ [class*="title"]',
+    'h1',
+    'h2',
   ];
-  for (const sel of titleSelectors) {
-    const el = doc.querySelector(sel);
-    if (el) {
-      const text = cleanText(el.textContent || '');
-      if (text && text.length > 5 && !isCompanyName(text)) {
-        return text;
+
+  for (let i = 0; i < titleSelectors.length; i++) {
+    const sel = titleSelectors[i];
+    try {
+      const els = doc.querySelectorAll(sel);
+      els.forEach((el) => {
+        const text = el.textContent || '';
+        addCandidate(text, 10 + i * 0.5);
+      });
+    } catch (e) {
+      // skip
+    }
+  }
+
+  const metaDesc = doc.querySelector('meta[name="description"]');
+  if (metaDesc) {
+    const content = metaDesc.getAttribute('content') || '';
+    const firstSentence = content.split(/[。，；.!?]/)[0];
+    addCandidate(firstSentence, 80);
+  }
+
+  const titleEl = doc.querySelector('title');
+  if (titleEl) {
+    let text = titleEl.textContent || '';
+    text = text.replace(/[-|_\s]+阿里巴巴.*$/gi, '');
+    text = text.replace(/[-|_\s]+1688.*$/gi, '');
+    text = text.replace(/[-|_\s]+淘宝.*$/gi, '');
+    text = text.replace(/[-|_\s]+天猫.*$/gi, '');
+    text = cleanText(text);
+    if (text && text.length > 5 && text.length < 100) {
+      if (isCompanyName(text)) {
+        addCandidate(text, 95);
+      } else {
+        addCandidate(text, 50);
       }
     }
   }
 
-  // 3. Try h1 but filter out company names
-  const h1 = doc.querySelector('h1');
-  if (h1) {
-    const text = cleanText(h1.textContent || '');
-    if (text && text.length > 5 && !isCompanyName(text)) {
-      return text;
-    }
-  }
-
-  // 4. Fallback to <title> tag with better cleaning
-  const titleEl = doc.querySelector('title');
-  if (titleEl) {
-    let text = titleEl.textContent || '';
-    // Remove site suffixes like "- 阿里巴巴", "- 1688.com", "_阿里巴巴"
-    text = text.replace(/[-|_\s].*阿里巴巴.*/gi, '');
-    text = text.replace(/[-|_\s].*1688.*/gi, '');
-    text = text.replace(/[-|_\s].*淘宝.*/gi, '');
-    text = cleanText(text);
-    if (text && text.length > 5 && !isCompanyName(text)) {
-      return text;
-    }
-  }
-
-  // 5. Last resort: try meta keywords first phrase
   const metaKeywords = doc.querySelector('meta[name="keywords"]');
   if (metaKeywords) {
     const content = metaKeywords.getAttribute('content') || '';
     const firstPhrase = content.split(/[,，]/)[0];
-    const text = cleanText(firstPhrase);
-    if (text && text.length > 5 && !isCompanyName(text)) {
-      return text;
+    addCandidate(firstPhrase, 70);
+  }
+
+  const sortedCandidates = candidates
+    .map((c: any) => c)
+    .sort((a: any, b: any) => a.priority - b.priority);
+
+  for (const c of sortedCandidates) {
+    if (!isCompanyName(c.text) && c.text.length >= 5) {
+      return c.text;
     }
   }
 
-  // 6. Try meta description
-  const metaDesc = doc.querySelector('meta[name="description"]');
-  if (metaDesc) {
-    const content = metaDesc.getAttribute('content') || '';
-    const text = cleanText(content).split(/[,，。；]/)[0];
-    if (text && text.length > 5 && text.length < 80 && !isCompanyName(text)) {
-      return text;
-    }
-  }
-
-  // 7. Fallback: use <title> even if it might contain company name,
-  //    but only if it's not purely a company name pattern
-  if (titleEl) {
-    let text = titleEl.textContent || '';
-    text = text.replace(/[-|_\s].*阿里巴巴.*/gi, '');
-    text = text.replace(/[-|_\s].*1688.*/gi, '');
-    text = text.replace(/[-|_\s].*淘宝.*/gi, '');
-    text = cleanText(text);
-    if (text && text.length > 3) {
-      return text;
-    }
+  if (sortedCandidates.length > 0) {
+    return sortedCandidates[0].text;
   }
 
   return '';
