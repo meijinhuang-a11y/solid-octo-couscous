@@ -27,6 +27,20 @@ function parsePrice(text: string): number {
   return match ? parseFloat(match[0]) : 0;
 }
 
+function normalizeImageUrl(src: string): string {
+  if (!src) return '';
+  // Convert 1688 thumbnail URLs to full-size images
+  // Patterns like: image.jpg_60x60q80.jpg, image_60x60q80.jpg, image_400x400.jpg etc.
+  let url = src;
+  // Step 1: Handle .jpg_60x60q80.jpg -> .jpg
+  url = url.replace(/(\.(?:jpg|jpeg|png|webp))_\d+x\d+[q\d]*\.(?:jpg|jpeg|png|webp)$/i, '$1');
+  // Step 2: Handle _60x60q80.jpg -> .jpg
+  url = url.replace(/_\d+x\d+[q\d]*\.(jpg|jpeg|png|webp)$/i, '.$1');
+  // Clean query params
+  url = url.replace(/\?.*$/, '');
+  return url;
+}
+
 function extractImages(doc: Document): ProductImage[] {
   const images: ProductImage[] = [];
   const selectors = [
@@ -36,13 +50,17 @@ function extractImages(doc: Document): ProductImage[] {
     '[class*="detail-gallery"] img',
     '#dt-tab img',
     '.vertical-img img',
+    '.offer-img-box img',
+    '[class*="gallery"] img',
   ];
 
   for (const sel of selectors) {
     const imgs = doc.querySelectorAll(sel);
     imgs.forEach((img) => {
-      const src = (img as HTMLImageElement).src;
+      const el = img as HTMLImageElement;
+      let src = el.src || el.getAttribute('data-src') || '';
       if (src && src.includes('alicdn') && (src.includes('.jpg') || src.includes('.png') || src.includes('.webp'))) {
+        src = normalizeImageUrl(src);
         if (!images.some((i) => i.url === src)) {
           images.push({ url: src, alt: `商品图${images.length + 1}` });
         }
@@ -54,8 +72,10 @@ function extractImages(doc: Document): ProductImage[] {
   if (images.length === 0) {
     const allImgs = doc.querySelectorAll('img[src*="alicdn"]');
     allImgs.forEach((img) => {
-      const src = (img as HTMLImageElement).src;
+      const el = img as HTMLImageElement;
+      let src = el.src || el.getAttribute('data-src') || '';
       if (src && (src.includes('.jpg') || src.includes('.png') || src.includes('.webp'))) {
+        src = normalizeImageUrl(src);
         if (images.length < 5 && !images.some((i) => i.url === src)) {
           images.push({ url: src, alt: `商品图${images.length + 1}` });
         }
@@ -66,27 +86,76 @@ function extractImages(doc: Document): ProductImage[] {
   return images.slice(0, 5);
 }
 
+function isCompanyName(text: string): boolean {
+  const companyPatterns = ['有限公司', '工厂', '商行', '经营部', '工作室', '贸易公司', '淘宝店', '旗舰店'];
+  return companyPatterns.some((p) => text.includes(p));
+}
+
 function extractTitle(doc: Document): string {
-  const h1Selectors = [
-    'h1',
-    '.d-title h1',
-    '.title-text',
+  // 1. Try meta og:title first (most reliable for product pages)
+  const ogTitle = doc.querySelector('meta[property="og:title"]');
+  if (ogTitle) {
+    const content = ogTitle.getAttribute('content') || '';
+    const text = cleanText(content);
+    if (text && text.length > 5 && !isCompanyName(text)) {
+      return text;
+    }
+  }
+
+  // 2. Try specific 1688 title selectors
+  const titleSelectors = [
+    '.d-title',
+    '[class*="offer-title"]',
     '[class*="title-main"]',
     '.mod-detail-title .d-title',
+    '.title-text',
+    '[class*="subject"]',
+    '[class*="item-title"]',
   ];
-  for (const sel of h1Selectors) {
+  for (const sel of titleSelectors) {
     const el = doc.querySelector(sel);
     if (el) {
       const text = cleanText(el.textContent || '');
-      if (text && text.length > 5) {
+      if (text && text.length > 5 && !isCompanyName(text)) {
         return text;
       }
     }
   }
+
+  // 3. Try h1 but filter out company names
+  const h1 = doc.querySelector('h1');
+  if (h1) {
+    const text = cleanText(h1.textContent || '');
+    if (text && text.length > 5 && !isCompanyName(text)) {
+      return text;
+    }
+  }
+
+  // 4. Fallback to <title> tag with better cleaning
   const titleEl = doc.querySelector('title');
   if (titleEl) {
-    return titleEl.textContent?.replace(/[-|_].*阿里巴巴.*/g, '').replace(/[-|_].*1688.*/g, '').trim() || '';
+    let text = titleEl.textContent || '';
+    // Remove site suffixes like "- 阿里巴巴", "- 1688.com", "_阿里巴巴"
+    text = text.replace(/[-|_\s].*阿里巴巴.*/gi, '');
+    text = text.replace(/[-|_\s].*1688.*/gi, '');
+    text = text.replace(/[-|_\s].*淘宝.*/gi, '');
+    text = cleanText(text);
+    if (text && text.length > 5 && !isCompanyName(text)) {
+      return text;
+    }
   }
+
+  // 5. Last resort: try meta keywords first phrase
+  const metaKeywords = doc.querySelector('meta[name="keywords"]');
+  if (metaKeywords) {
+    const content = metaKeywords.getAttribute('content') || '';
+    const firstPhrase = content.split(/[,，]/)[0];
+    const text = cleanText(firstPhrase);
+    if (text && text.length > 5 && !isCompanyName(text)) {
+      return text;
+    }
+  }
+
   return '';
 }
 

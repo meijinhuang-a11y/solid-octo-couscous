@@ -77,6 +77,7 @@ interface ProductExtractorState {
     categories: CategoryStats[];
   };
   hasProductWithUrl: (url: string) => boolean;
+  hasProductWithTitle: (title: string) => boolean;
 }
 
 const parsePrice = (priceStr: string): number => {
@@ -154,13 +155,19 @@ export const useProductExtractorStore = create<ProductExtractorState>()(
             return { success: false, error: validation.error };
           }
 
+          await new Promise((resolve) => setTimeout(resolve, 800));
+          const product = parse1688Html(html, url || '');
+
           if (url && get().hasProductWithUrl(url)) {
             set({ isExtracting: false, extractError: '该商品已在选品库中' });
             return { success: false, error: '该商品已在选品库中' };
           }
 
-          await new Promise((resolve) => setTimeout(resolve, 800));
-          const product = parse1688Html(html, url || 'https://detail.1688.com/offer/unknown');
+          if (!url && get().hasProductWithTitle(product.title)) {
+            set({ isExtracting: false, extractError: '该商品已在选品库中' });
+            return { success: false, error: '该商品已在选品库中' };
+          }
+
           set((state) => ({
             products: [product, ...state.products],
             isExtracting: false,
@@ -176,7 +183,13 @@ export const useProductExtractorStore = create<ProductExtractorState>()(
       },
 
       hasProductWithUrl: (url) => {
-        return get().products.some((p) => p.url === url);
+        if (!url) return false;
+        return get().products.some((p) => p.url && p.url === url);
+      },
+
+      hasProductWithTitle: (title) => {
+        if (!title) return false;
+        return get().products.some((p) => p.title === title);
       },
 
       deleteProduct: (id) => {

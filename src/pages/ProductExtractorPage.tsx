@@ -55,7 +55,7 @@ export default function ProductExtractorPage() {
 
   const handleExtractHtml = async () => {
     if (!htmlContent.trim()) return;
-    const result = await extractFromHtml(htmlContent.trim(), url.trim() || 'https://detail.1688.com/offer/unknown');
+    const result = await extractFromHtml(htmlContent.trim(), url.trim());
     if (result.success) {
       setHtmlContent('');
       setUrl('');
@@ -407,8 +407,12 @@ export default function ProductExtractorPage() {
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                     </motion.button>
                     <div className="flex gap-3">
-                      <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0" style={{ background: 'var(--cream-border)' }}>
-                        <img src={product.images[0]?.url} alt={product.images[0]?.alt} className="w-full h-full object-cover" />
+                      <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center" style={{ background: 'var(--cream-border)' }}>
+                        {product.images[0]?.url ? (
+                          <img src={product.images[0].url} alt={product.images[0].alt} className="w-full h-full object-cover" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                        ) : (
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--cream-text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0 pr-6">
                         <div className="flex items-center gap-1.5 mb-1.5">
@@ -616,14 +620,20 @@ function ProductDetail(props: ProductDetailProps) {
       {/* Top Section */}
       <div className="flex flex-col gap-4">
         <div className="w-full flex flex-col">
-          <div className="aspect-[4/3] rounded-2xl overflow-hidden mb-3" style={{ background: 'var(--cream-border)' }}>
-            <img src={product.images[activeImageIndex]?.url} alt={product.images[activeImageIndex]?.alt} className="w-full h-full object-cover" />
+          <div className="rounded-2xl overflow-hidden mb-3" style={{ background: 'var(--cream-border)', maxHeight: '260px' }}>
+            <img
+              src={product.images[activeImageIndex]?.url}
+              alt={product.images[activeImageIndex]?.alt}
+              className="w-full h-full object-contain"
+              style={{ maxHeight: '260px' }}
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
           </div>
           {product.images.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
               {product.images.map((img, idx) => (
-                <motion.button key={idx} type="button" onClick={() => setActiveImageIndex(idx)} className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 transition-all" style={{ border: `2px solid ${activeImageIndex === idx ? 'var(--soft-blue)' : 'transparent'}`, cursor: 'pointer', background: 'var(--cream-border)' }} whileTap={{ scale: 0.97 }}>
-                  <img src={img.url} alt={img.alt} className="w-full h-full object-cover" />
+                <motion.button key={idx} type="button" onClick={() => setActiveImageIndex(idx)} className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 transition-all flex items-center justify-center" style={{ border: `2px solid ${activeImageIndex === idx ? 'var(--soft-blue)' : 'transparent'}`, cursor: 'pointer', background: 'var(--cream-border)' }} whileTap={{ scale: 0.97 }}>
+                  <img src={img.url} alt={img.alt} className="w-full h-full object-cover" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 </motion.button>
               ))}
             </div>
