@@ -5,8 +5,6 @@ import type { ProductInfo, ProductStatus } from '@/types';
 import DashboardPanel from '@/components/ai-assistant/DashboardPanel';
 import { useDeviceDetect } from '@/hooks/useDeviceDetect';
 
-type ExtractMode = 'url' | 'html';
-
 const tabOptions: { value: ProductStatus | 'all'; label: string; desc: string }[] = [
   { value: 'pending', label: '未上架', desc: '1688提取，待评估' },
   { value: 'ready', label: '准备上架', desc: '利润已测算' },
@@ -23,7 +21,6 @@ export default function ProductExtractorPage() {
     isRefreshing,
     activeTab,
     setActiveTab,
-    extractFromUrl,
     extractFromHtml,
     getFilteredProducts,
     getStats,
@@ -37,7 +34,6 @@ export default function ProductExtractorPage() {
   } = useProductExtractorStore();
 
   const device = useDeviceDetect();
-  const [extractMode, setExtractMode] = useState<ExtractMode>('url');
   const [url, setUrl] = useState('');
   const [htmlContent, setHtmlContent] = useState('');
   const [showGuide, setShowGuide] = useState(false);
@@ -57,15 +53,9 @@ export default function ProductExtractorPage() {
   const stats = useMemo(() => getStats(), [getStats]);
   const selectedProduct = filteredProducts.find((p) => p.id === selectedId) || null;
 
-  const handleExtract = async () => {
-    if (!url.trim()) return;
-    await extractFromUrl(url.trim());
-    setUrl('');
-  };
-
   const handleExtractHtml = async () => {
     if (!htmlContent.trim()) return;
-    const result = await extractFromHtml(htmlContent.trim(), url.trim() || 'https://detail.1688.com/offer/');
+    const result = await extractFromHtml(htmlContent.trim(), url.trim() || 'https://detail.1688.com/offer/unknown');
     if (result.success) {
       setHtmlContent('');
       setUrl('');
@@ -76,19 +66,11 @@ export default function ProductExtractorPage() {
     try {
       const text = await navigator.clipboard.readText();
       if (text) {
-        if (extractMode === 'url') {
-          setUrl(text);
-        } else {
-          setHtmlContent(text);
-        }
+        setHtmlContent(text);
       }
     } catch {
       // 剪贴板不可用，忽略
     }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && extractMode === 'url') handleExtract();
   };
 
   const handleSelectProduct = (product: ProductInfo) => {
@@ -191,41 +173,21 @@ export default function ProductExtractorPage() {
       {/* Dashboard */}
       <DashboardPanel />
 
-      {/* Extract Mode Tabs */}
+      {/* Extract Mode Label */}
       <motion.div className="mb-3" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03, duration: 0.4 }}>
         <div className="flex gap-1 p-1 rounded-xl inline-flex" style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)' }}>
-          <button
-            type="button"
-            onClick={() => { setExtractMode('url'); setShowGuide(false); }}
-            className="px-4 py-1.5 rounded-lg transition-all"
+          <div
+            className="px-4 py-1.5 rounded-lg"
             style={{
-              background: extractMode === 'url' ? 'var(--soft-blue)' : 'transparent',
-              color: extractMode === 'url' ? '#fff' : 'var(--cream-dark)',
-              border: 'none',
-              cursor: 'pointer',
+              background: 'var(--moss-green)',
+              color: '#fff',
               fontFamily: "'Poppins',var(--font-sans)",
               fontSize: '0.75rem',
               fontWeight: 500,
             }}
           >
-            粘贴链接
-          </button>
-          <button
-            type="button"
-            onClick={() => { setExtractMode('html'); setShowGuide(false); }}
-            className="px-4 py-1.5 rounded-lg transition-all"
-            style={{
-              background: extractMode === 'html' ? 'var(--moss-green)' : 'transparent',
-              color: extractMode === 'html' ? '#fff' : 'var(--cream-dark)',
-              border: 'none',
-              cursor: 'pointer',
-              fontFamily: "'Poppins',var(--font-sans)",
-              fontSize: '0.75rem',
-              fontWeight: 500,
-            }}
-          >
-            粘贴页面源码（推荐）
-          </button>
+            粘贴页面源码提取
+          </div>
           <button
             type="button"
             onClick={() => setShowGuide(!showGuide)}
@@ -255,24 +217,14 @@ export default function ProductExtractorPage() {
             className="mb-3 overflow-hidden"
           >
             <div className="p-4 rounded-2xl" style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)' }}>
-              {extractMode === 'url' ? (
-                <div className="space-y-2" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-dark)', lineHeight: 1.7 }}>
-                  <p style={{ fontFamily: "'Poppins',var(--font-sans)", fontWeight: 600, marginBottom: '8px' }}>粘贴链接使用说明（模拟数据）</p>
-                  <p>1. 在1688上找到心仪商品，复制商品链接</p>
-                  <p>2. 粘贴到下方输入框，点击"提取"</p>
-                  <p>3. 系统会生成模拟商品数据供你体验</p>
-                  <p style={{ color: 'var(--warm-orange)' }}>⚠️ 链接模式为模拟数据，如需真实商品信息请使用"粘贴页面源码"模式</p>
-                </div>
-              ) : (
-                <div className="space-y-2" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-dark)', lineHeight: 1.7 }}>
-                  <p style={{ fontFamily: "'Poppins',var(--font-sans)", fontWeight: 600, marginBottom: '8px' }}>粘贴页面源码使用说明（真实数据）</p>
-                  <p>1. 在1688商品页面，按 <kbd style={{ padding: '2px 6px', borderRadius: '4px', background: 'var(--cream-border)', fontFamily: 'monospace' }}>F12</kbd> 打开开发者工具</p>
-                  <p>2. 点击顶部的 <span style={{ color: 'var(--soft-blue)', fontWeight: 500 }}>Elements</span>（元素）标签</p>
-                  <p>3. 选中 <code style={{ padding: '2px 6px', borderRadius: '4px', background: 'var(--cream-border)', fontFamily: 'monospace' }}>&lt;html&gt;</code> 标签，按 <kbd style={{ padding: '2px 6px', borderRadius: '4px', background: 'var(--cream-border)', fontFamily: 'monospace' }}>Ctrl+C</kbd> 复制</p>
-                  <p>4. 粘贴到下方文本框，同时在链接框粘贴商品URL，点击"提取"</p>
-                  <p style={{ color: 'var(--moss-green)' }}>✅ 可提取：商品标题、价格、图片、规格、店铺信息、发货信息等完整数据</p>
-                </div>
-              )}
+              <div className="space-y-2" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-dark)', lineHeight: 1.7 }}>
+                <p style={{ fontFamily: "'Poppins',var(--font-sans)", fontWeight: 600, marginBottom: '8px' }}>粘贴页面源码使用说明</p>
+                <p>1. 在1688商品页面，按 <kbd style={{ padding: '2px 6px', borderRadius: '4px', background: 'var(--cream-border)', fontFamily: 'monospace' }}>F12</kbd> 打开开发者工具</p>
+                <p>2. 点击顶部的 <span style={{ color: 'var(--soft-blue)', fontWeight: 500 }}>Elements</span>（元素）标签</p>
+                <p>3. 选中 <code style={{ padding: '2px 6px', borderRadius: '4px', background: 'var(--cream-border)', fontFamily: 'monospace' }}>&lt;html&gt;</code> 标签，按 <kbd style={{ padding: '2px 6px', borderRadius: '4px', background: 'var(--cream-border)', fontFamily: 'monospace' }}>Ctrl+C</kbd> 复制</p>
+                <p>4. 粘贴到下方文本框，同时在链接框粘贴商品URL，点击"提取"</p>
+                <p style={{ color: 'var(--moss-green)' }}>✅ 可提取：商品标题、价格、图片、规格、店铺信息、发货信息等完整数据</p>
+              </div>
             </div>
           </motion.div>
         )}
@@ -290,141 +242,72 @@ export default function ProductExtractorPage() {
         </motion.div>
       )}
 
-      {/* URL Input Mode */}
-      <AnimatePresence mode="wait">
-        {extractMode === 'url' ? (
-          <motion.div
-            key="url-mode"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="flex flex-col sm:flex-row gap-3 mb-4"
+      {/* HTML Input Mode */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="flex flex-col gap-3 mb-4"
+      >
+        <div className="relative">
+          <textarea
+            value={htmlContent}
+            onChange={(e) => setHtmlContent(e.target.value)}
+            placeholder="在此粘贴1688商品页面源码（F12 → 复制html标签内容）..."
+            className="w-full px-4 py-3 rounded-xl outline-none resize-none transition-all overflow-auto"
+            style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', fontFamily: "'Monaco','JetBrains Mono',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-dark)', minHeight: '110px', maxHeight: '200px', lineHeight: 1.5 }}
+            disabled={isExtracting}
+            rows={5}
+          />
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <div className="relative flex-1 min-w-[200px]">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--cream-text-muted)', position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}>
+              <path d="M10 13a5 5 0 0 1 5-5h4a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-4a5 5 0 0 1-5-5z" />
+            </svg>
+            <input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="商品链接（可选，用于记录来源）"
+              className="w-full h-10 pl-9 pr-3 rounded-xl outline-none transition-all"
+              style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-dark)' }}
+              disabled={isExtracting}
+            />
+          </div>
+          <motion.button
+            type="button"
+            onClick={handlePasteFromClipboard}
+            disabled={isExtracting}
+            className="h-10 px-4 rounded-xl flex items-center justify-center gap-1.5 transition-all flex-shrink-0"
+            style={{ background: 'var(--cream-bg)', color: 'var(--soft-blue)', border: '1px solid var(--cream-border)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, cursor: isExtracting ? 'not-allowed' : 'pointer' }}
+            whileTap={isExtracting ? {} : { scale: 0.97 }}
           >
-            <div className="relative flex-1 w-full">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--cream-text-muted)', position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}>
-                <path d="M10 13a5 5 0 0 1 5-5h4a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-4a5 5 0 0 1-5-5z" />
-                <polyline points="10 13 7 16 10 19" />
-              </svg>
-              <input
-                ref={inputRef}
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="粘贴1688商品网址，按回车提取..."
-                className="w-full h-11 pl-11 pr-4 rounded-xl outline-none transition-all"
-                style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', color: 'var(--cream-dark)' }}
-                disabled={isExtracting}
-              />
-            </div>
-            <div className="flex gap-2">
-              <motion.button
-                type="button"
-                onClick={handleExtract}
-                disabled={!url.trim() || isExtracting}
-                className="flex-1 sm:flex-none h-11 px-5 rounded-xl flex items-center justify-center gap-2 transition-all"
-                style={{ background: isExtracting ? 'var(--cream-border)' : 'var(--moss-green)', color: 'var(--text-on-primary)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.875rem', fontWeight: 500, cursor: (!url.trim() || isExtracting) ? 'not-allowed' : 'pointer', boxShadow: isExtracting ? 'none' : '0 4px 12px rgba(120,140,93,0.3)' }}
-                whileTap={(!url.trim() || isExtracting) ? {} : { scale: 0.97 }}
-              >
-                {isExtracting ? (
-                  <>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
-                    提取中...
-                  </>
-                ) : (
-                  <>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v14" /><polyline points="7 12 12 17 17 12" /></svg>
-                    提取
-                  </>
-                )}
-              </motion.button>
-              <motion.button
-                type="button"
-                onClick={refresh}
-                disabled={isRefreshing || isExtracting}
-                className="w-11 h-11 rounded-xl flex items-center justify-center transition-all flex-shrink-0"
-                style={{ background: 'transparent', color: 'var(--soft-blue)', border: '1px solid var(--cream-border)', cursor: (isRefreshing || isExtracting) ? 'not-allowed' : 'pointer' }}
-                whileTap={(isRefreshing || isExtracting) ? {} : { scale: 0.97 }}
-              >
-                {isRefreshing ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
-                ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" /></svg>
-                )}
-              </motion.button>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="html-mode"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="flex flex-col gap-3 mb-4"
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><path d="M8 10h8" /><path d="M8 14h8" /><path d="M8 18h5" /></svg>
+            粘贴
+          </motion.button>
+          <motion.button
+            type="button"
+            onClick={handleExtractHtml}
+            disabled={!htmlContent.trim() || isExtracting}
+            className="h-10 px-5 rounded-xl flex items-center justify-center gap-2 transition-all flex-shrink-0"
+            style={{ background: (!htmlContent.trim() || isExtracting) ? 'var(--cream-border)' : 'var(--moss-green)', color: 'var(--text-on-primary)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: (!htmlContent.trim() || isExtracting) ? 'not-allowed' : 'pointer', boxShadow: (!htmlContent.trim() || isExtracting) ? 'none' : '0 4px 12px rgba(120,140,93,0.3)' }}
+            whileTap={(!htmlContent.trim() || isExtracting) ? {} : { scale: 0.97 }}
           >
-            <div className="relative">
-              <textarea
-                value={htmlContent}
-                onChange={(e) => setHtmlContent(e.target.value)}
-                placeholder="在此粘贴1688商品页面源码（F12 → 复制html标签内容）..."
-                className="w-full px-4 py-3 rounded-xl outline-none resize-none transition-all overflow-auto"
-                style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', fontFamily: "'Monaco','JetBrains Mono',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-dark)', minHeight: '110px', maxHeight: '200px', lineHeight: 1.5 }}
-                disabled={isExtracting}
-                rows={5}
-              />
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              <div className="relative flex-1 min-w-[200px]">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--cream-text-muted)', position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}>
-                  <path d="M10 13a5 5 0 0 1 5-5h4a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-4a5 5 0 0 1-5-5z" />
-                </svg>
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="商品链接（可选，用于记录来源）"
-                  className="w-full h-10 pl-9 pr-3 rounded-xl outline-none transition-all"
-                  style={{ background: 'var(--cream-bg)', border: '1px solid var(--cream-border)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', color: 'var(--cream-dark)' }}
-                  disabled={isExtracting}
-                />
-              </div>
-              <motion.button
-                type="button"
-                onClick={handlePasteFromClipboard}
-                disabled={isExtracting}
-                className="h-10 px-4 rounded-xl flex items-center justify-center gap-1.5 transition-all flex-shrink-0"
-                style={{ background: 'var(--cream-bg)', color: 'var(--soft-blue)', border: '1px solid var(--cream-border)', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.75rem', fontWeight: 500, cursor: isExtracting ? 'not-allowed' : 'pointer' }}
-                whileTap={isExtracting ? {} : { scale: 0.97 }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><path d="M8 10h8" /><path d="M8 14h8" /><path d="M8 18h5" /></svg>
-                粘贴
-              </motion.button>
-              <motion.button
-                type="button"
-                onClick={handleExtractHtml}
-                disabled={!htmlContent.trim() || isExtracting}
-                className="h-10 px-5 rounded-xl flex items-center justify-center gap-2 transition-all flex-shrink-0"
-                style={{ background: (!htmlContent.trim() || isExtracting) ? 'var(--cream-border)' : 'var(--moss-green)', color: 'var(--text-on-primary)', border: 'none', fontFamily: "'Poppins',var(--font-sans)", fontSize: '0.8125rem', fontWeight: 500, cursor: (!htmlContent.trim() || isExtracting) ? 'not-allowed' : 'pointer', boxShadow: (!htmlContent.trim() || isExtracting) ? 'none' : '0 4px 12px rgba(120,140,93,0.3)' }}
-                whileTap={(!htmlContent.trim() || isExtracting) ? {} : { scale: 0.97 }}
-              >
-                {isExtracting ? (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
-                    解析中...
-                  </>
-                ) : (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
-                    解析提取
-                  </>
-                )}
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {isExtracting ? (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                解析中...
+              </>
+            ) : (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
+                解析提取
+              </>
+            )}
+          </motion.button>
+        </div>
+      </motion.div>
       <div className="mb-4 text-right hidden sm:block" style={{ fontFamily: "'Lora',var(--font-sans)", fontSize: '0.6875rem', color: 'var(--cream-text-muted)' }}>
         {formatDate(lastRefresh)} 更新
       </div>
